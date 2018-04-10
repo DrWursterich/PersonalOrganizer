@@ -6,7 +6,10 @@ import javafx.scene.layout.VBox;
 
 @SuppressWarnings("restriction")
 public class main extends Application {
+	private static Translator translator;
+
 	public static void main(String...args) {
+		translator = new Translator("de");
 		launch(args);
 	}
 
@@ -14,82 +17,79 @@ public class main extends Application {
 	public void start(Stage stage) throws Exception {
 		Scene scene = new Scene(new VBox(), 300, 300);
 		((VBox)scene.getRoot()).getChildren().add(this.menuBar());
-		
+
 		stage.setTitle("Personal Organizer");
 		stage.setScene(scene);
 		stage.show();
 	}
-	
+
 	private MenuBar menuBar() {
-		return new MenuBar(
-				new Menu("Datei",
-						new Menu("Neu", 
-								new MenuItem("Termin", e -> {
-									System.out.println("Neuen Termin anlegen");
-								}),
-								new MenuItem("Termin Gruppe", e -> {
-									System.out.println("Neue Termin Gruppe anlegen");
-								})),
-						new MenuItem("Öffnen", e -> {
-							System.out.println("Datei öffnen");
-						}),
-						new MenuItem("Speichern", e -> {
-							System.out.println("Datei speichern");
-						}),
-						new MenuItem("Speichern unter", e -> {
-							System.out.println("Datei speichern unter");
-						}),
-						new MenuItem("Einstellungen", e -> {
-							System.out.println("Einstellungsdialog öffnen");
-						}),
-						new MenuItem("Beenden", e -> {
-							System.exit(0);
-						})),
-				new Menu("Bearbeiten",
-						new MenuItem("Rückgängig", e -> {
-							System.out.println("Aktion rückgängig machen");
-						}),
-						new MenuItem("Wiederholen", e -> {
-							System.out.println("Aktion wiederholen");
-						}),
-						new MenuItem("Ausschneiden", e -> {
-							System.out.println("Element ausschneiden");
-						}),
-						new MenuItem("Kopieren", e -> {
-							System.out.println("Element kopieren");
-						}),
-						new MenuItem("Einfügen", e -> {
-							System.out.println("Element einfügen");
-						}),
-						new MenuItem("Löschen", e -> {
-							System.out.println("Element löschen");
-						}),
-						new MenuItem("Suchen", e -> {
-							System.out.println("Suchdialog öffnen");
-						})),
-				new Menu("Ansicht",
-						new Menu("Wechsen zu", 
-								new MenuItem("Tages Ansicht", e -> {
-									System.out.println("Zur Tages Ansicht wechseln");
-								}),
-								new MenuItem("Wochen Ansicht", e -> {
-									System.out.println("Zur Wochen Ansicht wechseln");
-								}), 
-								new MenuItem("Monats Ansicht", e -> {
-									System.out.println("Zur Monats Ansicht wechseln");
-								})),
-						new MenuItem("Öffnen", e -> {
-							System.out.println("Datei öffnen");
-						}),
-						new MenuItem("Speichern unter", e -> {
-							System.out.println("Datei speichern unter");
-						})),
-				new Menu("Hilfe",
-						new MenuItem("Handbuch ", e -> {
-							System.out.println("Handbuch öffnen");
-						}),
-						new MenuItem("Über Personal Organizer", e -> {
-							System.out.println("Über Personal Organizer");
-						})));
+		if (translator != null) {
+			return new MenuBar(
+					new Menu(translator.translate("menuBar", "file", "name"),
+							new Menu(translator.translate("menuBar", "file", "new", "name"),
+									new MenuItem(translator.translate("menuBar", "file", "new", "meeting"), e -> {
+										System.out.println("Neuen Termin anlegen");
+									}),
+									new MenuItem(translator.translate("menuBar", "file", "new", "meetings"), e -> {
+										System.out.println("Neue Termin Gruppe anlegen");
+									})),
+							new MenuItem(translator.translate("menuBar", "file", "open"), e -> {
+								System.out.println("Datei Ã¶ffnen");
+							}),
+							new MenuItem(translator.translate("menuBar", "file", "save"), e -> {
+								System.out.println("Datei speichern");
+							}),
+							new MenuItem(translator.translate("menuBar", "file", "save as"), e -> {
+								System.out.println("Datei speichern unter");
+							}),
+							new MenuItem(translator.translate("menuBar", "file", "settings"), e -> {
+								System.out.println("Einstellungsdialog Ã¶ffnen");
+							}),
+							new MenuItem(translator.translate("menuBar", "file", "exit"), e -> {
+								System.exit(0);
+							})),
+					new Menu(translator.translate("menuBar", "edit", "name"),
+							new MenuItem(translator.translate("menuBar", "edit", "undo"), e -> {
+								System.out.println("Aktion rÃ¼ckgÃ¤ngig machen");
+							}),
+							new MenuItem(translator.translate("menuBar", "edit", "redo"), e -> {
+								System.out.println("Aktion wiederholen");
+							}),
+							new MenuItem(translator.translate("menuBar", "edit", "cut"), e -> {
+								System.out.println("Element ausschneiden");
+							}),
+							new MenuItem(translator.translate("menuBar", "edit", "copy"), e -> {
+								System.out.println("Element kopieren");
+							}),
+							new MenuItem(translator.translate("menuBar", "edit", "paste"), e -> {
+								System.out.println("Element einfÃ¼gen");
+							}),
+							new MenuItem(translator.translate("menuBar", "edit", "delete"), e -> {
+								System.out.println("Element lÃ¶schen");
+							}),
+							new MenuItem(translator.translate("menuBar", "edit", "search"), e -> {
+								System.out.println("Suchdialog Ã¶ffnen");
+							})),
+					new Menu(translator.translate("menuBar", "view", "name"),
+							new Menu(translator.translate("menuBar", "view", "switch to", "name"),
+									new MenuItem(translator.translate("menuBar", "view", "switch to", "day view"), e -> {
+										System.out.println("Zur Tages Ansicht wechseln");
+									}),
+									new MenuItem(translator.translate("menuBar", "view", "switch to", "week view"), e -> {
+										System.out.println("Zur Wochen Ansicht wechseln");
+									}),
+									new MenuItem(translator.translate("menuBar", "view", "switch to", "month view"), e -> {
+										System.out.println("Zur Monats Ansicht wechseln");
+									}))),
+					new Menu(translator.translate("menuBar", "help", "name"),
+							new MenuItem(translator.translate("menuBar", "help", "manual"), e -> {
+								System.out.println("Handbuch Ã¶ffnen");
+							}),
+							new MenuItem(translator.translate("menuBar", "help", "about"), e -> {
+								System.out.println("Ãœber Personal Organizer");
+							})));
+		}
+		return null;
 	}
 }

@@ -1,0 +1,41 @@
+{
+	"menuBar": {
+		"file": {
+			"name": "Datei",
+			"new": {
+				"name": "Neu",
+				"meeting": "Termin",
+				"meetings": "Termin Gruppe"
+			},
+			"open": "Öffnen",
+			"save": "Speichern",
+			"save as": "Speichern unter",
+			"settings": "Einstellungen",
+			"exit": "Beenden"
+		},
+		"edit": {
+			"name": "Bearbeiten",
+			"undo": "Rückgängig",
+			"redo": "Wiederholen",
+			"cut": "Ausschneiden",
+			"copy": "Kopieren",
+			"paste": "Einfügen",
+			"delete": "Löschen",
+			"search": "Suchen"
+		},
+		"view": {
+			"name": "Ansicht",
+			"switch to": {
+				"name": "Wechseln zu",
+				"day view": "Tages Ansicht",
+				"week view": "Wochen Ansicht",
+				"month view": "Monats Ansicht"
+			}
+		},
+		"help": {
+		"name": "Hilfe",
+			"manual": "Handbuch",
+			"about": "Über Personal Organizer"
+		}
+	}
+}

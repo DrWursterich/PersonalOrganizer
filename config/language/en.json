@@ -1,0 +1,41 @@
+{
+	"menuBar": {
+		"file": {
+			"name": "File",
+			"new": {
+				"name": "New",
+				"meeting": "Meeting",
+				"meetings": "Meetings"
+			},
+			"open": "Open",
+			"save": "Save",
+			"save as": "Save as",
+			"settings": "Settings",
+			"exit": "Exit"
+		},
+		"edit": {
+			"name": "Edit",
+			"undo": "Undo",
+			"redo": "Redo",
+			"cut": "Cut",
+			"copy": "Copy",
+			"paste": "Paste",
+			"delete": "Delete",
+			"search": "Search"
+		},
+		"view": {
+			"name": "View",
+			"switch to": {
+				"name": "Switch to",
+				"day view": "Day View",
+				"week view": "Week View",
+				"month view": "Month View"
+			}
+		},
+		"help": {
+			"name": "Help",
+			"manual": "Manual",
+			"about": "About"
+		}
+	}
+}
