@@ -6,9 +6,11 @@ import javafx.scene.layout.VBox;
 
 @SuppressWarnings("restriction")
 public class main extends Application {
+	private static DatabaseController dbController;
 	private static Translator translator;
 
 	public static void main(String...args) {
+		dbController = new DatabaseController();
 		translator = new Translator("de");
 		launch(args);
 	}
