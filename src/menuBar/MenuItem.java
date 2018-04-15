@@ -1,4 +1,4 @@
-package MenuBar;
+package menuBar;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
