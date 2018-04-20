@@ -1,4 +1,6 @@
 {
+	"title": "Personal Organizer",
+	
 	"menuBar": {
 		"file": {
 			"name": "File",

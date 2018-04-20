@@ -1,0 +1,43 @@
+{
+	"title": "個人組織者",
+	
+	"menuBar": {
+		"file": {
+			"name": "文件",
+			"new": {
+				"name": "新",
+				"meeting": "約會",
+				"meetings": "日期"
+			},
+			"open": "開放",
+			"save": "保存",
+			"save as": "另存為",
+			"settings": "設置",
+			"exit": "出口"
+		},
+		"edit": {
+			"name": "編輯",
+			"undo": "解開",
+			"redo": "重做",
+			"cut": "切",
+			"copy": "複製",
+			"paste": "糊",
+			"delete": "刪除",
+			"search": "搜索"
+		},
+		"view": {
+			"name": "視圖",
+			"switch to": {
+				"name": "切換到",
+				"day view": "日視圖",
+				"week view": "週視圖",
+				"month view": "月視圖"
+			}
+		},
+		"help": {
+			"name": "幫幫我",
+			"manual": "手冊",
+			"about": "關於"
+		}
+	}
+}

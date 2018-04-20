@@ -8,7 +8,6 @@ import database.*;
 import menuBar.*;
 import views.*;
 
-@SuppressWarnings("restriction")
 public class PersonalOrganizer extends Application {
 	private static DatabaseController dbController;
 	private static Translator translator;
@@ -23,15 +22,15 @@ public class PersonalOrganizer extends Application {
 		VBox root = new VBox();
 		Scene scene = new Scene(root, 300, 300);
 		dbController = new DatabaseController();
-		dbController.addAppointment("Subject", "Description",
-				new GregorianCalendar(2018, 3, 15,  8, 30),
-				new GregorianCalendar(2018, 3, 15, 12, 10));
+		dbController.addAppointment("Termin", "Beschreibung",
+				new GregorianCalendar(2018, 3, 20,  8, 30),
+				new GregorianCalendar(2018, 3, 20, 12, 10));
 		translator = new Translator("de");
 		view = new DayView(dbController, new GregorianCalendar());
 		StackPane a = new StackPane();
 		a.getChildren().add(view);
 		root.getChildren().addAll(this.menuBar(), a);
-		stage.setTitle("Personal Organizer");
+		stage.setTitle(translator.translate("title"));
 		stage.setScene(scene);
 		stage.show();
 	}
