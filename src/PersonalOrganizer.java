@@ -1,13 +1,15 @@
 import javafx.application.Application;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Priority;
 import java.util.GregorianCalendar;
 import database.*;
 import menuBar.*;
 import views.*;
 
+@SuppressWarnings("restriction")
 public class PersonalOrganizer extends Application {
 	private static DatabaseController dbController;
 	private static Translator translator;
@@ -20,16 +22,17 @@ public class PersonalOrganizer extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 		VBox root = new VBox();
-		Scene scene = new Scene(root, 300, 300);
+		Scene scene = new Scene(root, 0.75*Screen.getPrimary().getBounds().getWidth(),
+				0.75*Screen.getPrimary().getBounds().getHeight());
 		dbController = new DatabaseController();
 		dbController.addAppointment("Termin", "Beschreibung",
-				new GregorianCalendar(2018, 3, 20,  8, 30),
-				new GregorianCalendar(2018, 3, 20, 12, 10));
+				new GregorianCalendar(2018, 3, 24,  8, 30),
+				new GregorianCalendar(2018, 3, 24, 12, 10));
 		translator = new Translator("de");
 		view = new DayView(dbController, new GregorianCalendar());
-		StackPane a = new StackPane();
-		a.getChildren().add(view);
-		root.getChildren().addAll(this.menuBar(), a);
+		VBox.setVgrow(view, Priority.ALWAYS);
+		root.getChildren().addAll(this.menuBar(), view);
+		view.prefWidthProperty().bind(stage.widthProperty());
 		stage.setTitle(translator.translate("title"));
 		stage.setScene(scene);
 		stage.show();
