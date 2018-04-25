@@ -5,10 +5,15 @@ import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.Priority;
 import java.util.GregorianCalendar;
-import database.*;
+import database.DatabaseController;
+import util.Translator;
 import menuBar.*;
 import views.*;
 
+/**
+ * Static Main Class for the Personal Organizer.
+ * @author Mario Schäper
+ */
 @SuppressWarnings("restriction")
 public class PersonalOrganizer extends Application {
 	private static DatabaseController dbController;
@@ -23,11 +28,11 @@ public class PersonalOrganizer extends Application {
 	public void start(Stage stage) throws Exception {
 		VBox root = new VBox();
 		Scene scene = new Scene(root, 0.75*Screen.getPrimary().getBounds().getWidth(),
-				0.75*Screen.getPrimary().getBounds().getHeight());
+				0.6*Screen.getPrimary().getBounds().getHeight());
 		dbController = new DatabaseController();
 		dbController.addAppointment("Termin", "Beschreibung",
-				new GregorianCalendar(2018, 3, 24,  8, 30),
-				new GregorianCalendar(2018, 3, 24, 12, 10));
+				new GregorianCalendar(2018, 3, 25,  8, 30),
+				new GregorianCalendar(2018, 3, 25, 12, 10));
 		translator = new Translator("de");
 		view = new DayView(dbController, new GregorianCalendar());
 		VBox.setVgrow(view, Priority.ALWAYS);
@@ -38,6 +43,10 @@ public class PersonalOrganizer extends Application {
 		stage.show();
 	}
 
+	/**
+	 * Creates and returns a menuBar
+	 * @return the menuBar
+	 */
 	private MenuBar menuBar() {
 		return new MenuBar(
 				new Menu(translator.translate("menuBar", "file", "name"),

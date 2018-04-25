@@ -1,21 +1,23 @@
 package containerItem;
 
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
-
 import container.Container;
 import container.DayContainer;
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
+import javafx.beans.property.StringProperty;
+import javafx.beans.property.SimpleStringProperty;
 
 /**
-	 * Class representing an appointment.
-	 * @author Mario Schäper
-	 */
+ * Class representing an appointment.
+ * @author Mario Schäper
+ */
+@SuppressWarnings("restriction")
 public class Appointment implements ContainerItem {
 	private ArrayList<Container<?>> parents;
 	private GregorianCalendar startDate;
 	private GregorianCalendar endDate;
-	private String subject;
-	private String description;
+	private StringProperty subject;
+	private StringProperty description;
 
 	/**
 	 * Invokes an instance of the class {@link Appointment Appointment}.
@@ -27,8 +29,8 @@ public class Appointment implements ContainerItem {
 	public Appointment(String subject, String description,
 			GregorianCalendar startDate, GregorianCalendar endDate) {
 		this.parents = new ArrayList<Container<?>>();
-		this.subject = subject;
-		this.description = description;
+		this.subject = new SimpleStringProperty(subject);
+		this.description = new SimpleStringProperty(description);
 		this.startDate = startDate;
 		this.endDate = endDate;
 	}
@@ -51,14 +53,14 @@ public class Appointment implements ContainerItem {
 	 * @param subject the new subject
 	 */
 	public void setSubject(String subject) {
-		this.subject = subject;
+		this.subject.setValue(subject);
 	}
 
 	/**
 	 * @param description the new description
 	 */
 	public void setDescription(String description) {
-		this.description = description;
+		this.description.setValue(description);
 	}
 
 	/**
@@ -78,17 +80,31 @@ public class Appointment implements ContainerItem {
 	}
 
 	/**
+	 * @return the subject property of the {@link Appointment Appointment}
+	 */
+	public StringProperty subjectProperty() {
+		return this.subject;
+	}
+
+	/**
+	 * @return the description property of the {@link Appointment Appointment}
+	 */
+	public StringProperty descriptionProperty() {
+		return this.description;
+	}
+
+	/**
 	 * @return the subject of the {@link Appointment Appointment}
 	 */
 	public String getSubject() {
-		return this.subject;
+		return this.subject.getValue();
 	}
 
 	/**
 	 * @return the description of the {@link Appointment Appointment}
 	 */
 	public String getDescription() {
-		return this.description;
+		return this.description.getValue();
 	}
 
 	/**
