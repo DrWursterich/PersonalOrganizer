@@ -8,7 +8,6 @@ import javafx.beans.property.SimpleIntegerProperty;
  * Also contains seperate fields for minutes and hours.
  * @author Mario Schäper
  */
-@SuppressWarnings("restriction")
 public class Time extends SimpleIntegerProperty {
 	private IntegerProperty minutes = new SimpleIntegerProperty(0);
 	private IntegerProperty hours = new SimpleIntegerProperty(0);

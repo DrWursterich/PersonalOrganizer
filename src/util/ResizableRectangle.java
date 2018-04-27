@@ -8,7 +8,6 @@ import javafx.scene.shape.Rectangle;
  * Initaly it is resizable in width and height.
  * @author Mario Schäper
  */
-@SuppressWarnings("restriction")
 public class ResizableRectangle extends Rectangle {
 	private boolean resizeWidth = true;
 	private boolean resizeHeight = true;

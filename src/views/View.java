@@ -7,7 +7,6 @@ import javafx.scene.layout.VBox;
  * Superclass for views
  * @author Mario Schäper
  */
-@SuppressWarnings("restriction")
 public abstract class View extends VBox {
 	protected DatabaseController database;
 

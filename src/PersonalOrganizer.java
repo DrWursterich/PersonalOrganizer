@@ -14,7 +14,6 @@ import views.*;
  * Static Main Class for the Personal Organizer.
  * @author Mario Schäper
  */
-@SuppressWarnings("restriction")
 public class PersonalOrganizer extends Application {
 	private static DatabaseController dbController;
 	private static Translator translator;
@@ -30,9 +29,13 @@ public class PersonalOrganizer extends Application {
 		Scene scene = new Scene(root, 0.75*Screen.getPrimary().getBounds().getWidth(),
 				0.6*Screen.getPrimary().getBounds().getHeight());
 		dbController = new DatabaseController();
-		dbController.addAppointment("Termin", "Beschreibung",
-				new GregorianCalendar(2018, 3, 25,  8, 30),
-				new GregorianCalendar(2018, 3, 25, 12, 10));
+		GregorianCalendar appointmentStart = new GregorianCalendar();
+		appointmentStart.set(GregorianCalendar.HOUR_OF_DAY, 8);
+		appointmentStart.set(GregorianCalendar.MINUTE, 30);
+		GregorianCalendar appointmentEnd = new GregorianCalendar();
+		appointmentEnd.set(GregorianCalendar.HOUR_OF_DAY, 12);
+		appointmentEnd.set(GregorianCalendar.MINUTE, 10);
+		dbController.addAppointment("Termin", "Beschreibung", appointmentStart, appointmentEnd);
 		translator = new Translator("de");
 		view = new DayView(dbController, new GregorianCalendar());
 		VBox.setVgrow(view, Priority.ALWAYS);

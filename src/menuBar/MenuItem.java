@@ -8,7 +8,6 @@ import javafx.event.EventHandler;
  * allowing for invocation with the onAction Event.
  * @author Mario Schäper
  */
-@SuppressWarnings("restriction")
 public class MenuItem extends javafx.scene.control.MenuItem {
 	public MenuItem(String name, EventHandler<ActionEvent> event) {
 		this.setText(name);

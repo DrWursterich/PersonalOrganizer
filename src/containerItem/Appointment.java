@@ -11,7 +11,6 @@ import javafx.beans.property.SimpleStringProperty;
  * Class representing an appointment.
  * @author Mario Schäper
  */
-@SuppressWarnings("restriction")
 public class Appointment implements ContainerItem {
 	private ArrayList<Container<?>> parents;
 	private GregorianCalendar startDate;

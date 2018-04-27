@@ -5,7 +5,8 @@ import java.util.GregorianCalendar;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
+import javafx.scene.layout.Pane;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -28,7 +29,6 @@ import containerItem.Appointment;
  * individual days in a format similar to a table.
  * @author Mario Schäper
  */
-@SuppressWarnings("restriction")
 public class DayView extends DateView {
 	private Rectangle topBar;
 	private DayScale dayScale;
@@ -45,7 +45,7 @@ public class DayView extends DateView {
 	 * Represents the scale of a day, in which {@link Appointment Appointments} can be displayed
 	 * @author Mario Schäper
 	 */
-	private class DayScale extends Region {
+	private class DayScale extends Pane {
 		private DatabaseController database;
 		private ObjectProperty<Font> font;
 		private Time start;
@@ -164,9 +164,12 @@ public class DayView extends DateView {
 		this.topBar.widthProperty().bind(this.widthProperty().subtract(this.topBar.strokeWidthProperty()));
 		this.topBar.yProperty().bind(this.topBar.strokeWidthProperty().divide(2));
 
-		this.dayScale = new DayScale(database, new Time(7, 0), new Time(22, 0));
-		VBox.setVgrow(this.dayScale, Priority.ALWAYS);
-		this.getChildren().addAll(this.topBar, this.dayScale);
+		this.dayScale = new DayScale(database, new Time(0, 0), new Time(24, 0));
+		ScrollPane sp = new ScrollPane(this.dayScale);
+		VBox.setVgrow(sp, Priority.ALWAYS);
+		sp.setFitToWidth(true);
+		sp.setFitToHeight(true);
+		this.getChildren().addAll(this.topBar, sp);
 	}
 
 	/**
