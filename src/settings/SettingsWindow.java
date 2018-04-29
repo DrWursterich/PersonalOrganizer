@@ -1,6 +1,9 @@
 package settings;
 
-import util.Translator;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.stage.Modality;
@@ -11,6 +14,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
@@ -22,9 +26,10 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.collections.FXCollections;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import util.Translator;
 
 /**
  * Class that represents a Window for the Settings.
@@ -48,7 +53,53 @@ public class SettingsWindow {
 	private ButtonType yesButton = new ButtonType(Translator.translate("general", "yes"), ButtonBar.ButtonData.YES);
 	private ButtonType noButton = new ButtonType(Translator.translate("general", "no"), ButtonBar.ButtonData.NO);
 	private ButtonType exitButton = new ButtonType("", ButtonBar.ButtonData.CANCEL_CLOSE);
-	private boolean hasChanged = false;
+	private static boolean hasChanged = false;
+
+	private interface CustomInput {
+		static List<CustomInput> customInputs = new ArrayList<>();
+		
+		default void addToInputs() {
+			customInputs.add(this);
+			this.setOnAction(e -> hasChanged = true);
+		}
+		
+		void setOnAction(EventHandler<ActionEvent> value);
+
+		void toDefault();
+	}
+
+	private class InpColorPicker extends ColorPicker implements CustomInput {
+		private Color defaultValue;
+
+		InpColorPicker(Color defaultValue) {
+			super();
+			this.addToInputs();
+			this.defaultValue = defaultValue;
+			this.toDefault();
+		}
+
+		@Override
+		public void toDefault() {
+			this.setValue(this.defaultValue);
+		}
+	}
+
+	private class InpComboBox<E> extends ComboBox<E> implements CustomInput {
+		private E defaultValue;
+
+		InpComboBox(ObservableList<E> options, E defaultValue) {
+			super(options);
+			this.addToInputs();
+			this.defaultValue = defaultValue;
+			this.toDefault();
+		}
+
+		@Override
+		public void toDefault() {
+			this.setValue(this.defaultValue);
+			
+		}
+	}
 
 	public SettingsWindow (Stage parentStage) {
 		HBox.setHgrow(this.bufferRegionLeft, Priority.ALWAYS);
@@ -59,12 +110,16 @@ public class SettingsWindow {
 		this.stage.setScene(this.scene);
 		this.applyButton.setOnAction(e -> {
 			this.tree.apply();
+			hasChanged = false;
 		});
 		this.cancelButton.setOnAction(e -> {
 			this.stage.hide();
 		});
 		this.restoreButton.setOnAction(e -> {
 			Settings.setDefaults();
+			for (CustomInput inp : CustomInput.customInputs) {
+				inp.toDefault();
+			}
 		});
 		this.applyButton.textProperty().bind(Translator.translationProperty("settings", "buttons", "apply"));
 		this.cancelButton.textProperty().bind(Translator.translationProperty("settings", "buttons", "cancel"));
@@ -94,7 +149,7 @@ public class SettingsWindow {
 		});
 		this.root.getChildren().addAll(this.contentBox, this.buttonBox);
 		this.stage.setOnCloseRequest(e -> {
-			if (this.hasChanged) {
+			if (hasChanged) {
 				ButtonType result = this.exitDialog.showAndWait().get();
 				if (((ButtonType)result).getButtonData().equals(this.exitButton.getButtonData())) {
 					e.consume();
@@ -110,7 +165,7 @@ public class SettingsWindow {
 	 * Invokes {@link javafx.stage.Stage#showAndWait() showAndWait}.
 	 */
 	public void show() {
-		this.hasChanged = false;
+		hasChanged = false;
 		this.stage.showAndWait();
 	}
 
@@ -133,10 +188,9 @@ public class SettingsWindow {
 			String fileName = f.getName();
 			options.add(fileName.substring(0, fileName.indexOf('.')));
 		}
-		ComboBox<String> languageSelection = new ComboBox<>(FXCollections.observableList(options));
+		ComboBox<String> languageSelection = new InpComboBox<>(FXCollections.observableList(options),
+				Translator.getLanguage());
 		Label languageSelectionLabel = new Label();
-		languageSelection.setValue(Translator.getLanguage());
-		languageSelection.setOnAction(e -> this.hasChanged = true);
 		languageSelectionLabel.textProperty().bind(
 				Translator.translationProperty("settings", "language", "languageLabel"));
 		pane.add(languageSelectionLabel, 0, 0);
@@ -173,18 +227,18 @@ public class SettingsWindow {
 		Label backgroundRightColorPickerLabel = new Label();
 		Label appointmentBackgroundColorPickerLabel = new Label();
 		Label appointmentStrokeColorPickerLabel = new Label();
-		ColorPicker topBarBackgroundColorPicker = new ColorPicker(Settings.DAYVIEW_TOPBAR_BACKGROUND_COLOR.getValue());
-		ColorPicker topBarStrokeColorPicker = new ColorPicker(Settings.DAYVIEW_TOPBAR_STROKE_COLOR.getValue());
-		ColorPicker backgroundLeftColorPicker = new ColorPicker(Settings.DAYVIEW_BACKGROUND_LEFT_COLOR.getValue());
-		ColorPicker backgroundRightColorPicker = new ColorPicker(Settings.DAYVIEW_BACKGROUND_RIGHT_COLOR.getValue());
-		ColorPicker appointmentBackgroundColorPicker = new ColorPicker(Settings.DAYVIEW_APPOINTMENT_BACKGROUND_COLOR.getValue());
-		ColorPicker appointmentStrokeColorPicker = new ColorPicker(Settings.DAYVIEW_APPOINTMENT_STROKE_COLOR.getValue());
-		topBarBackgroundColorPicker.setOnAction(e -> this.hasChanged = true);
-		topBarStrokeColorPicker.setOnAction(e -> this.hasChanged = true);
-		backgroundLeftColorPicker.setOnAction(e -> this.hasChanged = true);
-		backgroundRightColorPicker.setOnAction(e -> this.hasChanged = true);
-		appointmentBackgroundColorPicker.setOnAction(e -> this.hasChanged = true);
-		appointmentStrokeColorPicker.setOnAction(e -> this.hasChanged = true);
+		ColorPicker topBarBackgroundColorPicker = new InpColorPicker(
+				Settings.DAYVIEW_TOPBAR_BACKGROUND_COLOR.getValue());
+		ColorPicker topBarStrokeColorPicker = new InpColorPicker(
+				Settings.DAYVIEW_TOPBAR_STROKE_COLOR.getValue());
+		ColorPicker backgroundLeftColorPicker = new InpColorPicker(
+				Settings.DAYVIEW_BACKGROUND_LEFT_COLOR.getValue());
+		ColorPicker backgroundRightColorPicker = new InpColorPicker(
+				Settings.DAYVIEW_BACKGROUND_RIGHT_COLOR.getValue());
+		ColorPicker appointmentBackgroundColorPicker = new InpColorPicker(
+				Settings.DAYVIEW_APPOINTMENT_BACKGROUND_COLOR.getValue());
+		ColorPicker appointmentStrokeColorPicker = new InpColorPicker(
+				Settings.DAYVIEW_APPOINTMENT_STROKE_COLOR.getValue());
 		topBarBackgroundColorPickerLabel.textProperty().bind(
 				Translator.translationProperty("settings", "views", "dayView", "topBarBackgroundColorLabel"));
 		topBarStrokeColorPickerLabel.textProperty().bind(
