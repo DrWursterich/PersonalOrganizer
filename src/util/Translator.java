@@ -6,6 +6,8 @@ import java.nio.file.Files;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import javafx.beans.property.StringProperty;
+import javafx.beans.property.SimpleStringProperty;
 
 /**
  * A class that translates keywords into a specific language using .json-files.<br/>
@@ -15,7 +17,7 @@ import org.json.JSONObject;
  * @author Mario Schäper
  */
 public abstract class Translator {
-	private static String currentLanguage = "en";
+	private static StringProperty currentLanguage = new SimpleStringProperty("en");
 	private static JSONObject json;
 
 	/**
@@ -26,7 +28,7 @@ public abstract class Translator {
 	 * @return
 	 */
 	public static String getLanguage() {
-		return currentLanguage;
+		return currentLanguage.getValue();
 	}
 
 	/**
@@ -46,12 +48,13 @@ public abstract class Translator {
 			try {
 				json = new JSONObject(new String(Files.readAllBytes(file.toPath())));
 			} catch (JSONException e) {
+				e.printStackTrace();
 				throw new IOException("Language Configuration for \"" + language + "\" Could Not Be Loaded");
 			}
 		} else {
 			throw new IOException("Language Configuration for \"" + language + "\" Does Not Exist");
 		}
-		currentLanguage = language;
+		currentLanguage.setValue(language);
 	}
 
 	/**
@@ -71,8 +74,8 @@ public abstract class Translator {
 	 */
 	public static String translate(String...keys) {
 		if (json == null) {
-			throw new UnsetLanguageException(currentLanguage != null ?
-					(currentLanguage+".json does not exist") : "No Laguage is defined", currentLanguage);
+			throw new UnsetLanguageException(currentLanguage != null || currentLanguage.getValue() != null ?
+					(getLanguage()+".json does not exist") : "No Laguage is defined", getLanguage());
 		}
 		JSONObject newJson = json;
 		String ret = keys[keys.length-1];
@@ -103,5 +106,19 @@ public abstract class Translator {
 			}
 		}
 		return ret;
+	}
+
+	/**
+	 * Creates and returns a {@link javafx.beans.property.SimpleStringProperty SimpleStringProperty},
+	 * is bind to the translation of {@link #translate(String...) translate} invoked with the given keys.
+	 * @param keys sequence of keywords representing the .json-structure
+	 * @return translated property
+	 */
+	public static SimpleStringProperty translationProperty(String...keys) {
+		SimpleStringProperty strP = new SimpleStringProperty(translate(keys));
+		currentLanguage.addListener((v, o, n) -> {
+			strP.setValue(translate(keys));
+		});
+		return strP;
 	}
 }
