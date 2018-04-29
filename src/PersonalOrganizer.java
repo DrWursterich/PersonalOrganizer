@@ -8,7 +8,6 @@ import java.util.GregorianCalendar;
 import database.DatabaseController;
 import util.Translator;
 import menuBar.*;
-import settings.SettingsWindow;
 import views.*;
 
 /**
@@ -16,28 +15,26 @@ import views.*;
  * @author Mario Schäper
  */
 public class PersonalOrganizer extends Application {
-	private static DatabaseController dbController;
 	private static View view;
 
-	public static void main(String...args) {
+	public static void main(String...args) throws Exception {
+		Translator.setLanguage("de");
 		launch(args);
 	}
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		Translator.setLanguage("de");
 		VBox root = new VBox();
 		Scene scene = new Scene(root, 0.75*Screen.getPrimary().getBounds().getWidth(),
 				0.6*Screen.getPrimary().getBounds().getHeight());
-		dbController = new DatabaseController();
+		view = new DayView(new GregorianCalendar());
 		GregorianCalendar appointmentStart = new GregorianCalendar();
 		appointmentStart.set(GregorianCalendar.HOUR_OF_DAY, 8);
 		appointmentStart.set(GregorianCalendar.MINUTE, 30);
 		GregorianCalendar appointmentEnd = new GregorianCalendar();
 		appointmentEnd.set(GregorianCalendar.HOUR_OF_DAY, 12);
 		appointmentEnd.set(GregorianCalendar.MINUTE, 10);
-		dbController.addAppointment("Termin", "Beschreibung", appointmentStart, appointmentEnd);
-		view = new DayView(dbController, new GregorianCalendar());
+		DatabaseController.addAppointment("Termin", "Beschreibung", appointmentStart, appointmentEnd);
 		VBox.setVgrow(view, Priority.ALWAYS);
 		root.getChildren().addAll(this.menuBar(), view);
 		view.prefWidthProperty().bind(stage.widthProperty());

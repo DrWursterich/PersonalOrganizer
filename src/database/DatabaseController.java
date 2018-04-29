@@ -18,23 +18,22 @@ import containerItem.ContainerItem;
  * This class controlls the access to a database containing appointments.
  * @author Mario Schäper
  */
-public class DatabaseController {
-	private Container<YearContainer> container;
+public abstract class DatabaseController {
+	private static Container<YearContainer> container = new Container<YearContainer>();
 //	private String jdbcDriver = "com.mysql.jdbc.Driver";
 //	private String dbName = "Appointments";
 
 	/**
 	 * Invokes a {@link DatabaseController DatabaseController} instance.
 	 */
-	public DatabaseController() {
-		this.initiateDatabase();
-	}
+//	public DatabaseController() {
+//		this.initiateDatabase();
+//	}
 
 	/**
 	 * Initiates the database.
 	 */
-	public void initiateDatabase() {
-		this.container = new Container<YearContainer>();
+//	public void initiateDatabase() {
 //		try {
 //			Class.forName(this.jdbcDriver);
 //			DriverManager.getConnection("jdbc:mySql://localhost/?user=root&password=")
@@ -42,7 +41,7 @@ public class DatabaseController {
 //		} catch (ClassNotFoundException | SQLException e) {
 //			e.printStackTrace();
 //		}
-	}
+//	}
 	
 	/**
 	 * Adds an {@link Appointment Appointments} to the Database.
@@ -51,7 +50,7 @@ public class DatabaseController {
 	 * @param startDate the date, at which the appointment beginns
 	 * @param endDate the date, at which the appointment ends
 	 */
-	public void addAppointment(String subject, String description,
+	public static void addAppointment(String subject, String description,
 			GregorianCalendar startDate, GregorianCalendar endDate) {
 		Appointment appointment = new Appointment(subject, description, startDate, endDate);
 		startDate = (GregorianCalendar)startDate.clone();
@@ -59,10 +58,10 @@ public class DatabaseController {
 		startDate.set(GregorianCalendar.HOUR, 1);
 		endDate.set(GregorianCalendar.HOUR, 2);
 		while (startDate.before(endDate)) {
-			YearContainer year = search(this.container.getItems(), startDate.get(GregorianCalendar.YEAR));
+			YearContainer year = search(container.getItems(), startDate.get(GregorianCalendar.YEAR));
 			if (year == null) {
 				year = new YearContainer((short)startDate.get(GregorianCalendar.YEAR));
-				this.container.add(year);
+				container.add(year);
 			}
 			MonthContainer month = search(year.getItems(), startDate.get(GregorianCalendar.MONTH));
 			if (month == null) {
@@ -85,8 +84,8 @@ public class DatabaseController {
 	 * @param date specifies the day
 	 * @return list of all appointments sorted by starttime
 	 */
-	public ArrayList<Appointment> getDayAppointments(GregorianCalendar date) {
-		YearContainer year = search(this.container.getItems(), date.get(GregorianCalendar.YEAR));
+	public static ArrayList<Appointment> getDayAppointments(GregorianCalendar date) {
+		YearContainer year = search(container.getItems(), date.get(GregorianCalendar.YEAR));
 		if (year != null) {
 			MonthContainer month = search(year.getItems(), date.get(GregorianCalendar.MONTH));
 			if (month != null) {

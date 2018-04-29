@@ -1,7 +1,6 @@
 package views;
 
 import java.util.GregorianCalendar;
-import database.DatabaseController;
 
 /**
  * Superclass for all Views related to specific dates
@@ -10,8 +9,8 @@ import database.DatabaseController;
 public abstract class DateView extends View {
 	protected GregorianCalendar date;
 
-	public DateView(DatabaseController database, GregorianCalendar date) {
-		super(database);
+	public DateView(GregorianCalendar date) {
+		super();
 		this.loadDate(date);
 	}
 

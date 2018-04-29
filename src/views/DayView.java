@@ -45,14 +45,13 @@ public class DayView extends DateView {
 	 * Represents the scale of a day, in which {@link Appointment Appointments} can be displayed
 	 * @author Mario Schäper
 	 */
+	@SuppressWarnings("unused")
 	private class DayScale extends Pane {
-		private DatabaseController database;
 		private ObjectProperty<Font> font;
 		private Time start;
 		private Time end;
 
-		private DayScale(DatabaseController database, Time start, Time end) {
-			this.database = database;
+		private DayScale(Time start, Time end) {
 			this.start = start;
 			this.end = end;
 			this.font = new SimpleObjectProperty<Font>(Font.font("Courier New"));
@@ -111,7 +110,7 @@ public class DayView extends DateView {
 						.subtract(line2.strokeWidthProperty().divide(2)));
 				this.getChildren().addAll(line, label, line2);
 			}
-			ArrayList<Appointment> appointments = this.database.getDayAppointments(date);
+			ArrayList<Appointment> appointments = DatabaseController.getDayAppointments(date);
 			if (appointments != null) {
 				for (Appointment a : appointments) {
 					Rectangle appRec = new Rectangle() {
@@ -146,8 +145,8 @@ public class DayView extends DateView {
 		}
 	}
 
-	public DayView(DatabaseController database, GregorianCalendar date) {
-		super(database, date);
+	public DayView(GregorianCalendar date) {
+		super(date);
 		this.subjectFont = new SimpleObjectProperty<Font>(Font.font("Verdana", FontWeight.BOLD, 14));
 		this.descriptionFont = new SimpleObjectProperty<Font>(Font.font("Verdana", 12));
 		this.backgroundLeftColor = new SimpleObjectProperty<Color>(Color.BURLYWOOD);
@@ -164,7 +163,7 @@ public class DayView extends DateView {
 		this.topBar.widthProperty().bind(this.widthProperty().subtract(this.topBar.strokeWidthProperty()));
 		this.topBar.yProperty().bind(this.topBar.strokeWidthProperty().divide(2));
 
-		this.dayScale = new DayScale(database, new Time(0, 0), new Time(24, 0));
+		this.dayScale = new DayScale(new Time(0, 0), new Time(24, 0));
 		ScrollPane sp = new ScrollPane(this.dayScale);
 		VBox.setVgrow(sp, Priority.ALWAYS);
 		sp.setFitToWidth(true);

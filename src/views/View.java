@@ -1,6 +1,5 @@
 package views;
 
-import database.DatabaseController;
 import javafx.scene.layout.VBox;
 
 /**
@@ -8,11 +7,8 @@ import javafx.scene.layout.VBox;
  * @author Mario Schäper
  */
 public abstract class View extends VBox {
-	protected DatabaseController database;
-
-	public View(DatabaseController database) {
+	public View() {
 		super();
-		this.database = database;
 		this.setWidth(200);
 		this.setHeight(200);
 		this.parentProperty().addListener((observable, oldValue, newValue) -> {
