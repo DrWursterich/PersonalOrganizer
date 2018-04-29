@@ -1,6 +1,43 @@
 {
 	"title": "個人組織者",
-	
+
+	"general": {
+		"yes": "是的",
+		"no": "沒有"
+	},
+
+	"settings": {
+		"title": "設置",
+		"buttons": {
+			"apply": "申請",
+			"cancel": "退出",
+			"restoreDefault": "回報"
+		},
+		"closeDialog": {
+			"title": "警告",
+			"saveQuestion": "你想保存更改嗎？"
+		},
+		"general": {
+			"name": "通常"
+		},
+		"language": {
+			"name": "語言",
+			"languageLabel": "語言"
+		},
+		"views": {
+			"name": "意見",
+			"dayView": {
+				"name": "日景",
+				"topBarBackgroundColorLabel": "工具欄背景",
+				"topBarStrokeColorLabel": "工具欄邊緣",
+				"backgroundLeftColorLabel": "時間戳背景",
+				"backgroundRightColorLabel": "日曆背景",
+				"appointmentBackgroundColorLabel": "任命背景",
+				"appointmentStrokeColorLabel": "任命邊緣"
+			}
+		}
+	},
+
 	"menuBar": {
 		"file": {
 			"name": "文件",

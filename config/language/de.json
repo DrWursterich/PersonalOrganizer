@@ -1,6 +1,43 @@
 {
 	"title": "Personal Organizer",
-	
+
+	"general": {
+		"yes": "Ja",
+		"no": "Nein"
+	},
+
+	"settings": {
+		"title": "Einstellungen",
+		"buttons": {
+			"apply": "Anwenden",
+			"cancel": "Abbrechen",
+			"restoreDefault": "Zurücksetzen"
+		},
+		"closeDialog": {
+			"title": "Warnung",
+			"saveQuestion": "Möchten Sie die Änderungen speichern?"
+		},
+		"general": {
+			"name": "Allgemein"
+		},
+		"language": {
+			"name": "Sprache",
+			"languageLabel": "Sprache"
+		},
+		"views": {
+			"name": "Ansichten",
+			"dayView": {
+				"name": "Tag-Ansicht",
+				"topBarBackgroundColorLabel": "Toolbar Hintergrund",
+				"topBarStrokeColorLabel": "Toolbar Rand",
+				"backgroundLeftColorLabel": "Zeitstempel Hintergrund",
+				"backgroundRightColorLabel": "Kalender Hintergrund",
+				"appointmentBackgroundColorLabel": "Termin Hintergrund",
+				"appointmentStrokeColorLabel": "Termin Rand"
+			}
+		}
+	},
+
 	"menuBar": {
 		"file": {
 			"name": "Datei",

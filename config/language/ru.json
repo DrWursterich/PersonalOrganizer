@@ -1,6 +1,43 @@
 {
 	"title": "персональный органайзер",
-	
+
+	"general": {
+		"yes": "да",
+		"no": "нет"
+	},
+
+	"settings": {
+		"title": "настройки",
+		"buttons": {
+			"apply": "применять",
+			"cancel": "выкинуть",
+			"restoreDefault": "возвращение"
+		},
+		"closeDialog": {
+			"title": "предупреждение",
+			"saveQuestion": "Вы хотите сохранить изменения?"
+		},
+		"general": {
+			"name": "в целом"
+		},
+		"language": {
+			"name": "язык",
+			"languageLabel": "язык"
+		},
+		"views": {
+			"name": "мнения",
+			"dayView": {
+				"name": "Дневной обзор",
+				"topBarBackgroundColorLabel": "Фон панели инструментов",
+				"topBarStrokeColorLabel": "Край панели инструментов",
+				"backgroundLeftColorLabel": "Временная рамка",
+				"backgroundRightColorLabel": "Календарь фон",
+				"appointmentBackgroundColorLabel": "Назначение",
+				"appointmentStrokeColorLabel": "Назначение края"
+			}
+		}
+	},
+
 	"menuBar": {
 		"file": {
 			"name": "файл",
