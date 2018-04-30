@@ -23,6 +23,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.collections.FXCollections;
@@ -55,55 +56,97 @@ public class SettingsWindow {
 	private ButtonType exitButton = new ButtonType("", ButtonBar.ButtonData.CANCEL_CLOSE);
 	private static boolean hasChanged = false;
 
-	private interface CustomInput {
-		static List<CustomInput> customInputs = new ArrayList<>();
-		
-		default void addToInputs() {
+	/**
+	 * Interface for Input-Nodes, which represent a Setting.
+	 * @author Mario Schäper
+	 */
+	private interface CustomInput<E> {
+		static List<CustomInput<?>> customInputs = new ArrayList<>();
+
+		/**
+		 * Adds the Node to a static List to simplyfy Iterating.<br/>
+		 * Should be called when creating an Instance implementing this Interface.
+		 */
+		default void initialize(E defaultValue) {
 			customInputs.add(this);
 			this.setOnAction(e -> hasChanged = true);
+			this.setDefault(defaultValue);
+			this.toDefault();
 		}
-		
+
 		void setOnAction(EventHandler<ActionEvent> value);
 
-		void toDefault();
+		void setValue(E value);
+
+		/**
+		 * @return the default value. Should be the corresponding Setting.
+		 */
+		E getDefault();
+
+		/**
+		 * @param defaultValue the default value. Should be the corresponding Setting.
+		 */
+		void setDefault(E defaultValue);
+
+		/**
+		 * Restores the default Setting.
+		 */
+		default void toDefault() {
+			this.setValue(this.getDefault());
+		};
 	}
 
-	private class InpColorPicker extends ColorPicker implements CustomInput {
+	/**
+	 * Wrapper Class for {@link javafx.scene.control.ColorPicker ColorPicker} implementing
+	 * {@link CustomInput CustomInput}.
+	 * @author Mario Schäper
+	 */
+	private class InpColorPicker extends ColorPicker implements CustomInput<Color> {
 		private Color defaultValue;
 
 		InpColorPicker(Color defaultValue) {
 			super();
-			this.addToInputs();
-			this.defaultValue = defaultValue;
-			this.toDefault();
+			this.initialize(defaultValue);
 		}
 
-		@Override
-		public void toDefault() {
-			this.setValue(this.defaultValue);
+		public Color getDefault() {
+			return this.defaultValue;
+		}
+
+		public void setDefault(Color defaultValue) {
+			this.defaultValue = defaultValue;
 		}
 	}
 
-	private class InpComboBox<E> extends ComboBox<E> implements CustomInput {
+	/**
+	 * Wrapper Class for {@link javafx.scene.control.ComboBox ComboBox} implementing
+	 * {@link CustomInput CustomInput}.
+	 * @author Mario Schäper
+	 */
+	private class InpComboBox<E> extends ComboBox<E> implements CustomInput<E> {
 		private E defaultValue;
 
 		InpComboBox(ObservableList<E> options, E defaultValue) {
 			super(options);
-			this.addToInputs();
-			this.defaultValue = defaultValue;
-			this.toDefault();
+			this.initialize(defaultValue);
 		}
 
-		@Override
-		public void toDefault() {
-			this.setValue(this.defaultValue);
-			
+		public E getDefault() {
+			return this.defaultValue;
+		}
+
+		public void setDefault(E defaultValue) {
+			this.defaultValue = defaultValue;
 		}
 	}
 
 	public SettingsWindow (Stage parentStage) {
 		HBox.setHgrow(this.bufferRegionLeft, Priority.ALWAYS);
 		HBox.setHgrow(this.bufferRegionRight, Priority.ALWAYS);
+		HBox.setHgrow(this.scrollPane, Priority.ALWAYS);
+		VBox.setVgrow(this.contentBox, Priority.ALWAYS);
+		this.stage.setMinWidth(250);
+		this.stage.setMinHeight(100);
 		this.stage.setTitle(Translator.translate("settings", "title"));
 		this.stage.initModality(Modality.WINDOW_MODAL);
 		this.stage.initOwner(parentStage);
@@ -117,7 +160,12 @@ public class SettingsWindow {
 		});
 		this.restoreButton.setOnAction(e -> {
 			Settings.setDefaults();
-			for (CustomInput inp : CustomInput.customInputs) {
+			try {
+				Translator.setLanguage(Translator.DEFAULT_LANGUAGE);
+			} catch (Exception ex) {
+				System.out.println("An Error occurred restoring the Language");
+			}
+			for (CustomInput<?> inp : CustomInput.customInputs) {
 				inp.toDefault();
 			}
 		});
@@ -127,12 +175,15 @@ public class SettingsWindow {
 		this.contentBox.getChildren().addAll(this.tree, this.scrollPane);
 		this.buttonBox.getChildren().addAll(this.cancelButton, this.bufferRegionLeft,
 				this.restoreButton, this.bufferRegionRight, this.applyButton);
+		this.tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		this.tree.getItems().addAll(new TreeItem[]{generalItem(), this.languageItem(), this.viewsItem()});
 		this.tree.getSelectionModel().selectedItemProperty().addListener((v, o, n) -> {
 			if (n instanceof TreeItem) {
 				this.scrollPane.setContent(((TreeItem)n).getContent());
 			}
 		});
+		this.tree.getSelectionModel().clearAndSelect(0);
+		this.scrollPane.setPrefWidth(400);
 		this.exitDialog.titleProperty().bind(Translator.translationProperty("settings", "closeDialog", "title"));
 		this.exitDialog.getDialogPane().contentTextProperty().bind(
 				Translator.translationProperty("settings", "closeDialog", "saveQuestion"));
@@ -188,13 +239,15 @@ public class SettingsWindow {
 			String fileName = f.getName();
 			options.add(fileName.substring(0, fileName.indexOf('.')));
 		}
-		ComboBox<String> languageSelection = new InpComboBox<>(FXCollections.observableList(options),
+		ComboBox<String> languageSelection = new InpComboBox<String>(FXCollections.observableList(options),
 				Translator.getLanguage());
 		Label languageSelectionLabel = new Label();
 		languageSelectionLabel.textProperty().bind(
 				Translator.translationProperty("settings", "language", "languageLabel"));
 		pane.add(languageSelectionLabel, 0, 0);
 		pane.add(languageSelection, 1, 0);
+		pane.setHgap(20);
+		pane.setVgap(10);
 		return new TreeItem(Translator.translationProperty("settings", "language", "name"), pane, e -> {
 			if (!Translator.getLanguage().equals(languageSelection.getValue())) {
 				try {
