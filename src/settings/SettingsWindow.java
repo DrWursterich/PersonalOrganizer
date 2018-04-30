@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.stage.Modality;
 import javafx.scene.Scene;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -30,6 +31,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import util.Translator;
 
 /**
@@ -184,6 +186,7 @@ public class SettingsWindow {
 		});
 		this.tree.getSelectionModel().clearAndSelect(0);
 		this.scrollPane.setPrefWidth(400);
+		this.scrollPane.setFitToWidth(true);
 		this.exitDialog.titleProperty().bind(Translator.translationProperty("settings", "closeDialog", "title"));
 		this.exitDialog.getDialogPane().contentTextProperty().bind(
 				Translator.translationProperty("settings", "closeDialog", "saveQuestion"));
@@ -233,6 +236,8 @@ public class SettingsWindow {
 	 */
 	private TreeItem languageItem() {
 		GridPane pane = new GridPane();
+		ColumnConstraints columnLeft = new ColumnConstraints();
+		ColumnConstraints columnRight = new ColumnConstraints();
 		ArrayList<String> options = new ArrayList<String>();
 		File languageFolder = new File(".\\config\\language");
 		for (File f : languageFolder.listFiles()) {
@@ -244,8 +249,12 @@ public class SettingsWindow {
 		Label languageSelectionLabel = new Label();
 		languageSelectionLabel.textProperty().bind(
 				Translator.translationProperty("settings", "language", "languageLabel"));
-		pane.add(languageSelectionLabel, 0, 0);
-		pane.add(languageSelection, 1, 0);
+		columnLeft.setHalignment(HPos.LEFT);
+		columnRight.setHalignment(HPos.LEFT);
+		columnLeft.setHgrow(Priority.ALWAYS);
+		pane.getColumnConstraints().addAll(columnLeft, columnRight);
+		pane.addColumn(0, languageSelectionLabel);
+		pane.addColumn(1, languageSelection);
 		pane.setHgap(20);
 		pane.setVgap(10);
 		return new TreeItem(Translator.translationProperty("settings", "language", "name"), pane, e -> {
@@ -274,6 +283,8 @@ public class SettingsWindow {
 	 */
 	private TreeItem dayViewItem() {
 		GridPane pane = new GridPane();
+		ColumnConstraints columnLeft = new ColumnConstraints();
+		ColumnConstraints columnRight = new ColumnConstraints();
 		Label topBarBackgroundColorPickerLabel = new Label();
 		Label topBarStrokeColorPickerLabel = new Label();
 		Label backgroundLeftColorPickerLabel = new Label();
@@ -304,18 +315,22 @@ public class SettingsWindow {
 				Translator.translationProperty("settings", "views", "dayView", "appointmentBackgroundColorLabel"));
 		appointmentStrokeColorPickerLabel.textProperty().bind(
 				Translator.translationProperty("settings", "views", "dayView", "appointmentStrokeColorLabel"));
-		pane.add(topBarBackgroundColorPickerLabel, 0, 0);
-		pane.add(topBarBackgroundColorPicker, 1, 0);
-		pane.add(topBarStrokeColorPickerLabel, 0, 1);
-		pane.add(topBarStrokeColorPicker, 1, 1);
-		pane.add(backgroundLeftColorPickerLabel, 0, 2);
-		pane.add(backgroundLeftColorPicker, 1, 2);
-		pane.add(backgroundRightColorPickerLabel, 0, 3);
-		pane.add(backgroundRightColorPicker, 1, 3);
-		pane.add(appointmentBackgroundColorPickerLabel, 0, 4);
-		pane.add(appointmentBackgroundColorPicker, 1, 4);
-		pane.add(appointmentStrokeColorPickerLabel, 0, 5);
-		pane.add(appointmentStrokeColorPicker, 1, 5);
+		columnLeft.setHalignment(HPos.LEFT);
+		columnRight.setHalignment(HPos.LEFT);
+		columnLeft.setHgrow(Priority.ALWAYS);
+		pane.getColumnConstraints().addAll(columnLeft, columnRight);
+		pane.addColumn(0, 	topBarBackgroundColorPickerLabel,
+							topBarStrokeColorPickerLabel,
+							backgroundLeftColorPickerLabel,
+							backgroundRightColorPickerLabel,
+							appointmentBackgroundColorPickerLabel,
+							appointmentStrokeColorPickerLabel);
+		pane.addColumn(1, 	topBarBackgroundColorPicker,
+							topBarStrokeColorPicker,
+							backgroundLeftColorPicker,
+							backgroundRightColorPicker,
+							appointmentBackgroundColorPicker,
+							appointmentStrokeColorPicker);
 		pane.setHgap(20);
 		pane.setVgap(10);
 		return new TreeItem(Translator.translationProperty("settings", "views", "dayView", "name"), pane, e -> {
