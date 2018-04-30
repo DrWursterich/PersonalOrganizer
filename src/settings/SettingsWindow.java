@@ -149,7 +149,7 @@ public class SettingsWindow {
 		VBox.setVgrow(this.contentBox, Priority.ALWAYS);
 		this.stage.setMinWidth(250);
 		this.stage.setMinHeight(100);
-		this.stage.setTitle(Translator.translate("settings", "title"));
+		this.stage.titleProperty().bind(Translator.translationProperty("settings", "title"));
 		this.stage.initModality(Modality.WINDOW_MODAL);
 		this.stage.initOwner(parentStage);
 		this.stage.setScene(this.scene);
