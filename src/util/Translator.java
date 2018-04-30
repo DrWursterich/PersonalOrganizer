@@ -1,5 +1,6 @@
 package util;
 
+import java.util.Locale;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,19 +13,38 @@ import javafx.beans.property.SimpleStringProperty;
 /**
  * A class that translates keywords into a specific language using .json-files.<br/>
  * A language consists of a String of two chars, as an abbreviation
- * for the language it represents. A .json-file with the same name
- * has to be located in the ../config/language folder.
+ * for the language it represents (schould be according to ISO 639). A .json-file with
+ * the same name has to be located in the ../config/language folder.
  * @author Mario Schäper
  */
 public abstract class Translator {
-	private static StringProperty currentLanguage = new SimpleStringProperty("en");
+	private static StringProperty currentLanguage = new SimpleStringProperty();
 	private static JSONObject json;
+	/**
+	 * The default Language as determined by {@link java.util.Locale#getDefault() Locale.getDefault()}.
+	 */
+	public static final String DEFAULT_LANGUAGE;
+
+	static {
+		String systemLocale = Locale.getDefault().getLanguage();
+		try {
+			setLanguage(systemLocale);
+		} catch (Exception e) {
+			try {
+				setLanguage("en");
+			} catch (Exception ex) {
+				System.out.println("Unable to load Language settings");
+				System.exit(0);
+			}
+		}
+		DEFAULT_LANGUAGE = systemLocale;
+	}
 
 	/**
 	 * Returns the language.<br/>
 	 * A language consists of a String of two chars, as an abbreviation
-	 * for the language it represents. A .json-file with the same name
-	 * has to be located in the ../config/language folder.
+	 * for the language it represents (schould be according to ISO 639). A .json-file with
+	 * the same name has to be located in the ../config/language folder.
 	 * @return
 	 */
 	public static String getLanguage() {
@@ -34,8 +54,8 @@ public abstract class Translator {
 	/**
 	 * Sets the language.<br/>
 	 * A language consists of a String of two chars, as an abbreviation
-	 * for the language it represents. A .json-file with the same name
-	 * has to be located in the ../config/language folder.
+	 * for the language it represents (schould be according to ISO 639). A .json-file with
+	 * the same name has to be located in the ../config/language folder.
 	 * @param language the new language
 	 * @throws IOException if the .json-file could not be loaded
 	 */
