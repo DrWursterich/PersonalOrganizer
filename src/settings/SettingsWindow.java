@@ -27,11 +27,13 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
+import util.DragResizer;
 import util.Translator;
 
 /**
@@ -185,6 +187,9 @@ public class SettingsWindow {
 			}
 		});
 		this.tree.getSelectionModel().clearAndSelect(0);
+		DragResizer.makeResizable(this.tree, false, true, false, false,
+				this.tree.minHeightProperty(), new SimpleDoubleProperty(50),
+				this.tree.maxHeightProperty(), this.stage.widthProperty().subtract(100));
 		this.scrollPane.setPrefWidth(400);
 		this.scrollPane.setFitToWidth(true);
 		this.exitDialog.titleProperty().bind(Translator.translationProperty("settings", "closeDialog", "title"));

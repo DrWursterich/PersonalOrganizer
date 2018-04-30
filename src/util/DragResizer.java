@@ -23,7 +23,7 @@ public class DragResizer {
 	 * The margin around the control that a user can click in to start resizing
 	 * the region.
 	 */
-	private static final int RESIZE_MARGIN = 2;
+	private static final int RESIZE_MARGIN = 5;
 	private static final short NOTDRAGGING = 0;
 	private static final short NORTH = 1;
 	private static final short SOUTH = 2;
