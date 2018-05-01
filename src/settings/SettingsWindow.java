@@ -4,18 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javafx.stage.Stage;
-import javafx.stage.Window;
-import javafx.stage.Modality;
+
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.scene.Scene;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
@@ -27,13 +23,20 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.HPos;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import util.DragResizer;
+import util.FontPicker;
 import util.Translator;
 
 /**
@@ -140,6 +143,28 @@ public class SettingsWindow {
 		}
 
 		public void setDefault(E defaultValue) {
+			this.defaultValue = defaultValue;
+		}
+	}
+	
+	/**
+	 * Wrapper Class for {@link javafx.scene.control.ComboBox ComboBox} implementing
+	 * {@link CustomInput CustomInput}.
+	 * @author Mario Schäper
+	 */
+	private class InpFontPicker extends FontPicker implements CustomInput<Font> {
+		private Font defaultValue;
+		
+		InpFontPicker(Font font) {
+			super(font);
+			this.initialize(font);
+		}
+
+		public Font getDefault() {
+			return this.defaultValue;
+		}
+
+		public void setDefault(Font defaultValue) {
 			this.defaultValue = defaultValue;
 		}
 	}
@@ -306,6 +331,7 @@ public class SettingsWindow {
 		Label backgroundRightColorPickerLabel = new Label();
 		Label appointmentBackgroundColorPickerLabel = new Label();
 		Label appointmentStrokeColorPickerLabel = new Label();
+		Label timeStampFontPickerLabel = new Label();
 		ColorPicker topBarBackgroundColorPicker = new InpColorPicker(
 				Settings.DAYVIEW_TOPBAR_BACKGROUND_COLOR.getValue());
 		ColorPicker topBarStrokeColorPicker = new InpColorPicker(
@@ -318,6 +344,8 @@ public class SettingsWindow {
 				Settings.DAYVIEW_APPOINTMENT_BACKGROUND_COLOR.getValue());
 		ColorPicker appointmentStrokeColorPicker = new InpColorPicker(
 				Settings.DAYVIEW_APPOINTMENT_STROKE_COLOR.getValue());
+		FontPicker timeStampFontPicker = new InpFontPicker(
+				Settings.DAYVIEW_TIMESTAMP_FONT.getValue());
 		topBarBackgroundColorPickerLabel.textProperty().bind(
 				Translator.translationProperty("settings", "views", "dayView", "topBarBackgroundColorLabel"));
 		topBarStrokeColorPickerLabel.textProperty().bind(
@@ -330,6 +358,8 @@ public class SettingsWindow {
 				Translator.translationProperty("settings", "views", "dayView", "appointmentBackgroundColorLabel"));
 		appointmentStrokeColorPickerLabel.textProperty().bind(
 				Translator.translationProperty("settings", "views", "dayView", "appointmentStrokeColorLabel"));
+		timeStampFontPickerLabel.textProperty().bind(
+				Translator.translationProperty("settings", "views", "dayView", "timeStampFontLabel"));
 		columnLeft.setHalignment(HPos.LEFT);
 		columnRight.setHalignment(HPos.LEFT);
 		columnLeft.setHgrow(Priority.ALWAYS);
@@ -339,13 +369,15 @@ public class SettingsWindow {
 							backgroundLeftColorPickerLabel,
 							backgroundRightColorPickerLabel,
 							appointmentBackgroundColorPickerLabel,
-							appointmentStrokeColorPickerLabel);
+							appointmentStrokeColorPickerLabel,
+							timeStampFontPickerLabel);
 		pane.addColumn(1, 	topBarBackgroundColorPicker,
 							topBarStrokeColorPicker,
 							backgroundLeftColorPicker,
 							backgroundRightColorPicker,
 							appointmentBackgroundColorPicker,
-							appointmentStrokeColorPicker);
+							appointmentStrokeColorPicker,
+							timeStampFontPicker);
 		pane.setHgap(20);
 		pane.setVgap(10);
 		return new TreeItem(Translator.translationProperty("settings", "views", "dayView", "name"), pane, e -> {
@@ -355,6 +387,7 @@ public class SettingsWindow {
 			Settings.DAYVIEW_BACKGROUND_RIGHT_COLOR.setValue(backgroundRightColorPicker.getValue());
 			Settings.DAYVIEW_APPOINTMENT_BACKGROUND_COLOR.setValue(appointmentBackgroundColorPicker.getValue());
 			Settings.DAYVIEW_APPOINTMENT_STROKE_COLOR.setValue(appointmentStrokeColorPicker.getValue());
+			Settings.DAYVIEW_TIMESTAMP_FONT.setValue(timeStampFontPicker.getValue());
 		});
 	}
 }

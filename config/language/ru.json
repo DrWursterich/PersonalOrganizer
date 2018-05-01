@@ -3,7 +3,18 @@
 
 	"general": {
 		"yes": "да",
-		"no": "нет"
+		"no": "нет",
+		"ok": "ОК",
+		"cancel": "Отмена",
+		"fontPicker": {
+			"previewLabel": "предварительный просмотр",
+			"previewText": "AaBbYyZz",
+			"fontLabel": "Шрифт",
+			"sizeLabel": "Размер",
+			"styleLabel": "Стиль",
+			"boldLabel": "жирный",
+			"italicLabel": "курсивный"
+		}
 	},
 
 	"settings": {
@@ -33,7 +44,8 @@
 				"backgroundLeftColorLabel": "Временная рамка",
 				"backgroundRightColorLabel": "Календарь фон",
 				"appointmentBackgroundColorLabel": "Назначение",
-				"appointmentStrokeColorLabel": "Назначение края"
+				"appointmentStrokeColorLabel": "Назначение края",
+				"timeStampFontLabel": "Временной шрифт"
 			}
 		}
 	},

@@ -3,7 +3,18 @@
 
 	"general": {
 		"yes": "Yes",
-		"no": "No"
+		"no": "No",
+		"ok": "OK",
+		"cancel": "Cancel",
+		"fontPicker": {
+			"previewLabel": "Preview",
+			"previewText": "AaBbYyZz",
+			"fontLabel": "Font",
+			"sizeLabel": "Size",
+			"styleLabel": "Style",
+			"boldLabel": "Bold",
+			"italicLabel": "Italic"
+		}
 	},
 
 	"settings": {
@@ -33,7 +44,8 @@
 				"backgroundLeftColorLabel": "Timestamp Background",
 				"backgroundRightColorLabel": "View Hintergrund",
 				"appointmentBackgroundColorLabel": "Appointment Background",
-				"appointmentStrokeColorLabel": "Appointment Border"
+				"appointmentStrokeColorLabel": "Appointment Border",
+				"timeStampFontLabel": "Timestamp Font"
 			}
 		}
 	},

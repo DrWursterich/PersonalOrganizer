@@ -3,7 +3,18 @@
 
 	"general": {
 		"yes": "Ja",
-		"no": "Nein"
+		"no": "Nein",
+		"ok": "OK",
+		"cancel": "Abbrechen",
+		"fontPicker": {
+			"previewLabel": "Vorschau",
+			"previewText": "AaBbYyZz",
+			"fontLabel": "Font",
+			"sizeLabel": "Größe",
+			"styleLabel": "Stil",
+			"boldLabel": "Fett",
+			"italicLabel": "Kursiv"
+		}
 	},
 
 	"settings": {
@@ -33,7 +44,8 @@
 				"backgroundLeftColorLabel": "Zeitstempel Hintergrund",
 				"backgroundRightColorLabel": "Kalender Hintergrund",
 				"appointmentBackgroundColorLabel": "Termin Hintergrund",
-				"appointmentStrokeColorLabel": "Termin Rand"
+				"appointmentStrokeColorLabel": "Termin Rand",
+				"timeStampFontLabel": "Zeitstempel Schriftart"
 			}
 		}
 	},

@@ -3,7 +3,18 @@
 
 	"general": {
 		"yes": "是的",
-		"no": "沒有"
+		"no": "沒有",
+		"ok": "好",
+		"cancel": "取消",
+		"fontPicker": {
+			"previewLabel": "預習",
+			"previewText": "漢鼎繁海報",
+			"fontLabel": "字形",
+			"sizeLabel": "尺寸",
+			"styleLabel": "樣式",
+			"boldLabel": "粗體",
+			"italicLabel": "斜體"
+		}
 	},
 
 	"settings": {
@@ -33,7 +44,8 @@
 				"backgroundLeftColorLabel": "時間戳背景",
 				"backgroundRightColorLabel": "日曆背景",
 				"appointmentBackgroundColorLabel": "任命背景",
-				"appointmentStrokeColorLabel": "任命邊緣"
+				"appointmentStrokeColorLabel": "任命邊緣",
+				"timeStampFontLabel": "時間戳字體"
 			}
 		}
 	},
