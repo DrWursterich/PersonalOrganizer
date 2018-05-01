@@ -29,9 +29,9 @@ public class DragResizer {
 	private static final short SOUTH = 2;
 	private static final short EAST = 3;
 	private static final short WEST = 4;
+	private short dragging = NOTDRAGGING;
 	private Region region;
 	private boolean initMinHeight;
-	private short dragging = NOTDRAGGING;
 	private boolean draggableNorth = true;
 	private boolean draggableSouth = true;
 	private boolean draggableEast = true;
@@ -137,16 +137,25 @@ public class DragResizer {
 		switch (this.dragging) {
 			case (DragResizer.SOUTH):
 				this.region.setMinHeight(e.getY());
-				if (this.region.getMinWidth() > this.maxHeight.getValue()) {
-					System.out.println("denied since " + (this.region.getMinWidth()) + " > " + this.maxWidth.getValue());
-					this.region.setMinWidth(this.maxHeight.getValue());
+				if (this.region.getMinHeight() > this.maxHeight.getValue()) {
+					this.region.setMinHeight(this.maxHeight.getValue());
 				}
+				if (this.region.getMinHeight() < this.minHeight.getValue()) {
+					this.region.setMinHeight(this.minHeight.getValue());
+					return;
+				}
+				this.region.setPrefHeight(this.region.getMinHeight());
 				break;
 			case (DragResizer.EAST):
 				this.region.setMinWidth(e.getX());
 				if (this.region.getMinWidth() > this.maxWidth.getValue()) {
 					this.region.setMinWidth(this.maxWidth.getValue());
 				}
+				if (this.region.getMinWidth() < this.minWidth.getValue()) {
+					this.region.setMinWidth(this.minWidth.getValue());
+					return;
+				}
+				this.region.setPrefWidth(this.region.getMinWidth());
 				break;
 			case (DragResizer.NORTH):
 				double prevMinHeight = this.region.getMinHeight();
