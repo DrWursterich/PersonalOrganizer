@@ -73,7 +73,7 @@ public class SettingsWindow {
 		 */
 		default void initialize(E defaultValue) {
 			customInputs.add(this);
-			this.setOnAction(e -> hasChanged = true);
+			this.setOnAction(e -> SettingsWindow.hasChanged = true);
 			this.setDefault(defaultValue);
 			this.toDefault();
 		}
@@ -149,19 +149,37 @@ public class SettingsWindow {
 		HBox.setHgrow(this.bufferRegionRight, Priority.ALWAYS);
 		HBox.setHgrow(this.scrollPane, Priority.ALWAYS);
 		VBox.setVgrow(this.contentBox, Priority.ALWAYS);
+
 		this.stage.setMinWidth(250);
 		this.stage.setMinHeight(100);
 		this.stage.titleProperty().bind(Translator.translationProperty("settings", "title"));
 		this.stage.initModality(Modality.WINDOW_MODAL);
 		this.stage.initOwner(parentStage);
 		this.stage.setScene(this.scene);
+		this.stage.setOnCloseRequest(e -> {
+			if (SettingsWindow.hasChanged) {
+				ButtonType result = this.exitDialog.showAndWait().get();
+				if (((ButtonType)result).getButtonData().equals(this.exitButton.getButtonData())) {
+					e.consume();
+				}
+				if (((ButtonType)result).getButtonData().equals(this.yesButton.getButtonData())) {
+					this.tree.apply();
+				}
+			}
+		});
+
+		this.applyButton.textProperty().bind(Translator.translationProperty("settings", "buttons", "apply"));
 		this.applyButton.setOnAction(e -> {
 			this.tree.apply();
-			hasChanged = false;
+			SettingsWindow.hasChanged = false;
 		});
+
+		this.cancelButton.textProperty().bind(Translator.translationProperty("settings", "buttons", "cancel"));
 		this.cancelButton.setOnAction(e -> {
 			this.stage.hide();
 		});
+
+		this.restoreButton.textProperty().bind(Translator.translationProperty("settings", "buttons", "restoreDefault"));
 		this.restoreButton.setOnAction(e -> {
 			Settings.setDefaults();
 			try {
@@ -173,12 +191,10 @@ public class SettingsWindow {
 				inp.toDefault();
 			}
 		});
-		this.applyButton.textProperty().bind(Translator.translationProperty("settings", "buttons", "apply"));
-		this.cancelButton.textProperty().bind(Translator.translationProperty("settings", "buttons", "cancel"));
-		this.restoreButton.textProperty().bind(Translator.translationProperty("settings", "buttons", "restoreDefault"));
-		this.contentBox.getChildren().addAll(this.tree, this.scrollPane);
+
 		this.buttonBox.getChildren().addAll(this.cancelButton, this.bufferRegionLeft,
 				this.restoreButton, this.bufferRegionRight, this.applyButton);
+
 		this.tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		this.tree.getItems().addAll(new TreeItem[]{generalItem(), this.languageItem(), this.viewsItem()});
 		this.tree.getSelectionModel().selectedItemProperty().addListener((v, o, n) -> {
@@ -190,8 +206,12 @@ public class SettingsWindow {
 		DragResizer.makeResizable(this.tree, false, true, false, false,
 				this.tree.minHeightProperty(), new SimpleDoubleProperty(100),
 				this.tree.maxHeightProperty(), this.stage.widthProperty().subtract(175));
+
 		this.scrollPane.setPrefWidth(400);
 		this.scrollPane.setFitToWidth(true);
+
+		this.contentBox.getChildren().addAll(this.tree, this.scrollPane);
+
 		this.exitDialog.titleProperty().bind(Translator.translationProperty("settings", "closeDialog", "title"));
 		this.exitDialog.getDialogPane().contentTextProperty().bind(
 				Translator.translationProperty("settings", "closeDialog", "saveQuestion"));
@@ -201,30 +221,20 @@ public class SettingsWindow {
 				this.exitDialogWindow.hide();
 			}
 		});
+
 		this.exitDialogWindow.setOnCloseRequest(e -> {
 			this.exitDialog.setResult(this.exitButton);
 			this.exitDialogWindow.hide();
 			e.consume();
 		});
 		this.root.getChildren().addAll(this.contentBox, this.buttonBox);
-		this.stage.setOnCloseRequest(e -> {
-			if (hasChanged) {
-				ButtonType result = this.exitDialog.showAndWait().get();
-				if (((ButtonType)result).getButtonData().equals(this.exitButton.getButtonData())) {
-					e.consume();
-				}
-				if (((ButtonType)result).getButtonData().equals(this.yesButton.getButtonData())) {
-					this.tree.apply();
-				}
-			}
-		});
 	}
 
 	/**
 	 * Invokes {@link javafx.stage.Stage#showAndWait() showAndWait}.
 	 */
 	public void show() {
-		hasChanged = false;
+		SettingsWindow.hasChanged = false;
 		this.stage.showAndWait();
 	}
 
