@@ -1,17 +1,10 @@
 package util;
 
-import static javafx.scene.input.KeyCode.ENTER;
-import static javafx.scene.input.KeyCode.ESCAPE;
-import static javafx.scene.input.KeyCode.SPACE;
-import static javafx.scene.input.KeyEvent.KEY_PRESSED;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import com.sun.javafx.scene.control.behavior.ComboBoxBaseBehavior;
 import com.sun.javafx.scene.control.behavior.KeyBinding;
 import com.sun.javafx.scene.control.skin.ComboBoxPopupControl;
-
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -26,6 +19,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.Skin;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Background;
@@ -44,12 +38,17 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.util.StringConverter;
+import static javafx.scene.input.KeyCode.ENTER;
+import static javafx.scene.input.KeyCode.ESCAPE;
+import static javafx.scene.input.KeyCode.SPACE;
+import static javafx.scene.input.KeyEvent.KEY_PRESSED;
 
 public class FontPicker extends ComboBoxBase<Font> {
 	protected static final String OPEN_ACTION = "Open";
 	protected static final String CLOSE_ACTION = "Close";
 	protected static final List<KeyBinding> FONT_PICKER_BINDINGS = new ArrayList<>();
 	private FontPicker me = this;
+	private Tooltip tooltip = new Tooltip();
 	private GridPane content = new GridPane();
 	private CornerRadii contentRadii = new CornerRadii(5);
 	private ComboBox<String> fontBox = new ComboBox<>(FXCollections.observableList(Font.getFamilies()));
@@ -58,7 +57,7 @@ public class FontPicker extends ComboBoxBase<Font> {
 	private Insets previewInsets = new Insets(0, 1, 0, 1);
 	private Label fontLabel = new Label();
 	private Label sizeLabel = new Label();
-	private Spinner<Integer> sizeSpinner = new Spinner<>(1, 100, 12);
+	private Spinner<Integer> sizeSpinner;
 	private Label styleLabel = new Label();
 	private CheckBox boldCheckBox = new CheckBox();
 	private CheckBox italicCheckBox = new CheckBox();
@@ -69,7 +68,7 @@ public class FontPicker extends ComboBoxBase<Font> {
 	StringConverter<Integer> spinnerFormatter = new StringConverter<Integer>() {
 		@Override
 		public Integer fromString(String val) {
-			String oldVal = String.valueOf(sizeSpinner.getValue());
+			String oldVal = String.valueOf(me.sizeSpinner.getValue());
 			try {
 				int result = Integer.parseInt(val);
 				if (result >= 1 && result <= 100) {
@@ -77,8 +76,8 @@ public class FontPicker extends ComboBoxBase<Font> {
 				}
 				throw new Exception("Size out of Range.");
 			} catch (Exception e) {
-				sizeSpinner.getEditor().setText(oldVal);
-				return sizeSpinner.getValue();
+				me.sizeSpinner.getEditor().setText(oldVal);
+				return me.sizeSpinner.getValue();
 			}
 		}
 
@@ -127,9 +126,14 @@ public class FontPicker extends ComboBoxBase<Font> {
 		public FontPickerPopupControl(ComboBoxBase<Font> arg0, ComboBoxBaseBehavior<Font> arg1) {
 			super(arg0, arg1);
 			this.registerChangeListener(me.valueProperty(), "VALUE");
+
 			this.displayNode.setManaged(false);
 			this.displayNode.setPadding(new Insets(4, 4, 4, 8));
 			this.displayNode.setFont(Font.font(this.displayNode.getFont().getFamily(), 12));
+
+			me.tooltip.textProperty().bind(this.displayNode.textProperty());
+
+			this.updateFont();
 		}
 
 		@Override
@@ -181,6 +185,8 @@ public class FontPicker extends ComboBoxBase<Font> {
 
 	public FontPicker(Font font) {
 		this.setValue(font);
+		this.setPrefWidth(133);
+		Tooltip.install(this, this.tooltip);
 
 		this.content.setPrefSize(200, 230);
 		this.content.getColumnConstraints().addAll(new ColumnConstraints(40), new ColumnConstraints(160));
@@ -208,7 +214,7 @@ public class FontPicker extends ComboBoxBase<Font> {
 
 		this.fontLabel.textProperty().bind(Translator.translationProperty("general", "fontPicker", "fontLabel"));
 		this.fontBox.setMaxWidth(Double.MAX_VALUE);
-		this.fontBox.getSelectionModel().select(0);
+		this.fontBox.getSelectionModel().select(font == null ? Font.getDefault().getFamily() : font.getFamily());
 		this.fontBox.valueProperty().addListener(o -> this.changeFont());
 		this.fontBox.setCellFactory((ListView<String> listView) -> {
 			final ListCell<String> cell = new ListCell<String>() {
@@ -226,6 +232,7 @@ public class FontPicker extends ComboBoxBase<Font> {
 		});
 
 		this.sizeLabel.textProperty().bind(Translator.translationProperty("general", "fontPicker", "sizeLabel"));
+		this.sizeSpinner = new Spinner<>(1, 100, (int)(font == null ? 12 : font.getSize()));
 		this.sizeSpinner.setEditable(true);
 		this.sizeSpinner.setPrefWidth(70);
 		this.sizeSpinner.getValueFactory().setConverter(this.spinnerFormatter);
@@ -233,8 +240,10 @@ public class FontPicker extends ComboBoxBase<Font> {
 
 		this.styleLabel.textProperty().bind(Translator.translationProperty("general", "fontPicker", "styleLabel"));
 		this.boldCheckBox.textProperty().bind(Translator.translationProperty("general", "fontPicker", "boldLabel"));
+		this.boldCheckBox.setSelected(font == null ? false : font.getStyle().contains("Bold"));
 		this.boldCheckBox.selectedProperty().addListener(o -> this.changeFont());
 		this.italicCheckBox.textProperty().bind(Translator.translationProperty("general", "fontPicker", "italicLabel"));
+		this.italicCheckBox.setSelected(font == null ? false : font.getStyle().contains("Italic"));
 		this.italicCheckBox.selectedProperty().addListener(o -> this.changeFont());
 		this.styleBox.setAlignment(Pos.CENTER_LEFT);
 		this.styleBox.getChildren().addAll(this.boldCheckBox, this.italicCheckBox);
