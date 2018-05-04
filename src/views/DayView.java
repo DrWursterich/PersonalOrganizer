@@ -7,6 +7,7 @@ import javafx.concurrent.Task;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Pane;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -26,7 +27,7 @@ import util.Time;
  * @author Mario Schäper
  */
 public class DayView extends DateView {
-	private Rectangle topBar;
+	private ResizableRectangle topBar;
 	private DayScale dayScale;
 
 	/**
@@ -64,7 +65,7 @@ public class DayView extends DateView {
 		private void update() {
 			this.getChildren().clear();
 			Rectangle backgroundLeft = new ResizableRectangle();
-			backgroundLeft.widthProperty().bind(this.widthProperty().multiply(0.25));
+			backgroundLeft.widthProperty().set(60);
 			backgroundLeft.heightProperty().bind(this.heightProperty());
 			backgroundLeft.fillProperty().bind(Settings.DAYVIEW_BACKGROUND_LEFT_COLOR);
 			Rectangle backgroundRight = new ResizableRectangle();
@@ -129,24 +130,39 @@ public class DayView extends DateView {
 				}
 			}
 		}
+		
+		@Override
+        public void setHeight(double height) {
+            super.setHeight(700);
+        }
 	}
 
 	public DayView(GregorianCalendar date) {
 		super(date);
 
-		this.topBar = new ResizableRectangle(10, 40);
+		this.topBar = new ResizableRectangle(0, 40);
+		this.topBar.setResizeHeight(false);
 		this.topBar.fillProperty().bind(Settings.DAYVIEW_TOPBAR_BACKGROUND_COLOR);
 		this.topBar.strokeProperty().bind(Settings.DAYVIEW_TOPBAR_STROKE_COLOR);
 		this.topBar.setStrokeWidth(3);
 		this.topBar.widthProperty().bind(this.widthProperty().subtract(this.topBar.strokeWidthProperty()));
 		this.topBar.yProperty().bind(this.topBar.strokeWidthProperty().divide(2));
 
+//		this.dayScale = new DayScale(new Time(0, 0), new Time(24, 0));
+//		ScrollPane sp = new ScrollPane(this.dayScale);
+//		VBox.setVgrow(sp, Priority.ALWAYS);
+//		sp.setFitToWidth(true);
+//		sp.setFitToHeight(true);
+//		this.getChildren().addAll(this.topBar, sp);
+		
 		this.dayScale = new DayScale(new Time(0, 0), new Time(24, 0));
-		ScrollPane sp = new ScrollPane(this.dayScale);
-		VBox.setVgrow(sp, Priority.ALWAYS);
-		sp.setFitToWidth(true);
-		sp.setFitToHeight(true);
-		this.getChildren().addAll(this.topBar, sp);
+        ScrollPane sp = new ScrollPane(this.dayScale);
+//        VBox.setVgrow(sp, Priority.ALWAYS);
+        sp.setFitToWidth(true);
+//        sp.setFitToHeight(true);
+        sp.setHbarPolicy(ScrollBarPolicy.NEVER);
+        sp.setVbarPolicy(ScrollBarPolicy.ALWAYS);
+        this.getChildren().addAll(this.topBar, sp);
 	}
 
 	/**
