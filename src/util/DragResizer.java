@@ -151,45 +151,45 @@ public class DragResizer {
 	private void mouseDragged(MouseEvent e) {
 		switch (this.dragging) {
 			case (DragResizer.SOUTH):
-				this.region.setMinHeight(e.getY());
-				if (this.region.getMinHeight() > this.maxHeight.getValue().doubleValue()) {
-					this.region.setMinHeight(this.maxHeight.getValue().doubleValue());
+				this.region.setPrefHeight(e.getY());
+				if (this.region.getPrefHeight() > this.maxHeight.getValue().doubleValue()) {
+					this.region.setPrefHeight(this.maxHeight.getValue().doubleValue());
 				}
-				if (this.region.getMinHeight() < this.minHeight.getValue().doubleValue()) {
-					this.region.setMinHeight(this.minHeight.getValue().doubleValue());
+				if (this.region.getPrefHeight() < this.minHeight.getValue().doubleValue()) {
+					this.region.setPrefHeight(this.minHeight.getValue().doubleValue());
 					return;
 				}
-				this.region.setPrefHeight(this.region.getMinHeight());
+				this.region.setPrefHeight(this.region.getPrefHeight());
 				break;
 			case (DragResizer.EAST):
-				this.region.setMinWidth(e.getX());
-				if (this.region.getMinWidth() > this.maxWidth.getValue().doubleValue()) {
-					this.region.setMinWidth(this.maxWidth.getValue().doubleValue());
+				this.region.setPrefWidth(e.getX());
+				if (this.region.getPrefWidth() > this.maxWidth.getValue().doubleValue()) {
+					this.region.setPrefWidth(this.maxWidth.getValue().doubleValue());
 				}
-				if (this.region.getMinWidth() < this.minWidth.getValue().doubleValue()) {
-					this.region.setMinWidth(this.minWidth.getValue().doubleValue());
+				if (this.region.getPrefWidth() < this.minWidth.getValue().doubleValue()) {
+					this.region.setPrefWidth(this.minWidth.getValue().doubleValue());
 					return;
 				}
-				this.region.setPrefWidth(this.region.getMinWidth());
+				this.region.setPrefWidth(this.region.getPrefWidth());
 				break;
 			case (DragResizer.NORTH):
-				double prevMinHeight = this.region.getMinHeight();
-				this.region.setMinHeight(this.region.getMinHeight() - e.getY());
-				if (this.region.getMinHeight() < this.minHeight.getValue().doubleValue()) {
-					this.region.setMinHeight(this.minHeight.getValue().doubleValue());
+				double prevMinHeight = this.region.getPrefHeight();
+				this.region.setPrefHeight(this.region.getPrefHeight() - e.getY());
+				if (this.region.getPrefHeight() < this.minHeight.getValue().doubleValue()) {
+					this.region.setPrefHeight(this.minHeight.getValue().doubleValue());
 					this.region.setTranslateY(this.region.getTranslateY()
 							-(this.minHeight.getValue().doubleValue()-prevMinHeight));
 					return;
 				}
-				if (this.region.getMinHeight() > this.region.getPrefHeight() || e.getY() < 0) {
+				if (this.region.getPrefHeight() > this.region.getPrefHeight() || e.getY() < 0) {
 					this.region.setTranslateY(this.region.getTranslateY() + e.getY());
 				}
 				break;
 			case (DragResizer.WEST):
-				double prevMinWidth = this.region.getMinWidth();
-				this.region.setMinWidth(this.region.getMinWidth() - e.getX());
-				if (this.region.getMinWidth() < this.minWidth.getValue().doubleValue()) {
-					this.region.setMinWidth(this.minWidth.getValue().doubleValue());
+				double prevMinWidth = this.region.getPrefWidth();
+				this.region.setPrefWidth(this.region.getWidth() - e.getX());
+				if (this.region.getPrefWidth() < this.minWidth.getValue().doubleValue()) {
+					this.region.setPrefWidth(this.minWidth.getValue().doubleValue());
 					this.region.setTranslateX(this.region.getTranslateX()
 							-(this.minWidth.getValue().doubleValue()-prevMinWidth));
 					return;
@@ -219,8 +219,8 @@ public class DragResizer {
 		// setting a min height that is smaller than the current height will
 		// have no effect
 		if (!this.initMinHeight) {
-			this.region.setMinHeight(this.region.getHeight());
-			this.region.setMinWidth(this.region.getWidth());
+			this.region.setPrefHeight(this.region.getHeight());
+			this.region.setPrefWidth(this.region.getWidth());
 			this.initMinHeight = true;
 		}
 	}

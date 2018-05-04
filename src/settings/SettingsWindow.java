@@ -154,7 +154,7 @@ public class SettingsWindow {
 	 */
 	private class InpFontPicker extends FontPicker implements CustomInput<Font> {
 		private Font defaultValue;
-		
+
 		InpFontPicker(Font font) {
 			super(font);
 			this.initialize(font);
@@ -230,11 +230,12 @@ public class SettingsWindow {
 		this.tree.getSelectionModel().clearAndSelect(0);
 		DragResizer.makeResizable(this.tree, false, true, false, false,
 				this.tree.minHeightProperty(), new SimpleDoubleProperty(100),
-				this.tree.maxHeightProperty(), this.stage.widthProperty().subtract(175));
+				this.tree.maxHeightProperty(), this.stage.widthProperty().subtract(this.scrollPane.minWidthProperty()));
 
-		this.scrollPane.setPrefWidth(400);
+		this.scrollPane.setMinWidth(100);
 		this.scrollPane.setFitToWidth(true);
 
+		this.contentBox.setPrefWidth(600);
 		this.contentBox.getChildren().addAll(this.tree, this.scrollPane);
 
 		this.exitDialog.titleProperty().bind(Translator.translationProperty("settings", "closeDialog", "title"));
