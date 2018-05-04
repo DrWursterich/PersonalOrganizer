@@ -21,6 +21,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.SplitPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.ColumnConstraints;
@@ -47,10 +48,10 @@ public class SettingsWindow {
 	private Stage stage = new Stage();
 	private VBox root = new VBox();
 	private Scene scene = new Scene(this.root);
-	private HBox contentBox = new HBox();
 	private HBox buttonBox = new HBox();
 	private TreeView tree = new TreeView();
 	private ScrollPane scrollPane = new ScrollPane();
+	private SplitPane contentBox = new SplitPane(this.tree, this.scrollPane);
 	private Button applyButton = new Button();
 	private Button cancelButton = new Button();
 	private Button restoreButton = new Button();
@@ -228,15 +229,13 @@ public class SettingsWindow {
 			}
 		});
 		this.tree.getSelectionModel().clearAndSelect(0);
-		DragResizer.makeResizable(this.tree, false, true, false, false,
-				this.tree.minHeightProperty(), new SimpleDoubleProperty(100),
-				this.tree.maxHeightProperty(), this.stage.widthProperty().subtract(this.scrollPane.minWidthProperty()));
+		this.tree.setMinWidth(100);
 
 		this.scrollPane.setMinWidth(100);
 		this.scrollPane.setFitToWidth(true);
 
 		this.contentBox.setPrefWidth(600);
-		this.contentBox.getChildren().addAll(this.tree, this.scrollPane);
+		this.contentBox.setDividerPositions(0.3);
 
 		this.exitDialog.titleProperty().bind(Translator.translationProperty("settings", "closeDialog", "title"));
 		this.exitDialog.getDialogPane().contentTextProperty().bind(
