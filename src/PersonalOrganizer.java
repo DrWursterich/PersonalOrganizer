@@ -16,31 +16,35 @@ import views.*;
  * @author Mario Schäper
  */
 public class PersonalOrganizer extends Application {
-	private static View view;
-	private static SettingsWindow settings;
+	private VBox root = new VBox();
+	private Scene scene = new Scene(root,
+			0.75*Screen.getPrimary().getBounds().getWidth(),
+			0.60*Screen.getPrimary().getBounds().getHeight());
+	private View view;
+	private SettingsWindow settings;
 
 	public static void main(String...args) throws Exception {
-		Translator.setLanguage("de");
+		GregorianCalendar appointmentStart = new GregorianCalendar();
+		GregorianCalendar appointmentEnd = new GregorianCalendar();
+		appointmentStart.set(GregorianCalendar.HOUR_OF_DAY, 8);
+		appointmentStart.set(GregorianCalendar.MINUTE, 30);
+		appointmentEnd.set(GregorianCalendar.HOUR_OF_DAY, 12);
+		appointmentEnd.set(GregorianCalendar.MINUTE, 10);
+		DatabaseController.addAppointment("Termin", "Beschreibung", appointmentStart, appointmentEnd);
+
 		launch(args);
 	}
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		VBox root = new VBox();
-		Scene scene = new Scene(root, 0.75*Screen.getPrimary().getBounds().getWidth(),
-				0.6*Screen.getPrimary().getBounds().getHeight());
-		settings = new SettingsWindow(stage);
-		view = new DayView(new GregorianCalendar());
-		GregorianCalendar appointmentStart = new GregorianCalendar();
-		appointmentStart.set(GregorianCalendar.HOUR_OF_DAY, 8);
-		appointmentStart.set(GregorianCalendar.MINUTE, 30);
-		GregorianCalendar appointmentEnd = new GregorianCalendar();
-		appointmentEnd.set(GregorianCalendar.HOUR_OF_DAY, 12);
-		appointmentEnd.set(GregorianCalendar.MINUTE, 10);
-		DatabaseController.addAppointment("Termin", "Beschreibung", appointmentStart, appointmentEnd);
+		this.settings = new SettingsWindow(stage);
+
+		this.view = new DayView(new GregorianCalendar());
+		this.view.prefWidthProperty().bind(stage.widthProperty());
 		VBox.setVgrow(view, Priority.ALWAYS);
-		root.getChildren().addAll(this.menuBar(), view);
-		view.prefWidthProperty().bind(stage.widthProperty());
+
+		this.root.getChildren().addAll(this.menuBar(), view);
+
 		stage.titleProperty().bind(Translator.translationProperty("title"));
 		stage.setScene(scene);
 		stage.show();

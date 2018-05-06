@@ -234,7 +234,7 @@ public class FontPicker extends ComboBoxBase<Font> {
 		this.sizeLabel.textProperty().bind(Translator.translationProperty("general", "fontPicker", "sizeLabel"));
 		this.sizeSpinner = new Spinner<>(1, 100, (int)(font == null ? 12 : font.getSize()));
 		this.sizeSpinner.setEditable(true);
-		this.sizeSpinner.setPrefWidth(70);
+		this.sizeSpinner.setPrefWidth(90);
 		this.sizeSpinner.getValueFactory().setConverter(this.spinnerFormatter);
 		this.sizeSpinner.valueProperty().addListener(o -> this.changeFont());
 
@@ -249,13 +249,13 @@ public class FontPicker extends ComboBoxBase<Font> {
 		this.styleBox.getChildren().addAll(this.boldCheckBox, this.italicCheckBox);
 
 		this.okButton.textProperty().bind(Translator.translationProperty("general", "ok"));
-		this.okButton.setPrefWidth(55);
+		this.okButton.setPrefWidth(90);
 		this.okButton.setOnAction(e -> {
 			this.setValue(this.preview.getFont());
 			this.hide();
 		});
 		this.cancelButton.textProperty().bind(Translator.translationProperty("general", "cancel"));
-		this.cancelButton.setPrefWidth(55);
+		this.cancelButton.setPrefWidth(90);
 		this.cancelButton.setOnAction(e -> this.hide());
 		this.buttonBox.setAlignment(Pos.CENTER_RIGHT);
 		this.buttonBox.getChildren().addAll(this.okButton, this.cancelButton);
