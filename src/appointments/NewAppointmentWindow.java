@@ -1,7 +1,7 @@
 package appointments;
 
 import static javafx.scene.layout.Priority.ALWAYS;
-
+import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -24,12 +24,12 @@ import menus.MenuItem;
 import util.Translator;
 
 public class NewAppointmentWindow {
-	private TextField titleField = this.textField("newAppointment", "titlePrompt");
+	private TextField titleField = this.textField(this.trans("titlePrompt"));
 	private TextArea descriptionArea = new TextArea();
-	private Label categoryLabel = this.label("newAppointment", "category", "label");
+	private Label categoryLabel = this.label(this.trans("category", "label"));
 	private ComboBox<Category> categoryBox = new ComboBox<>();
 	private VBox categoryContainer = this.box(new VBox(this.categoryLabel, this.categoryBox));
-	private Label priorityLabel = this.label("newAppointment", "priority", "label");
+	private Label priorityLabel = this.label(this.trans("priority", "label"));
 	private ComboBox<Priority> priorityBox = new ComboBox<>();
 	private Button createPriorityButton = new Button("+");
 	private Tooltip createPriorityButtonTooltip = new Tooltip();
@@ -43,6 +43,24 @@ public class NewAppointmentWindow {
 	private Stage stage = new Stage();
 	private SplitPane root = new SplitPane(this.leftPane, this.tabPane);
 	private Scene scene = new Scene(this.root);
+
+	private StringProperty dateFromLabelText = this.trans("dateFrom", "label");
+	private StringProperty dateFromHourFieldText = this.trans("dateFrom", "hourPrompt");
+	private StringProperty dateFromMinuteFieldText = this.trans("dateFrom", "minutePrompt");
+	private StringProperty dateToLabelText = this.trans("dateTo", "label");
+	private StringProperty dateToHourFieldText = this.trans("dateTo", "hourPrompt");
+	private StringProperty dateToMinuteFieldText = this.trans("dateTo", "minutePrompt");
+	private StringProperty durationLabelText = this.trans("duration", "label");
+	private StringProperty durationMonthsFieldText = this.trans("duration", "monthsPrompt");
+	private StringProperty durationDaysFieldText = this.trans("duration", "daysPrompt");
+	private StringProperty durationHoursFieldText = this.trans("duration", "hoursPrompt");
+	private StringProperty durationMinutesFieldText = this.trans("duration", "minutesPrompt");
+	private StringProperty repetetionLabelText = this.trans("repetetion", "label");
+	private StringProperty repetetionMonthsFieldText = this.trans("repetetion", "monthsPrompt");
+	private StringProperty repetetionDaysFieldText = this.trans("repetetion", "daysPrompt");
+	private StringProperty repetetionHoursText = this.trans("repetetion", "hoursPrompt");
+	private StringProperty repetetionMinutesText = this.trans("repetetion", "minutesPrompt");
+	private StringProperty repetetionEndLabelText = this.trans("repetetion", "endDateLabel");
 
 	public NewAppointmentWindow(Stage parentStage) {
 		VBox.setVgrow(this.descriptionArea, ALWAYS);
@@ -121,33 +139,33 @@ public class NewAppointmentWindow {
 	}
 
 	private HBox tabContent() {
-		Label dateFromLabel = this.label("newAppointment", "dateFrom", "label");
+		Label dateFromLabel = this.label(this.dateFromLabelText);
 		DatePicker dateFromPicker = new DatePicker();
-		TextField dateFromHourField = this.textField("newAppointment", "dateFrom", "hourPrompt");
-		TextField dateFromMinuteField = this.textField("newAppointment", "dateFrom", "minutePrompt");
+		TextField dateFromHourField = this.textField(this.dateFromHourFieldText);
+		TextField dateFromMinuteField = this.textField(dateFromMinuteFieldText);
 		HBox dateFromTimeBox = this.box(new HBox(dateFromHourField, dateFromMinuteField));
-		Label dateToLabel = this.label("newAppointment", "dateTo", "label");
+		Label dateToLabel = this.label(dateToLabelText);
 		DatePicker dateToPicker = new DatePicker();
-		TextField dateToHourField = this.textField("newAppointment", "dateTo", "hourPrompt");
-		TextField dateToMinuteField = this.textField("newAppointment", "dateTo", "minutePrompt");
+		TextField dateToHourField = this.textField(dateToHourFieldText);
+		TextField dateToMinuteField = this.textField(dateToMinuteFieldText);
 		HBox dateToTimeBox = this.box(new HBox(dateToHourField, dateToMinuteField));
 		VBox tabContentLeft = this.box(new VBox(dateFromLabel, dateFromPicker,
 				dateFromTimeBox, dateToLabel, dateToPicker, dateToTimeBox));
-		Label durationLabel = this.label("newAppointment", "duration", "label");
-		TextField durationMonthsField = this.textField("newAppointment", "duration", "monthsPrompt");
-		TextField durationDaysField = this.textField("newAppointment", "duration", "daysPrompt");
+		Label durationLabel = this.label(durationLabelText);
+		TextField durationMonthsField = this.textField(durationMonthsFieldText);
+		TextField durationDaysField = this.textField(durationDaysFieldText);
 		HBox durationDaysBox = this.box(new HBox(durationMonthsField, durationDaysField));
-		TextField durationHoursField = this.textField("newAppointment", "duration", "hoursPrompt");
-		TextField durationMinutesField = this.textField("newAppointment", "duration", "minutesPrompt");
+		TextField durationHoursField = this.textField(durationHoursFieldText);
+		TextField durationMinutesField = this.textField(durationMinutesFieldText);
 		HBox durationTimeBox = this.box(new HBox(durationHoursField, durationMinutesField));
-		Label repetetionLabel = this.label("newAppointment", "repetetion", "label");
-		TextField repetetionMonthsField = this.textField("newAppointment", "repetetion", "monthsPrompt");
-		TextField repetetionDaysField = this.textField("newAppointment", "repetetion", "daysPrompt");
+		Label repetetionLabel = this.label(repetetionLabelText);
+		TextField repetetionMonthsField = this.textField(repetetionMonthsFieldText);
+		TextField repetetionDaysField = this.textField(repetetionDaysFieldText);
 		HBox repetetionDaysBox = this.box(new HBox(repetetionMonthsField, repetetionDaysField));
-		TextField repetetionHours = this.textField("newAppointment", "repetetion", "hoursPrompt");
-		TextField repetetionMinutes = this.textField("newAppointment", "repetetion", "minutesPrompt");
+		TextField repetetionHours = this.textField(repetetionHoursText);
+		TextField repetetionMinutes = this.textField(repetetionMinutesText);
 		HBox repetetionTimeBox = this.box(new HBox(repetetionHours, repetetionMinutes));
-		Label repetetionEndLabel = this.label("newAppointment", "repetetion", "endDateLabel");
+		Label repetetionEndLabel = this.label(repetetionEndLabelText);
 		DatePicker repetetionEndPicker = new DatePicker();
 		VBox tabContentRight = this.box(new VBox(durationLabel, durationDaysBox, durationTimeBox, repetetionLabel,
 				repetetionDaysBox, repetetionTimeBox, repetetionEndLabel, repetetionEndPicker));
@@ -186,17 +204,17 @@ public class NewAppointmentWindow {
 		return addTab;
 	}
 
-	private Label label(String...keys) {
+	private Label label(StringProperty text) {
 		Label ret = new Label();
-		ret.textProperty().bind(Translator.translationProperty(keys));
+		ret.textProperty().bind(text);
 		return ret;
 	}
 
-	private TextField textField(String...keys) {
+	private TextField textField(StringProperty promptText) {
 		TextField ret = new TextField();
 		ret.setMaxWidth(Double.MAX_VALUE);
 		HBox.setHgrow(ret, ALWAYS);
-		ret.promptTextProperty().bind(Translator.translationProperty(keys));
+		ret.promptTextProperty().bind(promptText);
 		return ret;
 	}
 
@@ -208,5 +226,12 @@ public class NewAppointmentWindow {
 	private VBox box(VBox box) {
 		box.setSpacing(5);
 		return box;
+	}
+
+	private StringProperty trans(String...keys) {
+		String[] newKeys = new String[keys.length+1];
+		newKeys[0] = "newAppointment";
+		System.arraycopy(keys, 0, newKeys, 1, keys.length);
+		return Translator.translationProperty(newKeys);
 	}
 }
