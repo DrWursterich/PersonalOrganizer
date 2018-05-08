@@ -5,6 +5,8 @@ import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.Priority;
 import java.util.GregorianCalendar;
+
+import appointments.NewAppointmentWindow;
 import database.DatabaseController;
 import util.Translator;
 import menuBar.*;
@@ -22,6 +24,7 @@ public class PersonalOrganizer extends Application {
 			0.60*Screen.getPrimary().getBounds().getHeight());
 	private View view;
 	private SettingsWindow settings;
+	private NewAppointmentWindow newAppointment;
 
 	public static void main(String...args) throws Exception {
 		GregorianCalendar appointmentStart = new GregorianCalendar();
@@ -38,6 +41,8 @@ public class PersonalOrganizer extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 		this.settings = new SettingsWindow(stage);
+
+		this.newAppointment = new NewAppointmentWindow(stage);
 
 		this.view = new DayView(new GregorianCalendar());
 		this.view.prefWidthProperty().bind(stage.widthProperty());
@@ -59,7 +64,7 @@ public class PersonalOrganizer extends Application {
 				new Menu(Translator.translationProperty("menuBar", "file", "name"),
 					new Menu(Translator.translationProperty("menuBar", "file", "new", "name"),
 						new MenuItem(Translator.translationProperty("menuBar", "file", "new", "meeting"), e -> {
-							System.out.println("Neuen Termin anlegen");
+							this.newAppointment.show();
 						}),
 						new MenuItem(Translator.translationProperty("menuBar", "file", "new", "meetings"), e -> {
 							System.out.println("Neue Termin Gruppe anlegen");
@@ -74,7 +79,7 @@ public class PersonalOrganizer extends Application {
 						System.out.println("Datei speichern unter");
 					}),
 					new MenuItem(Translator.translationProperty("menuBar", "file", "settings"), e -> {
-						settings.show();
+						this.settings.show();
 					}),
 					new MenuItem(Translator.translationProperty("menuBar", "file", "exit"), e -> {
 						System.exit(0);
