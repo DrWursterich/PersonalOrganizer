@@ -88,5 +88,47 @@
 			"manual": "Manual",
 			"about": "About"
 		}
+	},
+
+	"newAppointment": {
+		"title": "New Appointment",
+		"titlePrompt": "Title",
+		"descriptionPrompt": "Description",
+		"category": {
+			"label": "Category"
+		},
+		"priority": {
+			"label": "Priority",
+			"createTooltip": "Create a new Priority"
+		},
+		"dateFrom": {
+			"label": "Start Date",
+			"hourPrompt": "Hour",
+			"minutePrompt": "Minute"
+		},
+		"dateTo": {
+			"label": "End Date",
+			"hourPrompt": "Hour",
+			"minutePrompt": "Minute"
+		},
+		"duration": {
+			"label": "Duration",
+			"monthsPrompt": "Months",
+			"daysPrompt": "Days",
+			"hoursPrompt": "Hours",
+			"minutesPrompt": "Minutes"
+		},
+		"repetetion": {
+			"label": "Repetition",
+			"monthsPrompt": "Months",
+			"daysPrompt": "Days",
+			"hoursPrompt": "Hours",
+			"minutesPrompt": "Minutes",
+			"endDateLabel": "Repetition End"
+		},
+		"tabContextMenu": {
+			"close": "close",
+			"closeAll": "Close All"
+		}
 	}
 }

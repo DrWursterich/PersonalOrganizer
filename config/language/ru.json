@@ -88,5 +88,47 @@
 			"manual": "Руководство",
 			"about": "Около"
 		}
+	},
+
+	"newAppointment": {
+		"title": "Новая встреча",
+		"titlePrompt": "заглавие",
+		"descriptionPrompt": "Описание",
+		"category": {
+			"label": "категория"
+		},
+		"priority": {
+			"label": "приоритет",
+			"createTooltip": "Создать новый приоритет"
+		},
+		"dateFrom": {
+			"label": "Дата начала",
+			"hourPrompt": "Час",
+			"minutePrompt": "минут"
+		},
+		"dateTo": {
+			"label": "Дата окончания",
+			"hourPrompt": "Час",
+			"minutePrompt": "минут"
+		},
+		"duration": {
+			"label": "продолжительность",
+			"monthsPrompt": "Месяцы",
+			"daysPrompt": "дней",
+			"hoursPrompt": "часов",
+			"minutesPrompt": "минут"
+		},
+		"repetetion": {
+			"label": "Повторение",
+			"monthsPrompt": "Месяцы",
+			"daysPrompt": "дней",
+			"hoursPrompt": "часов",
+			"minutesPrompt": "минут",
+			"endDateLabel": "Окончание повторения"
+		},
+		"tabContextMenu": {
+			"close": "Закрыть",
+			"closeAll": "Закрыть все"
+		}
 	}
 }

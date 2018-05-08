@@ -88,5 +88,47 @@
 			"manual": "Handbuch",
 			"about": "Über Personal Organizer"
 		}
+	},
+
+	"newAppointment": {
+		"title": "Neuer Termin",
+		"titlePrompt": "Titel",
+		"descriptionPrompt": "Beschreibung",
+		"category": {
+			"label": "Kategorie"
+		},
+		"priority": {
+			"label": "Priorität",
+			"createTooltip": "Neue Priorität erstellen"
+		},
+		"dateFrom": {
+			"label": "Start-Datum",
+			"hourPrompt": "Stunde",
+			"minutePrompt": "Minute"
+		},
+		"dateTo": {
+			"label": "End-Datum",
+			"hourPrompt": "Stunde",
+			"minutePrompt": "Minute"
+		},
+		"duration": {
+			"label": "Dauer",
+			"monthsPrompt": "Monate",
+			"daysPrompt": "Tage",
+			"hoursPrompt": "Stunden",
+			"minutesPrompt": "Minuten"
+		},
+		"repetetion": {
+			"label": "Wiederholung",
+			"monthsPrompt": "Monate",
+			"daysPrompt": "Tage",
+			"hoursPrompt": "Stunden",
+			"minutesPrompt": "Minuten",
+			"endDateLabel": "Wiederholungsende"
+		},
+		"tabContextMenu": {
+			"close": "Schließen",
+			"closeAll": "Alle schließen"
+		}
 	}
 }

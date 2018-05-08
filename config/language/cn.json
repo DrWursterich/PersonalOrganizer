@@ -88,5 +88,47 @@
 			"manual": "手冊",
 			"about": "關於"
 		}
+	},
+
+	"newAppointment": {
+		"title": "新任命",
+		"titlePrompt": "標題",
+		"descriptionPrompt": "描述",
+		"category": {
+			"label": "類別"
+		},
+		"priority": {
+			"label": "優先",
+			"createTooltip": "創建一個新的優先級"
+		},
+		"dateFrom": {
+			"label": "開始日期",
+			"hourPrompt": "小時",
+			"minutePrompt": "分鐘"
+		},
+		"dateTo": {
+			"label": "結束日期",
+			"hourPrompt": "小時",
+			"minutePrompt": "分鐘"
+		},
+		"duration": {
+			"label": "持續時間",
+			"monthsPrompt": "月",
+			"daysPrompt": "天",
+			"hoursPrompt": "小時",
+			"minutesPrompt": "分鐘"
+		},
+		"repetetion": {
+			"label": "重複",
+			"monthsPrompt": "月",
+			"daysPrompt": "天",
+			"hoursPrompt": "小時",
+			"minutesPrompt": "分鐘",
+			"endDateLabel": "重複結束"
+		},
+		"tabContextMenu": {
+			"close": "關",
+			"closeAll": "關閉所有"
+		}
 	}
 }
