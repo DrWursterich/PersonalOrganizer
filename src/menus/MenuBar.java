@@ -1,4 +1,4 @@
-package menuBar;
+package menus;
 
 import javafx.scene.control.Menu;
 
