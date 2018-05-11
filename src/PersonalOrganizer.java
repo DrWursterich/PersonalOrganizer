@@ -24,7 +24,7 @@ public class PersonalOrganizer extends Application {
 			0.60*Screen.getPrimary().getBounds().getHeight());
 	private View view;
 	private SettingsWindow settings;
-	private NewAppointmentWindow newAppointment;
+	private Stage parentStage;
 
 	public static void main(String...args) throws Exception {
 		GregorianCalendar appointmentStart = new GregorianCalendar();
@@ -40,9 +40,9 @@ public class PersonalOrganizer extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		this.settings = new SettingsWindow(stage);
+		this.parentStage = stage;
 
-		this.newAppointment = new NewAppointmentWindow(stage);
+		this.settings = new SettingsWindow(stage);
 
 		this.view = new DayView(new GregorianCalendar());
 		this.view.prefWidthProperty().bind(stage.widthProperty());
@@ -64,7 +64,7 @@ public class PersonalOrganizer extends Application {
 				new Menu(Translator.translationProperty("menuBar", "file", "name"),
 					new Menu(Translator.translationProperty("menuBar", "file", "new", "name"),
 						new MenuItem(Translator.translationProperty("menuBar", "file", "new", "meeting"), e -> {
-							this.newAppointment.show();
+							(new NewAppointmentWindow(this.parentStage)).show();
 						}, "Ctrl+N"),
 						new MenuItem(Translator.translationProperty("menuBar", "file", "new", "meetings"), e -> {
 							System.out.println("Neue Termin Gruppe anlegen");
@@ -114,7 +114,7 @@ public class PersonalOrganizer extends Application {
 						new MenuItem(Translator.translationProperty("menuBar", "view", "switch to", "week view"), e -> {
 							System.out.println("Zur Wochen Ansicht wechseln");
 						}),
-						new MenuItem(Translator.translationProperty("menuBar", "view", "switch to", "month view"), e -> {
+						new MenuItem(Translator.translationProperty("menuBar", "view", "switch to", "month view"), e ->{
 							System.out.println("Zur Monats Ansicht wechseln");
 						}))),
 				new Menu(Translator.translationProperty("menuBar", "help", "name"),
