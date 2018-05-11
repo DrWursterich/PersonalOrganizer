@@ -1,0 +1,167 @@
+--PRIORITY
+ INSERT
+	INTO
+		PRIORITY(
+			ID,
+			NAME
+		)
+	VALUES(
+		1,
+		'HIGH'
+	);
+
+INSERT
+	INTO
+		PRIORITY(
+			ID,
+			NAME
+		)
+	VALUES(
+		2,
+		'NORMAL'
+	);
+
+INSERT
+	INTO
+		PRIORITY(
+			ID,
+			NAME
+		)
+	VALUES(
+		3,
+		'LOW'
+	);
+
+--PRIORITY_PERIOD
+ INSERT
+	INTO
+		PRIORITY_PERIOD(
+			PRIORITY_FK,
+			PERIOD_FK
+		)
+	VALUES(
+		1,
+		1
+	);
+
+INSERT
+	INTO
+		PRIORITY_PERIOD(
+			PRIORITY_FK,
+			PERIOD_FK
+		)
+	VALUES(
+		1,
+		2
+	);
+
+INSERT
+	INTO
+		PRIORITY_PERIOD(
+			PRIORITY_FK,
+			PERIOD_FK
+		)
+	VALUES(
+		1,
+		3
+	);
+
+INSERT
+	INTO
+		PRIORITY_PERIOD(
+			PRIORITY_FK,
+			PERIOD_FK
+		)
+	VALUES(
+		1,
+		4
+	);
+
+INSERT
+	INTO
+		PRIORITY_PERIOD(
+			PRIORITY_FK,
+			PERIOD_FK
+		)
+	VALUES(
+		2,
+		3
+	);
+
+INSERT
+	INTO
+		PRIORITY_PERIOD(
+			PRIORITY_FK,
+			PERIOD_FK
+		)
+	VALUES(
+		2,
+		4
+	);
+
+--PERIOD
+ INSERT
+	INTO
+		PERIOD(
+			MINUTES,
+			DAYS,
+			MONTHS
+		)
+	VALUES(
+		0,
+		1,
+		0
+	);
+
+INSERT
+	INTO
+		PERIOD(
+			MINUTES,
+			DAYS,
+			MONTHS
+		)
+	VALUES(
+		180,
+		0,
+		0
+	);
+
+INSERT
+	INTO
+		PERIOD(
+			MINUTES,
+			DAYS,
+			MONTHS
+		)
+	VALUES(
+		60,
+		0,
+		0
+	);
+
+INSERT
+	INTO
+		PERIOD(
+			MINUTES,
+			DAYS,
+			MONTHS
+		)
+	VALUES(
+		15,
+		0,
+		0
+	);
+
+--CATEGORY
+ INSERT
+	INTO
+		CATEGORY(
+			ID,
+			NAME,
+			DESCRIPTION
+		)
+	VALUES(
+		1,
+		'NONE',
+		''
+	);
