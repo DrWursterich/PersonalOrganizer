@@ -156,6 +156,7 @@ public class NewAppointmentWindow {
 					this.setText(String.format("#%02d", tabPane.getTabs().size()));
 					this.setOnSelectionChanged(f -> {});
 					this.setClosable(true);
+					this.setContextMenu();
 					this.setOnCloseRequest(f -> {
 						for (int i=tabPane.getTabs().indexOf(this);i<tabPane.getTabs().size()-1;i++) {
 							tabPane.getTabs().get(i).setText(String.format("#%02d", i));
@@ -169,10 +170,10 @@ public class NewAppointmentWindow {
 		public CustomTab(String string) {
 			super(string);
 			this.initialize();
+			this.setContextMenu();
 		}
 
 		private void initialize() {
-			try {
 			tabContent.setPadding(new Insets(10));
 
 			dateFromPicker.setMaxWidth(Double.MAX_VALUE);
@@ -195,7 +196,9 @@ public class NewAppointmentWindow {
 			HBox.setHgrow(tabContentLeft, ALWAYS);
 
 			this.setContent(tabContent);
+		}
 
+		private void setContextMenu() {
 			this.setContextMenu(new ContextMenu(
 					new MenuItem(trans("tabContextMenu", "close"),
 							e -> {this.close();}),
@@ -205,9 +208,6 @@ public class NewAppointmentWindow {
 								((CustomTab)tabPane.getTabs().get(i)).close();
 							};})
 					));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 		}
 
 		void close() {
@@ -250,10 +250,6 @@ public class NewAppointmentWindow {
 		HBox.setHgrow(this.cancelButton, ALWAYS);
 		HBox.setHgrow(this.acceptButton, ALWAYS);
 
-		CustomTab firstTab = new CustomTab("#01");
-		CustomTab addTab = new CustomTab();
-		this.tabPane.getTabs().addAll(firstTab, addTab);
-
 		this.leftPane.setPadding(new Insets(10));
 
 		this.descriptionArea.setPrefWidth(300);
@@ -274,9 +270,14 @@ public class NewAppointmentWindow {
 
 		this.rightPane.setPadding(new Insets(10));
 
+		CustomTab firstTab = new CustomTab("#01");
+		CustomTab addTab = new CustomTab();
+
 		this.tabPane.setPrefWidth(300);
 		this.tabPane.setMinWidth(200);
 		this.tabPane.setTabMinWidth(25);
+		this.tabPane.getTabs().addAll(firstTab, addTab);
+		this.tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
 
 		firstTab.setClosable(false);
 		firstTab.setContextMenu(new ContextMenu(
