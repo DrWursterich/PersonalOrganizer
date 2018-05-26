@@ -63,7 +63,7 @@ public abstract class Translator {
 		if (language == null) {
 			throw new IllegalArgumentException("Language cannot be Null");
 		}
-		File file = new File(".\\config\\language\\" + language + ".json");
+		File file = new File("config/language/" + language + ".json");
 		if (file.exists()) {
 			try {
 				json = new JSONObject(new String(Files.readAllBytes(file.toPath())));

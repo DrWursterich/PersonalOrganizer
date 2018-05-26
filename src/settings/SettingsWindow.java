@@ -277,7 +277,7 @@ public class SettingsWindow {
 		ColumnConstraints columnLeft = new ColumnConstraints();
 		ColumnConstraints columnRight = new ColumnConstraints();
 		ArrayList<String> options = new ArrayList<String>();
-		File languageFolder = new File(".\\config\\language");
+		File languageFolder = new File("config/language");
 		for (File f : languageFolder.listFiles()) {
 			String fileName = f.getName();
 			options.add(fileName.substring(0, fileName.indexOf('.')));
