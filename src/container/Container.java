@@ -43,10 +43,10 @@ public class Container<T extends ContainerItem> {
 	 * @param item the item to check for
 	 * @return <b>true</b> if the item is contained, <b>false</b> if not
 	 */
-	@SuppressWarnings("unused")
-	public boolean contains(T item) {
-		return DatabaseController.search(this.items, item.getValue()) == null ? false : true;
-	}
+//	@SuppressWarnings("unused")
+//	public boolean contains(T item) {
+//		return DatabaseController.search(this.items, item.getValue()) == null ? false : true;
+//	}
 
 	/**
 	 * @return the {@link ContainerItem ContainerItems}

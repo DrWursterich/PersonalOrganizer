@@ -1,48 +1,137 @@
 package database;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.LineNumberReader;
+import java.nio.file.Files;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Savepoint;
+import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
-//import java.sql.DriverManager;
-//import java.sql.SQLException;
-
-import container.*;
+import appointments.Category;
+import appointments.Priority;
 import containerItem.Appointment;
-import containerItem.ContainerItem;
-
-/*
- * #####################################################################################
- * TODO: THIS CLASS USES A TEMPORARY SUBSTITUTE STORAGE-STRUCTURE INSTEAD OF A DATABASE!
- * #####################################################################################
- */
+import util.Duration;
 
 /**
  * This class controlls the access to a database containing appointments.
  * @author Mario Schäper
  */
 public abstract class DatabaseController {
-	private static Container<YearContainer> container = new Container<YearContainer>();
-//	private String jdbcDriver = "com.mysql.jdbc.Driver";
-//	private String dbName = "Appointments";
+	private static final String INSERT_APPOINTMENTGROUP = "INSERT INTO APPOINTMENT_GROUP "
+			+ "(NAME, DESCRIPTION, PRIORITY_FK, CATEGORY_FK) VALUES (?, ?, ?, ?);";
+	private static final String INSERT_APPOINTMENT = "INSERT INTO APPOINTMENT "
+			+ "(START_DATE, END_DATE, CIRCLE_FK) VALUES (?, ?, ?);";
+	private static final String INSERT_APPOINTMENT_APPOINTMENT_GROUP = "INSERT INTO "
+			+ "APPOINTMENT_APPOINTMENT_GROUP (APPOINTMENT_FK, APPOINTMENT_GROUP_FK) VALUES (?, ?);";
+	private static ArrayList<ResultSet> results = new ArrayList<>();
+	private static Connection connection;
+
+	static {
+		try {
+			DatabaseController.connection = 
+					DriverManager.getConnection("jdbc:sqlite:appointments.db");
+			DatabaseController.runScript("CREATE_TABLE");
+			DatabaseController.runScript("INSERT_INTO");
+			DatabaseController.runScript("CREATE_TRIGGER");
+			DatabaseController.runScript("CREATE_VIEW");
+		} catch (SQLException e) {
+			System.out.println("Connection to database could not be established");
+			e.printStackTrace();
+			System.exit(0);
+		}
+	}
 
 	/**
-	 * Invokes a {@link DatabaseController DatabaseController} instance.
+	 * A class to hold data.
+	 * Serves the purposes of readability and structure.
+	 * @author Mario Schäper
 	 */
-//	public DatabaseController() {
-//		this.initiateDatabase();
-//	}
+	public static class AppointmentContainer {
+		private String subject;
+		private String description;
+		private Category category;
+		private Priority priority;
+		private ArrayList<AppointmentItem> appointmentItems;
+
+		public AppointmentContainer(String subject, String description, Category category,
+				Priority priority, ArrayList<AppointmentItem> appointmentItems) {
+			this.subject = subject;
+			this.description = description;
+			this.category = category;
+			this.priority = priority;
+			this.appointmentItems = appointmentItems;
+		}
+
+		public String getSubject() {
+			return subject;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public Category getCategory() {
+			return category;
+		}
+
+		public Priority getPriority() {
+			return priority;
+		}
+
+		public ArrayList<AppointmentItem> getAppointmentItems() {
+			return appointmentItems;
+		}
+	}
 
 	/**
-	 * Initiates the database.
+	 * A class to hold data.
+	 * Serves the purposes of readability and structure.
+	 * @author Mario Schäper
 	 */
-//	public void initiateDatabase() {
-//		try {
-//			Class.forName(this.jdbcDriver);
-//			DriverManager.getConnection("jdbc:mySql://localhost/?user=root&password=")
-//					.createStatement().executeUpdate("CREATE DATABASE IF NOT EXISTS " + dbName);
-//		} catch (ClassNotFoundException | SQLException e) {
-//			e.printStackTrace();
-//		}
-//	}
-	
+	public static class AppointmentItem {
+		public static final Duration NO_REPETITION = new Duration(0, 0, 0, 0);
+		private GregorianCalendar startDate;
+		private GregorianCalendar endDate;
+		private Duration repetition;
+		private GregorianCalendar repetitionEnd;
+
+		public AppointmentItem(GregorianCalendar startDate, GregorianCalendar endDate,
+				Duration repetition, GregorianCalendar repetitionEnd) {
+			this.startDate = startDate;
+			this.endDate = endDate;
+			this.repetition = repetition;
+			this.repetitionEnd = repetitionEnd;
+		}
+		
+		public AppointmentItem(GregorianCalendar startDate, GregorianCalendar endDate) {
+			this(startDate, endDate, AppointmentItem.NO_REPETITION, null);
+		}
+
+		public GregorianCalendar getStartDate() {
+			return startDate;
+		}
+
+		public GregorianCalendar getEndDate() {
+			return endDate;
+		}
+
+		public Duration getRepetition() {
+			return repetition;
+		}
+
+		public GregorianCalendar getRepetitionEnd() {
+			return repetitionEnd;
+		}
+	}
+
 	/**
 	 * Adds an {@link Appointment Appointments} to the Database.
 	 * @param subject the subject
@@ -50,31 +139,51 @@ public abstract class DatabaseController {
 	 * @param startDate the date, at which the appointment beginns
 	 * @param endDate the date, at which the appointment ends
 	 */
-	public static void addAppointment(String subject, String description,
-			GregorianCalendar startDate, GregorianCalendar endDate) {
-		Appointment appointment = new Appointment(subject, description, startDate, endDate);
-		startDate = (GregorianCalendar)startDate.clone();
-		endDate = (GregorianCalendar)endDate.clone();
-		startDate.set(GregorianCalendar.HOUR, 1);
-		endDate.set(GregorianCalendar.HOUR, 2);
-		while (startDate.before(endDate)) {
-			YearContainer year = search(container.getItems(), startDate.get(GregorianCalendar.YEAR));
-			if (year == null) {
-				year = new YearContainer((short)startDate.get(GregorianCalendar.YEAR));
-				container.add(year);
+	public static void addAppointment(AppointmentContainer appointment) {
+		PreparedStatement statement = null;
+		Savepoint savepoint = null;
+		try {
+			savepoint = DatabaseController.connection.setSavepoint();
+			DatabaseController.connection.setAutoCommit(false);
+			statement = DatabaseController.connection
+					.prepareStatement(DatabaseController.INSERT_APPOINTMENTGROUP);
+			statement.setString(1, appointment.getSubject());
+			statement.setString(2,appointment.getDescription());
+			statement.setInt(3, DatabaseController.getPriorityId(appointment.getPriority()));
+			statement.setInt(4, DatabaseController.getCategoryId(appointment.getCategory()));
+			statement.executeUpdate();
+			statement.close();
+			int appointmentGroupId = DatabaseController.getMaxId("APPOINTMENT_GROUP");
+			for (AppointmentItem app : appointment.getAppointmentItems()) {
+				statement = DatabaseController.connection
+						.prepareStatement(DatabaseController.INSERT_APPOINTMENT);
+				statement.setDate(1, new Date(app.getStartDate().getTimeInMillis()));
+				statement.setDate(2, new Date(app.getEndDate().getTimeInMillis()));
+				statement.setInt(3, DatabaseController.getDurationId(app.getRepetition()));
+				statement.executeUpdate();
+				statement.close();
+				statement = DatabaseController.connection
+						.prepareStatement(DatabaseController.INSERT_APPOINTMENT_APPOINTMENT_GROUP);
+				statement.setInt(1, DatabaseController.getMaxId("APPOINTMENT"));
+				statement.setInt(2, appointmentGroupId);
+				statement.executeUpdate();
+				statement.close();
 			}
-			MonthContainer month = search(year.getItems(), startDate.get(GregorianCalendar.MONTH));
-			if (month == null) {
-				month = new MonthContainer((short)startDate.get(GregorianCalendar.MONTH));
-				year.add(month);
+			DatabaseController.connection.commit();
+		} catch (SQLException e) {
+			System.out.println("unable to add appointment: " + e.getMessage());
+			if (savepoint != null) {
+				try {
+					DatabaseController.connection.rollback(savepoint);
+				} catch (SQLException ex) {}
 			}
-			DayContainer day = search(month.getItems(), startDate.get(GregorianCalendar.DAY_OF_MONTH));
-			if (day == null) {
-				day = new DayContainer((short)startDate.get(GregorianCalendar.DAY_OF_MONTH));
-				month.add(day);
-			}
-			day.add(appointment);
-			startDate.add(GregorianCalendar.DAY_OF_MONTH, 1);
+		} finally {
+			try {
+				DatabaseController.connection.setAutoCommit(true);
+				if (statement != null) {
+					statement.close();
+				}
+			} catch (SQLException e) {}
 		}
 	}
 
@@ -85,53 +194,125 @@ public abstract class DatabaseController {
 	 * @return list of all appointments sorted by starttime
 	 */
 	public static ArrayList<Appointment> getDayAppointments(GregorianCalendar date) {
-		YearContainer year = search(container.getItems(), date.get(GregorianCalendar.YEAR));
-		if (year != null) {
-			MonthContainer month = search(year.getItems(), date.get(GregorianCalendar.MONTH));
-			if (month != null) {
-				DayContainer day = search(month.getItems(), date.get(GregorianCalendar.DAY_OF_MONTH));
-				if (day != null) {
-					return day.getItems();
-				}
+		ArrayList<Appointment> appointments = new ArrayList<>();
+		String formatedDate = "'" + new SimpleDateFormat("yyyy-mm-dd").format(date.getTime()) + "'";
+		try {
+			Statement statement = DatabaseController.connection.createStatement();
+			ResultSet result = statement
+					.executeQuery("SELECT * FROM APPOINTMENTS_VIEW WHERE START_DATE < DATE("
+							+ formatedDate + ") AND DATE("
+							+ formatedDate
+							+ ") < DATE(REPETITION_END, +END_DATE, -START_DATE);");
+			while (result.next()) {
+				GregorianCalendar start = new GregorianCalendar();
+				GregorianCalendar end = new GregorianCalendar();
+				start.setTime(result.getDate("START_DATE"));
+				end.setTime(result.getDate("END_DATE"));
+				appointments.add(new Appointment(result.getString("NAME"),
+						result.getString("DESCRIPTION"), start, end));
 			}
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+			return null;
 		}
-		return null;
+		return appointments;
 	}
 
 	/**
-	 * Returns the {@link ContainerItem ContainerItem} with the given
-	 * value from an {@link java.util.ArrayList ArrayList}, found via
-	 * binary search.<br/>
-	 * If it does not contain a suitable item <b>null</b> is returned.
-	 * @param list the list to search in
-	 * @param value the item-value to look for
-	 * @return item with specified value or null
+	 * Executes a script with the given name, that is located in the SQL-folder
+	 * and has the extension ".sql". The name may contain subfolders but not its
+	 * extionsion.
+	 * @param script the name of the script to execute
 	 */
-	public static <T extends ContainerItem> T search(ArrayList<T> list, long value) {
-		if (list.size() > 0) {
-			int startIndex = 0;
-			int endIndex = list.size()-1;
-			if (list.get(startIndex).getValue() == value) {
-				return list.get(startIndex);
+	public static void runScript(String script) {
+		ArrayList<ResultSet> currentResults = new ArrayList<>();
+		Statement statement = null;
+		Savepoint savepoint = null;
+		try {
+			savepoint = DatabaseController.connection.setSavepoint();
+			DatabaseController.connection.setAutoCommit(false);
+			File file = new File("SQL/" + script + ".sql");
+			if (!file.exists()) {
+				throw new IOException(file.getAbsolutePath() + " does not exist");
 			}
-			if (list.get(endIndex).getValue() == value) {
-				return list.get(endIndex);
-			}
-			if (value > list.get(startIndex).getValue() && value < list.get(endIndex).getValue()) {
-				while (endIndex-startIndex > 1) {
-					int midIndex = startIndex + (endIndex-startIndex)/2;
-					if (list.get(midIndex).getValue() == value) {
-						return list.get(midIndex);
-					} else {
-						if (list.get(midIndex).getValue() > value) {
-							endIndex = midIndex;
-						} else {
-							startIndex = midIndex;
+			LineNumberReader reader = new LineNumberReader(Files.newBufferedReader(file.toPath()));
+			StringBuffer command = new StringBuffer();
+			String line = null;
+			while((line = reader.readLine()) != null) {
+				line = line.replace('\n', ' ').replace('\t', ' ').replace('\r', ' ').trim();
+				if (!line.startsWith("--") && line.length() >= 1) {
+					command.append(line);
+					if (line.endsWith(";")) {
+						statement = DatabaseController.connection.createStatement();
+						statement.execute(command.toString());
+						ResultSet resultSet = statement.getResultSet();
+						if (resultSet != null) {
+							currentResults.add(resultSet);
 						}
+						command = new StringBuffer();
+					} else {
+						command.append(' ');
 					}
 				}
 			}
+			DatabaseController.connection.commit();
+			DatabaseController.results = currentResults;
+		} catch (IOException | SQLException e) {
+			System.out.println("unable to execute script " + script + ": " + e.getMessage());
+			if (savepoint != null) {
+				try {
+					DatabaseController.connection.rollback(savepoint);
+				} catch (SQLException ex) {}
+			}
+		} finally {
+			try {
+				DatabaseController.connection.setAutoCommit(true);
+				if (statement != null) {
+					statement.close();
+				}
+			} catch (SQLException e) {}
 		}
-		return null;
+	}
+
+	/**
+	 * Returns the ID of the given {@link Priority Priority} from the database.
+	 * If there is none, it will be inserted first.
+	 * @param priority the priority to get the ID from
+	 * @return the ID of the priority
+	 */
+	private static int getPriorityId(Priority priority) {
+		return 0;
+	}
+
+	/**
+	 * Returns the ID of the given {@link Category Category} from the database.
+	 * If there is none, it will be inserted first.
+	 * @param category the category to get the ID from
+	 * @return the ID of the category
+	 */
+	private static int getCategoryId(Category category) {
+		return 0;
+	}
+
+	/**
+	 * Returns the ID of the given {@link Duration Duration} from the database.
+	 * If there is none, it will be inserted first.
+	 * @param duration the duration to get the ID from
+	 * @return the ID of the duration
+	 */
+	private static int getDurationId(Duration duration) {
+		return 0;
+	}
+
+	/**
+	 * Returns the highest ID in the given table of the database.
+	 * @param table the table
+	 * @return the highest ID in the given table
+	 * @throws SQLException 
+	 */
+	private static int getMaxId(String table) throws SQLException {
+		ResultSet result = DatabaseController.connection.createStatement()
+				.executeQuery("SELECT MAX(ID) AS MAX_ID FROM " + table + ";");
+		return result.getInt("MAX_ID");
 	}
 }

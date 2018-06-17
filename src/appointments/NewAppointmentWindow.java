@@ -1,12 +1,13 @@
 package appointments;
 
 import static javafx.scene.layout.Priority.ALWAYS;
-
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
 import database.DatabaseController;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -298,10 +299,19 @@ public class NewAppointmentWindow {
 		this.acceptButton.setOnAction(e -> {
 			if (this.titleField.getText() != null && this.titleField.getText() != "" &&
 					firstTab.getDateFrom().before(firstTab.getDateTo())) {
-				DatabaseController.addAppointment(
+				ArrayList<DatabaseController.AppointmentItem> appointments = new ArrayList<>();
+				ObservableList<Tab> tabs = this.tabPane.getTabs();
+				for (int i=0;i<tabs.size();i++) {
+					if (this.tabPane.getTabs().get(i).isClosable()) {
+						appointments.add(new DatabaseController.AppointmentItem(
+								((CustomTab)tabs.get(i)).getDateFrom(),
+								((CustomTab)tabs.get(i)).getDateTo()));
+					}
+				}
+				DatabaseController.addAppointment(new DatabaseController.AppointmentContainer(
 						this.titleField.getText(),
 						this.descriptionArea.getText() == null ? "" : this.descriptionArea.getText(),
-						firstTab.getDateFrom(), firstTab.getDateTo());
+						this.categoryBox.getValue(), this.priorityBox.getValue(), appointments));
 				this.stage.close();
 			}
 		});

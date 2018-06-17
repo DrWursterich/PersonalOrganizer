@@ -132,9 +132,9 @@ public class DayView extends DateView {
 		}
 		
 		@Override
-        public void setHeight(double height) {
-            super.setHeight(700);
-        }
+		public void setHeight(double height) {
+			super.setHeight(700);
+		}
 	}
 
 	public DayView(GregorianCalendar date) {

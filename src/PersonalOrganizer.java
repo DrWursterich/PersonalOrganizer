@@ -33,7 +33,7 @@ public class PersonalOrganizer extends Application {
 		appointmentStart.set(GregorianCalendar.MINUTE, 30);
 		appointmentEnd.set(GregorianCalendar.HOUR_OF_DAY, 12);
 		appointmentEnd.set(GregorianCalendar.MINUTE, 10);
-		DatabaseController.addAppointment("Termin", "Beschreibung", appointmentStart, appointmentEnd);
+//		DatabaseController.addAppointment("Termin", "Beschreibung", appointmentStart, appointmentEnd);
 
 		launch(args);
 	}

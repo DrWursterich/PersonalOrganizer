@@ -1,167 +1,32 @@
 --PRIORITY
- INSERT
-	INTO
-		PRIORITY(
-			ID,
-			NAME
-		)
-	VALUES(
-		1,
-		'HIGH'
-	);
-
-INSERT
-	INTO
-		PRIORITY(
-			ID,
-			NAME
-		)
-	VALUES(
-		2,
-		'NORMAL'
-	);
-
-INSERT
-	INTO
-		PRIORITY(
-			ID,
-			NAME
-		)
-	VALUES(
-		3,
-		'LOW'
-	);
-
---PRIORITY_PERIOD
- INSERT
-	INTO
-		PRIORITY_PERIOD(
-			PRIORITY_FK,
-			PERIOD_FK
-		)
-	VALUES(
-		1,
-		1
-	);
-
-INSERT
-	INTO
-		PRIORITY_PERIOD(
-			PRIORITY_FK,
-			PERIOD_FK
-		)
-	VALUES(
-		1,
-		2
-	);
-
-INSERT
-	INTO
-		PRIORITY_PERIOD(
-			PRIORITY_FK,
-			PERIOD_FK
-		)
-	VALUES(
-		1,
-		3
-	);
-
-INSERT
-	INTO
-		PRIORITY_PERIOD(
-			PRIORITY_FK,
-			PERIOD_FK
-		)
-	VALUES(
-		1,
-		4
-	);
-
-INSERT
-	INTO
-		PRIORITY_PERIOD(
-			PRIORITY_FK,
-			PERIOD_FK
-		)
-	VALUES(
-		2,
-		3
-	);
-
-INSERT
-	INTO
-		PRIORITY_PERIOD(
-			PRIORITY_FK,
-			PERIOD_FK
-		)
-	VALUES(
-		2,
-		4
-	);
+ INSERT OR IGNORE INTO PRIORITY
+	(ID,	NAME) VALUES
+	(1,		'HIGH'), 
+	(2,		'NORMAL'),
+	(3,		'LOW');
 
 --PERIOD
- INSERT
-	INTO
-		PERIOD(
-			MINUTES,
-			DAYS,
-			MONTHS
-		)
-	VALUES(
-		0,
-		1,
-		0
-	);
+ INSERT OR IGNORE INTO PERIOD(ID, MINUTES, DAYS, MONTHS) VALUES
+	(1, 0, 1, 0),
+	(2, 180, 0, 0);
 
-INSERT
-	INTO
-		PERIOD(
-			MINUTES,
-			DAYS,
-			MONTHS
-		)
-	VALUES(
-		180,
-		0,
-		0
-	);
+--PERIOD
+ INSERT OR IGNORE INTO PERIOD
+	(ID,	MINUTES,	DAYS,	MONTHS) VALUES
+	(3,		60,			0,		0),
+	(4,		15,			0,		0);
 
-INSERT
-	INTO
-		PERIOD(
-			MINUTES,
-			DAYS,
-			MONTHS
-		)
-	VALUES(
-		60,
-		0,
-		0
-	);
-
-INSERT
-	INTO
-		PERIOD(
-			MINUTES,
-			DAYS,
-			MONTHS
-		)
-	VALUES(
-		15,
-		0,
-		0
-	);
+--PRIORITY_PERIOD
+ INSERT OR IGNORE INTO PRIORITY_PERIOD
+	(ID,	PRIORITY_FK,	PERIOD_FK) VALUES
+	(1,		1,				1),
+	(2,		1,				2),
+	(3,		1,				3),
+	(4,		1,				4),
+	(5,		2,				3),
+	(6,		2,				4);
 
 --CATEGORY
- INSERT
-	INTO
-		CATEGORY(
-			ID,
-			NAME,
-			DESCRIPTION
-		)
-	VALUES(
-		1,
-		'NONE',
-		''
-	);
+ INSERT OR IGNORE INTO CATEGORY
+	(ID,	NAME,	DESCRIPTION) VALUES
+	(1,		'NONE',	'');

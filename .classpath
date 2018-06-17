@@ -4,5 +4,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="libraries/java-json.jar"/>
 	<classpathentry kind="lib" path="libraries/mysql-connector-java-5.1.46-bin.jar"/>
+	<classpathentry kind="lib" path="D:/Users/Mario/Desktop/Eclipse/Workspace/PersonalOrganizer/libraries/sqlite-jdbc-3.23.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
