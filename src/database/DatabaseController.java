@@ -36,7 +36,7 @@ public abstract class DatabaseController {
 
 	static {
 		try {
-			DatabaseController.connection = 
+			DatabaseController.connection =
 					DriverManager.getConnection("jdbc:sqlite:appointments.db");
 			DatabaseController.runScript("CREATE_TABLE");
 			DatabaseController.runScript("INSERT_INTO");
@@ -110,7 +110,7 @@ public abstract class DatabaseController {
 			this.repetition = repetition;
 			this.repetitionEnd = repetitionEnd;
 		}
-		
+
 		public AppointmentItem(GregorianCalendar startDate, GregorianCalendar endDate) {
 			this(startDate, endDate, AppointmentItem.NO_REPETITION, null);
 		}
@@ -195,14 +195,11 @@ public abstract class DatabaseController {
 	 */
 	public static ArrayList<Appointment> getDayAppointments(GregorianCalendar date) {
 		ArrayList<Appointment> appointments = new ArrayList<>();
-		String formatedDate = "'" + new SimpleDateFormat("yyyy-mm-dd").format(date.getTime()) + "'";
+		String dateStr = "'" + new SimpleDateFormat("yyyy-mm-dd").format(date.getTime()) + "'";
 		try {
 			Statement statement = DatabaseController.connection.createStatement();
-			ResultSet result = statement
-					.executeQuery("SELECT * FROM APPOINTMENTS_VIEW WHERE START_DATE < DATE("
-							+ formatedDate + ") AND DATE("
-							+ formatedDate
-							+ ") < DATE(REPETITION_END, +END_DATE, -START_DATE);");
+			ResultSet result = statement.executeQuery("SELECT * FROM APPOINTMENTS_VIEW WHERE START_DATE <= DATE("
+					+ dateStr + ") AND DATE(" + dateStr + ") < DATE(REPETITION_END, +END_DATE, -START_DATE);");
 			while (result.next()) {
 				GregorianCalendar start = new GregorianCalendar();
 				GregorianCalendar end = new GregorianCalendar();
@@ -308,7 +305,7 @@ public abstract class DatabaseController {
 	 * Returns the highest ID in the given table of the database.
 	 * @param table the table
 	 * @return the highest ID in the given table
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	private static int getMaxId(String table) throws SQLException {
 		ResultSet result = DatabaseController.connection.createStatement()

@@ -32,6 +32,7 @@ import menus.MenuItem;
 import util.Translator;
 
 public class NewAppointmentWindow {
+	private static final String ADD_TAB_TEXT = " + ";
 	private TextField titleField = this.textField(this.trans("titlePrompt"), true, -1);
 	private TextArea descriptionArea = new TextArea();
 	private Label categoryLabel = this.label(this.trans("category", "label"));
@@ -39,7 +40,7 @@ public class NewAppointmentWindow {
 	private VBox categoryContainer = this.box(new VBox(this.categoryLabel, this.categoryBox));
 	private Label priorityLabel = this.label(this.trans("priority", "label"));
 	private ComboBox<Priority> priorityBox = new ComboBox<>();
-	private Button createPriorityButton = new Button("+");
+	private Button createPriorityButton = new Button(NewAppointmentWindow.ADD_TAB_TEXT);
 	private Tooltip createPriorityButtonTooltip = new Tooltip();
 	private HBox priorityInputs = this.box(new HBox(this.priorityBox, this.createPriorityButton));
 	private VBox priorityContainer = this.box(new VBox(this.priorityLabel, this.priorityInputs));
@@ -149,7 +150,7 @@ public class NewAppointmentWindow {
 
 		public CustomTab() {
 			super();
-			this.setText(" + ");
+			this.setText(NewAppointmentWindow.ADD_TAB_TEXT);
 			this.initialize();
 			this.setClosable(false);
 			this.setOnSelectionChanged(e -> {
@@ -302,7 +303,7 @@ public class NewAppointmentWindow {
 				ArrayList<DatabaseController.AppointmentItem> appointments = new ArrayList<>();
 				ObservableList<Tab> tabs = this.tabPane.getTabs();
 				for (int i=0;i<tabs.size();i++) {
-					if (this.tabPane.getTabs().get(i).isClosable()) {
+					if (!NewAppointmentWindow.ADD_TAB_TEXT.equals(this.tabPane.getTabs().get(i).getText())) {
 						appointments.add(new DatabaseController.AppointmentItem(
 								((CustomTab)tabs.get(i)).getDateFrom(),
 								((CustomTab)tabs.get(i)).getDateTo()));
