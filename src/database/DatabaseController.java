@@ -5,20 +5,22 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.nio.file.Files;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import appointments.Category;
 import appointments.Priority;
 import containerItem.Appointment;
 import util.Duration;
+
+import static java.util.GregorianCalendar.DAY_OF_MONTH;
+import static java.util.GregorianCalendar.MONTH;
+import static java.util.GregorianCalendar.YEAR;
 
 /**
  * This class controlls the access to a database containing appointments.
@@ -31,13 +33,13 @@ public abstract class DatabaseController {
 			+ "(START_DATE, END_DATE, CIRCLE_FK) VALUES (?, ?, ?);";
 	private static final String INSERT_APPOINTMENT_APPOINTMENT_GROUP = "INSERT INTO "
 			+ "APPOINTMENT_APPOINTMENT_GROUP (APPOINTMENT_FK, APPOINTMENT_GROUP_FK) VALUES (?, ?);";
-	private static ArrayList<ResultSet> results = new ArrayList<>();
 	private static Connection connection;
+	@SuppressWarnings("unused")
+	private static ArrayList<ResultSet> results = new ArrayList<>();
 
 	static {
 		try {
-			DatabaseController.connection =
-					DriverManager.getConnection("jdbc:sqlite:appointments.db");
+			connection = DriverManager.getConnection("jdbc:sqlite:appointments.db");
 			DatabaseController.runScript("CREATE_TABLE");
 			DatabaseController.runScript("INSERT_INTO");
 			DatabaseController.runScript("CREATE_TRIGGER");
@@ -143,10 +145,9 @@ public abstract class DatabaseController {
 		PreparedStatement statement = null;
 		Savepoint savepoint = null;
 		try {
-			savepoint = DatabaseController.connection.setSavepoint();
-			DatabaseController.connection.setAutoCommit(false);
-			statement = DatabaseController.connection
-					.prepareStatement(DatabaseController.INSERT_APPOINTMENTGROUP);
+			savepoint = connection.setSavepoint();
+			connection.setAutoCommit(false);
+			statement = connection.prepareStatement(INSERT_APPOINTMENTGROUP);
 			statement.setString(1, appointment.getSubject());
 			statement.setString(2,appointment.getDescription());
 			statement.setInt(3, DatabaseController.getPriorityId(appointment.getPriority()));
@@ -155,31 +156,32 @@ public abstract class DatabaseController {
 			statement.close();
 			int appointmentGroupId = DatabaseController.getMaxId("APPOINTMENT_GROUP");
 			for (AppointmentItem app : appointment.getAppointmentItems()) {
-				statement = DatabaseController.connection
-						.prepareStatement(DatabaseController.INSERT_APPOINTMENT);
-				statement.setDate(1, new Date(app.getStartDate().getTimeInMillis()));
-				statement.setDate(2, new Date(app.getEndDate().getTimeInMillis()));
-				statement.setInt(3, DatabaseController.getDurationId(app.getRepetition()));
+				statement = connection.prepareStatement(INSERT_APPOINTMENT);
+				statement.setLong(1, app.getStartDate().getTimeInMillis());
+				statement.setLong(2, app.getEndDate().getTimeInMillis());
+				statement.setInt(3, DatabaseController.getCircleId(
+						DatabaseController.getDurationId(app.getRepetition()),
+						app.getRepetitionEnd()));
 				statement.executeUpdate();
 				statement.close();
-				statement = DatabaseController.connection
-						.prepareStatement(DatabaseController.INSERT_APPOINTMENT_APPOINTMENT_GROUP);
+				statement = connection.prepareStatement(INSERT_APPOINTMENT_APPOINTMENT_GROUP);
 				statement.setInt(1, DatabaseController.getMaxId("APPOINTMENT"));
 				statement.setInt(2, appointmentGroupId);
 				statement.executeUpdate();
 				statement.close();
 			}
-			DatabaseController.connection.commit();
+			connection.commit();
 		} catch (SQLException e) {
 			System.out.println("unable to add appointment: " + e.getMessage());
+			e.printStackTrace();
 			if (savepoint != null) {
 				try {
-					DatabaseController.connection.rollback(savepoint);
+					connection.rollback(savepoint);
 				} catch (SQLException ex) {}
 			}
 		} finally {
 			try {
-				DatabaseController.connection.setAutoCommit(true);
+				connection.setAutoCommit(true);
 				if (statement != null) {
 					statement.close();
 				}
@@ -195,18 +197,34 @@ public abstract class DatabaseController {
 	 */
 	public static ArrayList<Appointment> getDayAppointments(GregorianCalendar date) {
 		ArrayList<Appointment> appointments = new ArrayList<>();
-		String dateStr = "'" + new SimpleDateFormat("yyyy-mm-dd").format(date.getTime()) + "'";
+		GregorianCalendar dateStart = new GregorianCalendar(date.get(YEAR),
+				date.get(MONTH), date.get(DAY_OF_MONTH));
+		GregorianCalendar dateEnd = (GregorianCalendar)dateStart.clone();
+		dateEnd.add(DAY_OF_MONTH, 1);
 		try {
-			Statement statement = DatabaseController.connection.createStatement();
-			ResultSet result = statement.executeQuery("SELECT * FROM APPOINTMENTS_VIEW WHERE START_DATE <= DATE("
-					+ dateStr + ") AND DATE(" + dateStr + ") < DATE(REPETITION_END, +END_DATE, -START_DATE);");
+			Statement statement = connection.createStatement();
+			ResultSet result = statement.executeQuery("SELECT * FROM APPOINTMENTS_VIEW " +
+					"WHERE START_DATE < " + dateEnd.getTimeInMillis() + " AND " +
+					"(REPETITION_END + (END_DATE - START_DATE)) >= " + dateStart.getTimeInMillis());
 			while (result.next()) {
 				GregorianCalendar start = new GregorianCalendar();
 				GregorianCalendar end = new GregorianCalendar();
 				start.setTime(result.getDate("START_DATE"));
 				end.setTime(result.getDate("END_DATE"));
-				appointments.add(new Appointment(result.getString("NAME"),
-						result.getString("DESCRIPTION"), start, end));
+				Duration appDuration = new Duration(start, end);
+				Duration repetition = new Duration(result.getInt("REPETITION_MONTHS"),
+						0, 0, result.getInt("REPETITION_MINUTES"));
+				int div = (int)Math.ceil(Duration.divide(new Duration(start,
+						Duration.subtract(dateStart, appDuration)), repetition));
+				while (!Duration.add(end, Duration.multiply(repetition, ++div)).after(dateStart));
+				GregorianCalendar current =
+						Duration.add(start, Duration.multiply(repetition, --div));
+				do {
+					appointments.add(new Appointment(result.getString("NAME"),
+							result.getString("DESCRIPTION"), current,
+							Duration.add(current, appDuration)));
+				} while ((current = Duration.add(start, Duration.multiply(repetition, ++div)))
+						.before(dateEnd));
 			}
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
@@ -226,8 +244,8 @@ public abstract class DatabaseController {
 		Statement statement = null;
 		Savepoint savepoint = null;
 		try {
-			savepoint = DatabaseController.connection.setSavepoint();
-			DatabaseController.connection.setAutoCommit(false);
+			savepoint = connection.setSavepoint();
+			connection.setAutoCommit(false);
 			File file = new File("SQL/" + script + ".sql");
 			if (!file.exists()) {
 				throw new IOException(file.getAbsolutePath() + " does not exist");
@@ -240,7 +258,7 @@ public abstract class DatabaseController {
 				if (!line.startsWith("--") && line.length() >= 1) {
 					command.append(line);
 					if (line.endsWith(";")) {
-						statement = DatabaseController.connection.createStatement();
+						statement = connection.createStatement();
 						statement.execute(command.toString());
 						ResultSet resultSet = statement.getResultSet();
 						if (resultSet != null) {
@@ -252,18 +270,18 @@ public abstract class DatabaseController {
 					}
 				}
 			}
-			DatabaseController.connection.commit();
-			DatabaseController.results = currentResults;
+			connection.commit();
+			results = currentResults;
 		} catch (IOException | SQLException e) {
 			System.out.println("unable to execute script " + script + ": " + e.getMessage());
 			if (savepoint != null) {
 				try {
-					DatabaseController.connection.rollback(savepoint);
+					connection.rollback(savepoint);
 				} catch (SQLException ex) {}
 			}
 		} finally {
 			try {
-				DatabaseController.connection.setAutoCommit(true);
+				connection.setAutoCommit(true);
 				if (statement != null) {
 					statement.close();
 				}
@@ -271,35 +289,91 @@ public abstract class DatabaseController {
 		}
 	}
 
+
 	/**
 	 * Returns the ID of the given {@link Priority Priority} from the database.
 	 * If there is none, it will be inserted first.
 	 * @param priority the priority to get the ID from
 	 * @return the ID of the priority
+	 * @throws SQLException
 	 */
-	private static int getPriorityId(Priority priority) {
+	private static int getPriorityId(Priority priority) throws SQLException {
+		//TODO
 		return 0;
 	}
+
 
 	/**
 	 * Returns the ID of the given {@link Category Category} from the database.
 	 * If there is none, it will be inserted first.
 	 * @param category the category to get the ID from
 	 * @return the ID of the category
+	 * @throws SQLException
 	 */
-	private static int getCategoryId(Category category) {
+	private static int getCategoryId(Category category) throws SQLException {
+		//TODO
 		return 0;
 	}
+
 
 	/**
 	 * Returns the ID of the given {@link Duration Duration} from the database.
 	 * If there is none, it will be inserted first.
 	 * @param duration the duration to get the ID from
 	 * @return the ID of the duration
+	 * @throws SQLException
 	 */
-	private static int getDurationId(Duration duration) {
-		return 0;
+	private static int getDurationId(Duration duration) throws SQLException {
+		int durationMinutes = (duration.getMinutes() + duration.getHours() * 60);
+		int id = 0;
+		ResultSet result = connection.createStatement().executeQuery(
+				"SELECT ID FROM PERIOD " +
+				"WHERE MINUTES = " + durationMinutes + " AND " +
+				"DAYS = " + duration.getDays() + " AND " +
+				"MONTHS = " + duration.getMonths() + ";");
+		if (result.isClosed() || result.getInt("ID") == 0) {
+			connection.createStatement().executeUpdate(
+					"INSERT INTO PERIOD (MINUTES, DAYS, MONTHS) VALUES (" +
+					durationMinutes + ", " +
+					duration.getDays() + ", " +
+					duration.getMonths() + ");");
+			id = DatabaseController.getMaxId("PERIOD");
+		} else {
+			id = result.getInt("ID");
+		}
+		result.close();
+		return id;
 	}
+
+
+	/**
+	 * Returns the ID of the circle-entity with the given parameters from the database.
+	 * If there is none, it will be inserted first.
+	 * @param durationId the foreign key of a {@link Duration Duration}
+	 * @param repetitionEnd the date at witch the circle terminates
+	 * @return the ID of the circle-entity
+	 * @throws SQLException
+	 */
+	private static int getCircleId(int durationId, GregorianCalendar repetitionEnd)
+			throws SQLException {
+		int id = 0;
+		ResultSet result = connection.createStatement().executeQuery(
+				"SELECT ID FROM CIRCLE " +
+				"WHERE PERIOD_FK = " + durationId + " AND " +
+				"END_DATE = " + repetitionEnd.getTimeInMillis());
+		if (result.isClosed() || result.getInt("ID") == 0) {
+			connection.createStatement().executeUpdate(
+					"INSERT INTO CIRCLE (END_DATE, PERIOD_FK) VALUES (" +
+					repetitionEnd.getTimeInMillis() + ", " +
+					durationId + ");");
+			id = DatabaseController.getMaxId("CIRCLE");
+		} else {
+			id = result.getInt("ID");
+		}
+		result.close();
+		return id;
+	}
+
 
 	/**
 	 * Returns the highest ID in the given table of the database.
@@ -308,8 +382,14 @@ public abstract class DatabaseController {
 	 * @throws SQLException
 	 */
 	private static int getMaxId(String table) throws SQLException {
-		ResultSet result = DatabaseController.connection.createStatement()
-				.executeQuery("SELECT MAX(ID) AS MAX_ID FROM " + table + ";");
-		return result.getInt("MAX_ID");
+		ResultSet result = connection.createStatement().executeQuery(
+				"SELECT MAX(ID) AS MAX_ID " +
+				"FROM " + table + ";");
+		int id = 0;
+		if (!result.isClosed()) {
+			id = result.getInt("MAX_ID");
+			result.close();
+		}
+		return id;
 	}
 }
