@@ -1,10 +1,12 @@
 package appointments;
 
 import static javafx.scene.layout.Priority.ALWAYS;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
-import database.DatabaseController;
+import java.util.function.Function;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
@@ -27,8 +29,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
+import database.DatabaseController;
 import menus.ContextMenu;
 import menus.MenuItem;
+import util.Duration;
 import util.Translator;
 
 public class NewAppointmentWindow {
@@ -69,8 +73,8 @@ public class NewAppointmentWindow {
 	private StringProperty repetetionLabelText = this.trans("repetetion", "label");
 	private StringProperty repetetionMonthsFieldText = this.trans("repetetion", "monthsPrompt");
 	private StringProperty repetetionDaysFieldText = this.trans("repetetion", "daysPrompt");
-	private StringProperty repetetionHoursText = this.trans("repetetion", "hoursPrompt");
-	private StringProperty repetetionMinutesText = this.trans("repetetion", "minutesPrompt");
+	private StringProperty repetetionHoursFieldText = this.trans("repetetion", "hoursPrompt");
+	private StringProperty repetetionMinutesFieldText = this.trans("repetetion", "minutesPrompt");
 	private StringProperty repetetionEndLabelText = this.trans("repetetion", "endDateLabel");
 
 	private class CustomTab extends Tab {
@@ -97,13 +101,13 @@ public class NewAppointmentWindow {
 		private TextField repetetionMonthsField = textField(repetetionMonthsFieldText, false, -1);
 		private TextField repetetionDaysField = textField(repetetionDaysFieldText, false, 30);
 		private HBox repetetionDaysBox = box(new HBox(repetetionMonthsField, repetetionDaysField));
-		private TextField repetetionHours = textField(repetetionHoursText, false, 23);
-		private TextField repetetionMinutes = textField(repetetionMinutesText, false, 59);
-		private HBox repetetionTimeBox = box(new HBox(repetetionHours, repetetionMinutes));
+		private TextField repetetionHoursField = textField(repetetionHoursFieldText, false, 23);
+		private TextField repetetionMinutesField = textField(repetetionMinutesFieldText, false, 59);
+		private HBox repetetionTimeBox = box(new HBox(repetetionHoursField, repetetionMinutesField));
 		private Label repetetionEndLabel = label(repetetionEndLabelText);
 		private DatePicker repetetionEndPicker = new DatePicker();
-		private VBox tabContentRight = box(new VBox(durationLabel, durationDaysBox, durationTimeBox, repetetionLabel,
-				repetetionDaysBox, repetetionTimeBox, repetetionEndLabel, repetetionEndPicker));
+		private VBox tabContentRight = box(new VBox(durationLabel, durationDaysBox, durationTimeBox,
+				repetetionLabel, repetetionDaysBox, repetetionTimeBox, repetetionEndLabel, repetetionEndPicker));
 		private HBox tabContent = box(new HBox(tabContentLeft, tabContentRight));
 
 		private ChangeListener<Object> updateDateTo = (observable, oldValue, newValue) -> {
@@ -224,20 +228,35 @@ public class NewAppointmentWindow {
 
 		GregorianCalendar getDateFrom() {
 			return new GregorianCalendar(
-					this.dateFromPicker.getValue().getYear(),
-					this.dateFromPicker.getValue().getMonthValue(),
-					this.dateFromPicker.getValue().getDayOfMonth(),
+					fieldVal(this.dateFromPicker, o -> o.getYear()),
+					fieldVal(this.dateFromPicker, o -> o.getMonthValue()-1),
+					fieldVal(this.dateFromPicker, o -> o.getDayOfMonth()),
 					fieldVal(this.dateFromHourField),
 					fieldVal(this.dateFromMinuteField));
 		}
 
 		GregorianCalendar getDateTo() {
 			return new GregorianCalendar(
-					this.dateToPicker.getValue().getYear(),
-					this.dateToPicker.getValue().getMonthValue(),
-					this.dateToPicker.getValue().getDayOfMonth(),
+					fieldVal(this.dateToPicker, o -> o.getYear()),
+					fieldVal(this.dateToPicker, o -> o.getMonthValue()-1),
+					fieldVal(this.dateToPicker, o -> o.getDayOfMonth()),
 					fieldVal(this.dateToHourField),
 					fieldVal(this.dateToMinuteField));
+		}
+
+		Duration getRepetition() {
+			return new Duration(
+					fieldVal(this.repetetionMonthsField),
+					fieldVal(this.repetetionDaysField),
+					fieldVal(this.repetetionHoursField),
+					fieldVal(this.repetetionMinutesField));
+		}
+
+		GregorianCalendar getRepetitionEnd() {
+			return new GregorianCalendar(
+					fieldVal(this.repetetionEndPicker, o -> o.getYear(), this.dateFromPicker),
+					fieldVal(this.repetetionEndPicker, o -> o.getMonthValue()-1, this.dateFromPicker),
+					fieldVal(this.repetetionEndPicker, o -> o.getDayOfMonth(), this.dateFromPicker));
 		}
 	}
 
@@ -303,16 +322,20 @@ public class NewAppointmentWindow {
 				ArrayList<DatabaseController.AppointmentItem> appointments = new ArrayList<>();
 				ObservableList<Tab> tabs = this.tabPane.getTabs();
 				for (int i=0;i<tabs.size();i++) {
-					if (!NewAppointmentWindow.ADD_TAB_TEXT.equals(this.tabPane.getTabs().get(i).getText())) {
+					if (!ADD_TAB_TEXT.equals(tabs.get(i).getText())) {
 						appointments.add(new DatabaseController.AppointmentItem(
 								((CustomTab)tabs.get(i)).getDateFrom(),
-								((CustomTab)tabs.get(i)).getDateTo()));
+								((CustomTab)tabs.get(i)).getDateTo(),
+								((CustomTab)tabs.get(i)).getRepetition(),
+								((CustomTab)tabs.get(i)).getRepetitionEnd()));
 					}
 				}
 				DatabaseController.addAppointment(new DatabaseController.AppointmentContainer(
 						this.titleField.getText(),
-						this.descriptionArea.getText() == null ? "" : this.descriptionArea.getText(),
-						this.categoryBox.getValue(), this.priorityBox.getValue(), appointments));
+						this.descriptionArea.getText(),
+						this.categoryBox.getValue(),
+						this.priorityBox.getValue(),
+						appointments));
 				this.stage.close();
 			}
 		});
@@ -398,5 +421,18 @@ public class NewAppointmentWindow {
 		} catch (NumberFormatException e) {
 			return 0;
 		}
+	}
+
+	private int fieldVal(DatePicker field, Function<LocalDate, Integer> function, int standard) {
+		return field.getValue() != null ? function.apply(field.getValue()) : standard;
+	}
+
+	private int fieldVal(DatePicker field, Function<LocalDate, Integer> function) {
+		return this.fieldVal(field, function, function.apply(LocalDate.now()));
+	}
+
+	private int fieldVal(DatePicker field, Function<LocalDate, Integer> function,
+			DatePicker standard) {
+		return this.fieldVal(field, function, fieldVal(standard, function));
 	}
 }
