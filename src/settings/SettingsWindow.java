@@ -35,10 +35,10 @@ import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import menus.FontPicker;
 import menus.TreeItem;
 import menus.TreeView;
 import settings.Setting;
-import util.FontPicker;
 import util.Translator;
 
 /**

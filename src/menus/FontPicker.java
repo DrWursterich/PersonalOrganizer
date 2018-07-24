@@ -1,4 +1,4 @@
-package util;
+package menus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +38,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.util.StringConverter;
+import util.Translator;
 import static javafx.scene.input.KeyCode.ENTER;
 import static javafx.scene.input.KeyCode.ESCAPE;
 import static javafx.scene.input.KeyCode.SPACE;
