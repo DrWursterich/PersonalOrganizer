@@ -1,16 +1,14 @@
 import javafx.application.Application;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import menus.*;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.Priority;
 import java.util.GregorianCalendar;
-
 import appointments.NewAppointmentWindow;
-import database.DatabaseController;
-import util.Translator;
 import settings.SettingsWindow;
+import util.Translator;
+import menus.*;
 import views.*;
 
 /**
@@ -19,7 +17,7 @@ import views.*;
  */
 public class PersonalOrganizer extends Application {
 	private VBox root = new VBox();
-	private Scene scene = new Scene(root,
+	private Scene scene = new Scene(this.root,
 			0.75*Screen.getPrimary().getBounds().getWidth(),
 			0.60*Screen.getPrimary().getBounds().getHeight());
 	private View view;
@@ -27,32 +25,28 @@ public class PersonalOrganizer extends Application {
 	private Stage parentStage;
 
 	public static void main(String...args) throws Exception {
-		GregorianCalendar appointmentStart = new GregorianCalendar();
-		GregorianCalendar appointmentEnd = new GregorianCalendar();
-		appointmentStart.set(GregorianCalendar.HOUR_OF_DAY, 8);
-		appointmentStart.set(GregorianCalendar.MINUTE, 30);
-		appointmentEnd.set(GregorianCalendar.HOUR_OF_DAY, 12);
-		appointmentEnd.set(GregorianCalendar.MINUTE, 10);
-//		DatabaseController.addAppointment("Termin", "Beschreibung", appointmentStart, appointmentEnd);
-
-		launch(args);
+		Application.launch(args);
 	}
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		this.parentStage = stage;
+		try {
+			this.parentStage = stage;
 
-		this.settings = new SettingsWindow(stage);
+			this.settings = new SettingsWindow(stage);
 
-		this.view = new DayView(new GregorianCalendar());
-		this.view.prefWidthProperty().bind(stage.widthProperty());
-		VBox.setVgrow(view, Priority.ALWAYS);
+			this.view = new DayView(new GregorianCalendar());
+			this.view.prefWidthProperty().bind(stage.widthProperty());
+			VBox.setVgrow(this.view, Priority.ALWAYS);
 
-		this.root.getChildren().addAll(this.menuBar(), view);
+			this.root.getChildren().addAll(this.menuBar(), this.view);
 
-		stage.titleProperty().bind(Translator.translationProperty("title"));
-		stage.setScene(scene);
-		stage.show();
+			stage.titleProperty().bind(Translator.translationProperty("title"));
+			stage.setScene(this.scene);
+			stage.show();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
