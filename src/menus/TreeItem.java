@@ -1,4 +1,4 @@
-package settings;
+package menus;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.Event;
