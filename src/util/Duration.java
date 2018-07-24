@@ -1,5 +1,6 @@
 package util;
 
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 /**
@@ -7,20 +8,21 @@ import java.util.GregorianCalendar;
  * @author Mario Schäper
  */
 public class Duration implements Comparable<Duration> {
-	private final static int MINUTES_PER_MONTH = 27 * 24 * 60;
+	private final static int MIN_MINUTES_PER_MONTH = 27 * 24 * 60;
+	private final static int MAX_MINUTES_PER_MONTH = 31 * 24 * 60;
 
 	private final short months;
 	private final long minutes;
 
 	public Duration(int months, int days, long hours, long minutes) {
 		this.months = (short)months;
-		this.minutes = minutes + 60*(hours + 24*days);
+		this.minutes = minutes + 60 * (hours + 24 * days);
 	}
 
 	public Duration(GregorianCalendar from, GregorianCalendar to, boolean monthsAsDays) {
 		this.months = (short)(monthsAsDays ? 0 : this.monthsBetween(from, to));
 		GregorianCalendar tmp = (GregorianCalendar)from.clone();
-		tmp.add(GregorianCalendar.MONTH, this.months);
+		tmp.add(Calendar.MONTH, this.months);
 		this.minutes = (to.getTimeInMillis() - tmp.getTimeInMillis()) / 60000;
 	}
 
@@ -77,10 +79,10 @@ public class Duration implements Comparable<Duration> {
 	 */
 	public static GregorianCalendar add(GregorianCalendar augend, Duration addend) {
 		GregorianCalendar ret = (GregorianCalendar)augend.clone();
-		ret.add(GregorianCalendar.MONTH, addend.months);
-		ret.add(GregorianCalendar.DAY_OF_MONTH, addend.getDays());
-		ret.add(GregorianCalendar.HOUR_OF_DAY, addend.getHours());
-		ret.add(GregorianCalendar.MINUTE, addend.getMinutes());
+		ret.add(Calendar.MONTH, addend.months);
+		ret.add(Calendar.DAY_OF_MONTH, addend.getDays());
+		ret.add(Calendar.HOUR_OF_DAY, addend.getHours());
+		ret.add(Calendar.MINUTE, addend.getMinutes());
 		return ret;
 	}
 
@@ -103,10 +105,10 @@ public class Duration implements Comparable<Duration> {
 	 */
 	public static GregorianCalendar subtract(GregorianCalendar minuend, Duration subtrahend) {
 		GregorianCalendar ret = (GregorianCalendar)minuend.clone();
-		ret.add(GregorianCalendar.MINUTE, subtrahend.getMinutes() * -1);
-		ret.add(GregorianCalendar.HOUR_OF_DAY, subtrahend.getHours() * -1);
-		ret.add(GregorianCalendar.DAY_OF_MONTH, subtrahend.getDays() * -1);
-		ret.add(GregorianCalendar.MONTH, subtrahend.months * -1);
+		ret.add(Calendar.MINUTE, -subtrahend.getMinutes() * -1);
+		ret.add(Calendar.HOUR_OF_DAY, -subtrahend.getHours());
+		ret.add(Calendar.DAY_OF_MONTH, -subtrahend.getDays());
+		ret.add(Calendar.MONTH, -subtrahend.months);
 		return ret;
 	}
 
@@ -145,7 +147,7 @@ public class Duration implements Comparable<Duration> {
 	 */
 	public static Duration divide(Duration dividend, int divisor) {
 		return new Duration(dividend.months / divisor, 0, 0, dividend.minutes / divisor
-				+ (dividend.months % divisor) * MINUTES_PER_MONTH / divisor);
+				+ (dividend.months % divisor) * MIN_MINUTES_PER_MONTH / divisor);
 	}
 
 	/**
@@ -156,8 +158,8 @@ public class Duration implements Comparable<Duration> {
 	 * @return the quotient
 	 */
 	public static double divide(Duration dividend, Duration divisor) {
-		return (dividend.months * MINUTES_PER_MONTH + dividend.minutes) /
-				(divisor.months * MINUTES_PER_MONTH + divisor.minutes);
+		return (dividend.months * MAX_MINUTES_PER_MONTH + dividend.minutes) /
+				(divisor.months * MIN_MINUTES_PER_MONTH + divisor.minutes);
 	}
 
 	/**
@@ -170,18 +172,18 @@ public class Duration implements Comparable<Duration> {
 	private int monthsBetween(GregorianCalendar from, GregorianCalendar to) {
 		int months = 0;
 		GregorianCalendar tmp = (GregorianCalendar)from.clone();
-		tmp.add(GregorianCalendar.MONTH, 1);
+		tmp.add(Calendar.MONTH, 1);
 		while (tmp.before(to)) {
 			months++;
-			tmp.add(GregorianCalendar.MONTH, 1);
+			tmp.add(Calendar.MONTH, 1);
 		}
 		return months;
 	}
 
 	@Override
 	public String toString() {
-		return this.getHours() + ":" + this.getMinutes() + " "
-				+ this.getDays() + "." + this.getMonths() + ".";
+		return String.format("%2d:%2d %2d.%2d",
+				this.getHours(), this.getMinutes(), this.getDays(), this.getMonths());
 	}
 
 	@Override
@@ -191,16 +193,16 @@ public class Duration implements Comparable<Duration> {
 
 	@Override
 	public boolean equals(Object other) {
-		if (other == null || !(other instanceof Duration)) {
-			return false;
-		}
-		return this.months == ((Duration)other).months && this.minutes == ((Duration)other).minutes;
+		return (other == null || !(other instanceof Duration))
+				? false
+				: this.months == ((Duration)other).months
+						&& this.minutes == ((Duration)other).minutes;
 	}
 
 	@Override
 	public int compareTo(Duration other) {
 		return Long.compare(
-				this.months * MINUTES_PER_MONTH + this.minutes,
-				other.months * MINUTES_PER_MONTH + other.minutes);
+				this.months * MIN_MINUTES_PER_MONTH + this.minutes,
+				other.months * MIN_MINUTES_PER_MONTH + other.minutes);
 	}
 }
