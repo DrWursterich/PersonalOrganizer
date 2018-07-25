@@ -82,7 +82,7 @@ public class SettingsWindow {
 			customInputs.add(this);
 			this.setOnAction(e -> SettingsWindow.hasChanged = true);
 			this.setSetting(setting);
-			this.toDefault();
+			this.setValue(setting.getValue());
 		}
 
 		void setOnAction(EventHandler<ActionEvent> value);
