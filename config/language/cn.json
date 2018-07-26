@@ -1,5 +1,11 @@
 {
 	"title": "個人組織者",
+	"dialogs": {
+		"unexpectedError": {
+			"title": "錯誤",
+			"message": "發生了未知錯誤."
+		}
+	},
 
 	"general": {
 		"yes": "是的",
@@ -24,9 +30,11 @@
 			"cancel": "退出",
 			"restoreDefault": "回報"
 		},
-		"closeDialog": {
-			"title": "警告",
-			"saveQuestion": "你想保存更改嗎？"
+		"dialogs": {
+			"unsavedChanges": {
+				"title": "警告",
+				"message": "你想保存更改嗎？"
+			}
 		},
 		"general": {
 			"name": "通常"
@@ -129,6 +137,12 @@
 		"tabContextMenu": {
 			"close": "關",
 			"closeAll": "關閉所有"
+		},
+		"dialogs": {
+			"invalidData": {
+				"title": "警告",
+				"message": "輸入的數據不完整或無效."
+			}
 		}
 	}
 }

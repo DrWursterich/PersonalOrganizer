@@ -12,17 +12,14 @@ import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -34,8 +31,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import menus.FontPicker;
+import menus.OptionsDialog;
 import menus.TreeItem;
 import menus.TreeView;
 import settings.Setting;
@@ -58,13 +55,6 @@ public class SettingsWindow {
 	private final Button restoreButton = new Button();
 	private final Region bufferRegionLeft = new Region();
 	private final Region bufferRegionRight = new Region();
-	private final Dialog<ButtonType> exitDialog = new Dialog<>();
-	private final Window exitDialogWindow = this.exitDialog.getDialogPane().getScene().getWindow();
-	private final ButtonType yesButton = new ButtonType(
-			Translator.translate("general", "yes"), ButtonBar.ButtonData.YES);
-	private final ButtonType noButton = new ButtonType(
-			Translator.translate("general", "no"), ButtonBar.ButtonData.NO);
-	private final ButtonType exitButton = new ButtonType("", ButtonBar.ButtonData.CANCEL_CLOSE);
 	private static boolean hasChanged = false;
 
 	/**
@@ -199,11 +189,20 @@ public class SettingsWindow {
 		this.stage.setScene(this.scene);
 		this.stage.setOnCloseRequest(e -> {
 			if (SettingsWindow.hasChanged) {
-				final ButtonType result = this.exitDialog.showAndWait().get();
-				if (result.getButtonData().equals(this.exitButton.getButtonData())) {
+				ButtonType yes = new ButtonType(
+						Translator.translate("general", "yes"), ButtonData.YES);
+				ButtonType no = new ButtonType(
+						Translator.translate("general", "no"), ButtonData.NO);
+				ButtonType cancel = new ButtonType(
+						Translator.translate("general", "cancel"), ButtonData.CANCEL_CLOSE);
+				ButtonType result = OptionsDialog.getOption(
+						Translator.translate("settings", "dialogs", "unsavedChanges", "title"),
+						Translator.translate("settings", "dialogs", "unsavedChanges", "message"),
+						yes, no, cancel);
+				if (cancel.getButtonData().equals(result.getButtonData())) {
 					e.consume();
 				}
-				if (result.getButtonData().equals(this.yesButton.getButtonData())) {
+				if (yes.getButtonData().equals(result.getButtonData())) {
 					this.tree.apply();
 				}
 			}
@@ -254,22 +253,6 @@ public class SettingsWindow {
 
 		this.contentBox.setPrefWidth(600);
 		this.contentBox.setDividerPositions(0.3);
-
-		this.exitDialog.titleProperty().bind(Translator.translationProperty("settings", "closeDialog", "title"));
-		this.exitDialog.getDialogPane().contentTextProperty().bind(
-				Translator.translationProperty("settings", "closeDialog", "saveQuestion"));
-		this.exitDialog.getDialogPane().getButtonTypes().addAll(this.yesButton, this.noButton);
-		this.exitDialog.getDialogPane().addEventHandler(KeyEvent.KEY_PRESSED, e -> {
-			if (e.getCode() == KeyCode.ESCAPE) {
-				this.exitDialogWindow.hide();
-			}
-		});
-
-		this.exitDialogWindow.setOnCloseRequest(e -> {
-			this.exitDialog.setResult(this.exitButton);
-			this.exitDialogWindow.hide();
-			e.consume();
-		});
 		this.root.getChildren().addAll(this.contentBox, this.buttonBox);
 	}
 

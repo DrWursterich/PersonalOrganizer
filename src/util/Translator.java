@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import javafx.beans.property.StringProperty;
+import menus.OptionsDialog;
 import javafx.beans.property.SimpleStringProperty;
 
 /**
@@ -28,12 +29,14 @@ public abstract class Translator {
 	static {
 		String systemLocale = Locale.getDefault().getLanguage();
 		try {
-			setLanguage(systemLocale);
+			Translator.setLanguage(systemLocale);
 		} catch (Exception e) {
+			systemLocale = "en";
 			try {
-				setLanguage("en");
+				Translator.setLanguage(systemLocale);
 			} catch (Exception ex) {
 				System.out.println("Unable to load Language settings");
+				OptionsDialog.showMessage("Error", "Unable to load default Language Settings");
 				System.exit(0);
 			}
 		}
@@ -69,10 +72,11 @@ public abstract class Translator {
 				json = new JSONObject(new String(Files.readAllBytes(file.toPath())));
 			} catch (JSONException e) {
 				e.printStackTrace();
-				throw new IOException("Language Configuration for \"" + language + "\" Could Not Be Loaded");
+				throw new IOException("Language Configuration for \"" +
+						language + "\" could not be loaded");
 			}
 		} else {
-			throw new IOException("Language Configuration for \"" + language + "\" Does Not Exist");
+			throw new IOException("Language Configuration for \"" + language + "\" does not exist");
 		}
 		currentLanguage.setValue(language);
 	}
@@ -90,12 +94,16 @@ public abstract class Translator {
 	 * would have the the method call <pre>.translate("window", "title");</pre><br/>
 	 * To translate the "window" keyword use <pre>.translate("window", "name");</pre>
 	 * @param keys sequence of keywords representing the .json-structure
-	 * @return
+	 * @return the translated String
+	 * @throws UnsetLanguageException if the language of this class is not set
 	 */
-	public static String translate(String...keys) {
+	public static String translate(String...keys) throws UnsetLanguageException {
 		if (json == null) {
-			throw new UnsetLanguageException(currentLanguage != null || currentLanguage.getValue() != null ?
-					(getLanguage()+".json does not exist") : "No Laguage is defined", getLanguage());
+			throw new UnsetLanguageException(
+					currentLanguage != null || currentLanguage.getValue() != null
+							? (Translator.getLanguage() + ".json does not exist")
+							: "No Laguage is defined",
+					Translator.getLanguage());
 		}
 		JSONObject newJson = json;
 		String ret = keys[keys.length-1];
@@ -129,15 +137,19 @@ public abstract class Translator {
 	}
 
 	/**
-	 * Creates and returns a {@link javafx.beans.property.SimpleStringProperty SimpleStringProperty},
-	 * is bind to the translation of {@link #translate(String...) translate} invoked with the given keys.
+	 * Creates and returns a
+	 * {@link javafx.beans.property.SimpleStringProperty SimpleStringProperty},
+	 * which is bound to the translation of {@link #translate(String...) translate}
+	 * invoked with the given keys.
 	 * @param keys sequence of keywords representing the .json-structure
-	 * @return translated property
+	 * @return the translated property
+	 * @throws UnsetLanguageException if the language of this class is not set
 	 */
-	public static SimpleStringProperty translationProperty(String...keys) {
-		SimpleStringProperty strP = new SimpleStringProperty(translate(keys));
+	public static SimpleStringProperty translationProperty(String...keys)
+			throws UnsetLanguageException {
+		SimpleStringProperty strP = new SimpleStringProperty(Translator.translate(keys));
 		currentLanguage.addListener((v, o, n) -> {
-			strP.setValue(translate(keys));
+			strP.setValue(Translator.translate(keys));
 		});
 		return strP;
 	}

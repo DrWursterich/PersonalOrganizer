@@ -1,5 +1,11 @@
 {
 	"title": "персональный органайзер",
+	"dialogs": {
+		"unexpectedError": {
+			"title": "ошибка",
+			"message": "Произошла неизвестная ошибка."
+		}
+	},
 
 	"general": {
 		"yes": "да",
@@ -24,9 +30,11 @@
 			"cancel": "выкинуть",
 			"restoreDefault": "возвращение"
 		},
-		"closeDialog": {
-			"title": "предупреждение",
-			"saveQuestion": "Вы хотите сохранить изменения?"
+		"dialogs": {
+			"unsavedChanges": {
+				"title": "предупреждение",
+				"message": "Вы хотите сохранить изменения?"
+			}
 		},
 		"general": {
 			"name": "в целом"
@@ -129,6 +137,12 @@
 		"tabContextMenu": {
 			"close": "Закрыть",
 			"closeAll": "Закрыть все"
+		},
+		"dialogs": {
+			"invalidData": {
+				"title": "предупреждение",
+				"message": "Введенные данные недействительны или неполны."
+			}
 		}
 	}
 }

@@ -1,5 +1,11 @@
 {
 	"title": "Personal Organizer",
+	"dialogs": {
+		"unexpectedError": {
+			"title": "Fehler",
+			"message": "Ein unbekannter Fehler ist aufgetreten."
+		}
+	},
 
 	"general": {
 		"yes": "Ja",
@@ -24,9 +30,11 @@
 			"cancel": "Abbrechen",
 			"restoreDefault": "Zurücksetzen"
 		},
-		"closeDialog": {
-			"title": "Warnung",
-			"saveQuestion": "Möchten Sie die Änderungen speichern?"
+		"dialogs": {
+			"unsavedChanges": {
+				"title": "Warnung",
+				"message": "Möchten Sie die Änderungen speichern?"
+			}
 		},
 		"general": {
 			"name": "Allgemein"
@@ -129,6 +137,12 @@
 		"tabContextMenu": {
 			"close": "Schließen",
 			"closeAll": "Alle schließen"
+		},
+		"dialogs": {
+			"invalidData": {
+				"title": "Warnung",
+				"message": "Die eingegebenen Daten sind ungültig oder unvollständig."
+			}
 		}
 	}
 }

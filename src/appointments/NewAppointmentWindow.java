@@ -32,6 +32,7 @@ import javafx.util.StringConverter;
 import database.DatabaseController;
 import menus.ContextMenu;
 import menus.MenuItem;
+import menus.OptionsDialog;
 import util.Duration;
 import util.Translator;
 
@@ -78,57 +79,57 @@ public class NewAppointmentWindow {
 	private StringProperty repetetionEndLabelText = this.trans("repetetion", "endDateLabel");
 
 	private class CustomTab extends Tab {
-		private Label dateFromLabel = label(dateFromLabelText);
+		private Label dateFromLabel = NewAppointmentWindow.this.label(NewAppointmentWindow.this.dateFromLabelText);
 		private DatePicker dateFromPicker = new DatePicker();
-		private TextField dateFromHourField = textField(dateFromHourFieldText, false, 23);
-		private TextField dateFromMinuteField = textField(dateFromMinuteFieldText, false, 59);
-		private HBox dateFromTimeBox = box(new HBox(dateFromHourField, dateFromMinuteField));
-		private Label dateToLabel = label(dateToLabelText);
+		private TextField dateFromHourField = NewAppointmentWindow.this.textField(NewAppointmentWindow.this.dateFromHourFieldText, false, 23);
+		private TextField dateFromMinuteField = NewAppointmentWindow.this.textField(NewAppointmentWindow.this.dateFromMinuteFieldText, false, 59);
+		private HBox dateFromTimeBox = NewAppointmentWindow.this.box(new HBox(this.dateFromHourField, this.dateFromMinuteField));
+		private Label dateToLabel = NewAppointmentWindow.this.label(NewAppointmentWindow.this.dateToLabelText);
 		private DatePicker dateToPicker = new DatePicker();
-		private TextField dateToHourField = textField(dateToHourFieldText, false, 23);
-		private TextField dateToMinuteField = textField(dateToMinuteFieldText, false, 59);
-		private HBox dateToTimeBox = box(new HBox(dateToHourField, dateToMinuteField));
-		private VBox tabContentLeft = box(new VBox(dateFromLabel, dateFromPicker,
-				dateFromTimeBox, dateToLabel, dateToPicker, dateToTimeBox));
-		private Label durationLabel = label(durationLabelText);
-		private TextField durationMonthsField = textField(durationMonthsFieldText, false, -1);
-		private TextField durationDaysField = textField(durationDaysFieldText, false, 30);
-		private HBox durationDaysBox = box(new HBox(durationMonthsField, durationDaysField));
-		private TextField durationHoursField = textField(durationHoursFieldText, false, 23);
-		private TextField durationMinutesField = textField(durationMinutesFieldText, false, 59);
-		private HBox durationTimeBox = box(new HBox(durationHoursField, durationMinutesField));
-		private Label repetetionLabel = label(repetetionLabelText);
-		private TextField repetetionMonthsField = textField(repetetionMonthsFieldText, false, -1);
-		private TextField repetetionDaysField = textField(repetetionDaysFieldText, false, 30);
-		private HBox repetetionDaysBox = box(new HBox(repetetionMonthsField, repetetionDaysField));
-		private TextField repetetionHoursField = textField(repetetionHoursFieldText, false, 23);
-		private TextField repetetionMinutesField = textField(repetetionMinutesFieldText, false, 59);
-		private HBox repetetionTimeBox = box(new HBox(repetetionHoursField, repetetionMinutesField));
-		private Label repetetionEndLabel = label(repetetionEndLabelText);
+		private TextField dateToHourField = NewAppointmentWindow.this.textField(NewAppointmentWindow.this.dateToHourFieldText, false, 23);
+		private TextField dateToMinuteField = NewAppointmentWindow.this.textField(NewAppointmentWindow.this.dateToMinuteFieldText, false, 59);
+		private HBox dateToTimeBox = NewAppointmentWindow.this.box(new HBox(this.dateToHourField, this.dateToMinuteField));
+		private VBox tabContentLeft = NewAppointmentWindow.this.box(new VBox(this.dateFromLabel, this.dateFromPicker,
+				this.dateFromTimeBox, this.dateToLabel, this.dateToPicker, this.dateToTimeBox));
+		private Label durationLabel = NewAppointmentWindow.this.label(NewAppointmentWindow.this.durationLabelText);
+		private TextField durationMonthsField = NewAppointmentWindow.this.textField(NewAppointmentWindow.this.durationMonthsFieldText, false, -1);
+		private TextField durationDaysField = NewAppointmentWindow.this.textField(NewAppointmentWindow.this.durationDaysFieldText, false, 30);
+		private HBox durationDaysBox = NewAppointmentWindow.this.box(new HBox(this.durationMonthsField, this.durationDaysField));
+		private TextField durationHoursField = NewAppointmentWindow.this.textField(NewAppointmentWindow.this.durationHoursFieldText, false, 23);
+		private TextField durationMinutesField = NewAppointmentWindow.this.textField(NewAppointmentWindow.this.durationMinutesFieldText, false, 59);
+		private HBox durationTimeBox = NewAppointmentWindow.this.box(new HBox(this.durationHoursField, this.durationMinutesField));
+		private Label repetetionLabel = NewAppointmentWindow.this.label(NewAppointmentWindow.this.repetetionLabelText);
+		private TextField repetetionMonthsField = NewAppointmentWindow.this.textField(NewAppointmentWindow.this.repetetionMonthsFieldText, false, -1);
+		private TextField repetetionDaysField = NewAppointmentWindow.this.textField(NewAppointmentWindow.this.repetetionDaysFieldText, false, 30);
+		private HBox repetetionDaysBox = NewAppointmentWindow.this.box(new HBox(this.repetetionMonthsField, this.repetetionDaysField));
+		private TextField repetetionHoursField = NewAppointmentWindow.this.textField(NewAppointmentWindow.this.repetetionHoursFieldText, false, 23);
+		private TextField repetetionMinutesField = NewAppointmentWindow.this.textField(NewAppointmentWindow.this.repetetionMinutesFieldText, false, 59);
+		private HBox repetetionTimeBox = NewAppointmentWindow.this.box(new HBox(this.repetetionHoursField, this.repetetionMinutesField));
+		private Label repetetionEndLabel = NewAppointmentWindow.this.label(NewAppointmentWindow.this.repetetionEndLabelText);
 		private DatePicker repetetionEndPicker = new DatePicker();
-		private VBox tabContentRight = box(new VBox(durationLabel, durationDaysBox, durationTimeBox,
-				repetetionLabel, repetetionDaysBox, repetetionTimeBox, repetetionEndLabel, repetetionEndPicker));
-		private HBox tabContent = box(new HBox(tabContentLeft, tabContentRight));
+		private VBox tabContentRight = NewAppointmentWindow.this.box(new VBox(this.durationLabel, this.durationDaysBox, this.durationTimeBox,
+				this.repetetionLabel, this.repetetionDaysBox, this.repetetionTimeBox, this.repetetionEndLabel, this.repetetionEndPicker));
+		private HBox tabContent = NewAppointmentWindow.this.box(new HBox(this.tabContentLeft, this.tabContentRight));
 
 		private ChangeListener<Object> updateDateTo = (observable, oldValue, newValue) -> {
 			if ((oldValue == null || !oldValue.equals(newValue)) &&
 					this.dateFromPicker.getValue() != null) {
-				int result = fieldVal(this.dateFromMinuteField) + fieldVal(this.durationMinutesField);
+				int result = NewAppointmentWindow.this.fieldVal(this.dateFromMinuteField) + NewAppointmentWindow.this.fieldVal(this.durationMinutesField);
 				this.dateToMinuteField.setText("" + (result % 60));
-				result = result / 60 + fieldVal(this.dateFromHourField) + fieldVal(this.durationHoursField);
+				result = result / 60 + NewAppointmentWindow.this.fieldVal(this.dateFromHourField) + NewAppointmentWindow.this.fieldVal(this.durationHoursField);
 				this.dateToHourField.setText("" + (result % 24));
 				this.dateToPicker.setValue(this.dateFromPicker.getValue().plusDays(result / 24
-						+ fieldVal(this.durationDaysField)).plusMonths(fieldVal(this.durationMonthsField)));
+						+ NewAppointmentWindow.this.fieldVal(this.durationDaysField)).plusMonths(NewAppointmentWindow.this.fieldVal(this.durationMonthsField)));
 			}
 		};
 
 		private ChangeListener<Object> updateDuration = (observable, oldValue, newValue) -> {
 			if ((oldValue == null || !oldValue.equals(newValue)) &&
 					this.dateFromPicker.getValue() != null && this.dateToPicker.getValue() != null) {
-				int startMinute = fieldVal(dateFromMinuteField);
-				int startHour = fieldVal(dateFromHourField);
-				int endMinute = fieldVal(dateToMinuteField);
-				int endHour = fieldVal(dateToHourField);
+				int startMinute = NewAppointmentWindow.this.fieldVal(this.dateFromMinuteField);
+				int startHour = NewAppointmentWindow.this.fieldVal(this.dateFromHourField);
+				int endMinute = NewAppointmentWindow.this.fieldVal(this.dateToMinuteField);
+				int endHour = NewAppointmentWindow.this.fieldVal(this.dateToHourField);
 				long minutes = TimeUnit.MINUTES.convert(
 						(new GregorianCalendar(
 							this.dateToPicker.getValue().getYear(), this.dateToPicker.getValue().getMonthValue(),
@@ -159,16 +160,16 @@ public class NewAppointmentWindow {
 			this.setClosable(false);
 			this.setOnSelectionChanged(e -> {
 				if (this.isSelected()) {
-					this.setText(String.format("#%02d", tabPane.getTabs().size()));
+					this.setText(String.format("#%02d", NewAppointmentWindow.this.tabPane.getTabs().size()));
 					this.setOnSelectionChanged(f -> {});
 					this.setClosable(true);
 					this.setContextMenu();
 					this.setOnCloseRequest(f -> {
-						for (int i=tabPane.getTabs().indexOf(this);i<tabPane.getTabs().size()-1;i++) {
-							tabPane.getTabs().get(i).setText(String.format("#%02d", i));
+						for (int i=NewAppointmentWindow.this.tabPane.getTabs().indexOf(this);i<NewAppointmentWindow.this.tabPane.getTabs().size()-1;i++) {
+							NewAppointmentWindow.this.tabPane.getTabs().get(i).setText(String.format("#%02d", i));
 						}
 					});
-					tabPane.getTabs().add(tabPane.getTabs().size(), new CustomTab());
+					NewAppointmentWindow.this.tabPane.getTabs().add(NewAppointmentWindow.this.tabPane.getTabs().size(), new CustomTab());
 				}
 			});
 		}
@@ -180,38 +181,38 @@ public class NewAppointmentWindow {
 		}
 
 		private void initialize() {
-			tabContent.setPadding(new Insets(10));
+			this.tabContent.setPadding(new Insets(10));
 
-			dateFromPicker.setMaxWidth(Double.MAX_VALUE);
-			dateToPicker.setMaxWidth(Double.MAX_VALUE);
-			repetetionEndPicker.setMaxWidth(Double.MAX_VALUE);
+			this.dateFromPicker.setMaxWidth(Double.MAX_VALUE);
+			this.dateToPicker.setMaxWidth(Double.MAX_VALUE);
+			this.repetetionEndPicker.setMaxWidth(Double.MAX_VALUE);
 
-			durationMinutesField.textProperty().addListener(updateDateTo);
-			durationHoursField.textProperty().addListener(updateDateTo);
-			durationDaysField.textProperty().addListener(updateDateTo);
-			durationMonthsField.textProperty().addListener(updateDateTo);
+			this.durationMinutesField.textProperty().addListener(this.updateDateTo);
+			this.durationHoursField.textProperty().addListener(this.updateDateTo);
+			this.durationDaysField.textProperty().addListener(this.updateDateTo);
+			this.durationMonthsField.textProperty().addListener(this.updateDateTo);
 
-			dateFromPicker.valueProperty().addListener(updateDuration);
-			dateFromHourField.textProperty().addListener(updateDuration);
-			dateFromMinuteField.textProperty().addListener(updateDuration);
-			dateToPicker.valueProperty().addListener(updateDuration);
-			dateToHourField.textProperty().addListener(updateDuration);
-			dateToMinuteField.textProperty().addListener(updateDuration);
+			this.dateFromPicker.valueProperty().addListener(this.updateDuration);
+			this.dateFromHourField.textProperty().addListener(this.updateDuration);
+			this.dateFromMinuteField.textProperty().addListener(this.updateDuration);
+			this.dateToPicker.valueProperty().addListener(this.updateDuration);
+			this.dateToHourField.textProperty().addListener(this.updateDuration);
+			this.dateToMinuteField.textProperty().addListener(this.updateDuration);
 
-			HBox.setHgrow(tabContentRight, ALWAYS);
-			HBox.setHgrow(tabContentLeft, ALWAYS);
+			HBox.setHgrow(this.tabContentRight, ALWAYS);
+			HBox.setHgrow(this.tabContentLeft, ALWAYS);
 
-			this.setContent(tabContent);
+			this.setContent(this.tabContent);
 		}
 
 		private void setContextMenu() {
 			this.setContextMenu(new ContextMenu(
-					new MenuItem(trans("tabContextMenu", "close"),
+					new MenuItem(NewAppointmentWindow.this.trans("tabContextMenu", "close"),
 							e -> {this.close();}),
 					new SeparatorMenuItem(),
-					new MenuItem(trans("tabContextMenu", "closeAll"),
-							e -> {for (int i=tabPane.getTabs().size()-2;i>0;i--) {
-								((CustomTab)tabPane.getTabs().get(i)).close();
+					new MenuItem(NewAppointmentWindow.this.trans("tabContextMenu", "closeAll"),
+							e -> {for (int i=NewAppointmentWindow.this.tabPane.getTabs().size()-2;i>0;i--) {
+								((CustomTab)NewAppointmentWindow.this.tabPane.getTabs().get(i)).close();
 							};})
 					));
 		}
@@ -223,40 +224,40 @@ public class NewAppointmentWindow {
 			if (this.getOnClosed() != null) {
 				this.getOnClosed().handle(null);
 			}
-			tabPane.getTabs().remove(this);
+			NewAppointmentWindow.this.tabPane.getTabs().remove(this);
 		}
 
 		GregorianCalendar getDateFrom() {
 			return new GregorianCalendar(
-					fieldVal(this.dateFromPicker, o -> o.getYear()),
-					fieldVal(this.dateFromPicker, o -> o.getMonthValue()-1),
-					fieldVal(this.dateFromPicker, o -> o.getDayOfMonth()),
-					fieldVal(this.dateFromHourField),
-					fieldVal(this.dateFromMinuteField));
+					NewAppointmentWindow.this.fieldVal(this.dateFromPicker, o -> o.getYear()),
+					NewAppointmentWindow.this.fieldVal(this.dateFromPicker, o -> o.getMonthValue()-1),
+					NewAppointmentWindow.this.fieldVal(this.dateFromPicker, o -> o.getDayOfMonth()),
+					NewAppointmentWindow.this.fieldVal(this.dateFromHourField),
+					NewAppointmentWindow.this.fieldVal(this.dateFromMinuteField));
 		}
 
 		GregorianCalendar getDateTo() {
 			return new GregorianCalendar(
-					fieldVal(this.dateToPicker, o -> o.getYear()),
-					fieldVal(this.dateToPicker, o -> o.getMonthValue()-1),
-					fieldVal(this.dateToPicker, o -> o.getDayOfMonth()),
-					fieldVal(this.dateToHourField),
-					fieldVal(this.dateToMinuteField));
+					NewAppointmentWindow.this.fieldVal(this.dateToPicker, o -> o.getYear()),
+					NewAppointmentWindow.this.fieldVal(this.dateToPicker, o -> o.getMonthValue()-1),
+					NewAppointmentWindow.this.fieldVal(this.dateToPicker, o -> o.getDayOfMonth()),
+					NewAppointmentWindow.this.fieldVal(this.dateToHourField),
+					NewAppointmentWindow.this.fieldVal(this.dateToMinuteField));
 		}
 
 		Duration getRepetition() {
 			return new Duration(
-					fieldVal(this.repetetionMonthsField),
-					fieldVal(this.repetetionDaysField),
-					fieldVal(this.repetetionHoursField),
-					fieldVal(this.repetetionMinutesField));
+					NewAppointmentWindow.this.fieldVal(this.repetetionMonthsField),
+					NewAppointmentWindow.this.fieldVal(this.repetetionDaysField),
+					NewAppointmentWindow.this.fieldVal(this.repetetionHoursField),
+					NewAppointmentWindow.this.fieldVal(this.repetetionMinutesField));
 		}
 
 		GregorianCalendar getRepetitionEnd() {
 			return new GregorianCalendar(
-					fieldVal(this.repetetionEndPicker, o -> o.getYear(), this.dateFromPicker),
-					fieldVal(this.repetetionEndPicker, o -> o.getMonthValue()-1, this.dateFromPicker),
-					fieldVal(this.repetetionEndPicker, o -> o.getDayOfMonth(), this.dateFromPicker));
+					NewAppointmentWindow.this.fieldVal(this.repetetionEndPicker, o -> o.getYear(), this.dateFromPicker),
+					NewAppointmentWindow.this.fieldVal(this.repetetionEndPicker, o -> o.getMonthValue()-1, this.dateFromPicker),
+					NewAppointmentWindow.this.fieldVal(this.repetetionEndPicker, o -> o.getDayOfMonth(), this.dateFromPicker));
 		}
 	}
 
@@ -337,6 +338,12 @@ public class NewAppointmentWindow {
 						this.priorityBox.getValue(),
 						appointments));
 				this.stage.close();
+			} else {
+				OptionsDialog.showMessage(
+						Translator.translate(
+								"newAppointment", "dialogs", "invalidData", "title"),
+						Translator.translate(
+								"newAppointment", "dialogs", "invalidData", "message"));
 			}
 		});
 
@@ -367,7 +374,7 @@ public class NewAppointmentWindow {
 		tooltip.textProperty().bind(promptText);
 		ret.setTooltip(tooltip);
 		if (!allowText) {
-			ret.setTextFormatter(new TextFormatter<String>(new StringConverter<String>() {
+			ret.setTextFormatter(new TextFormatter<>(new StringConverter<String>() {
 				@Override
 				public String toString(String object) {
 					if ("".equals(object)) {
@@ -433,6 +440,6 @@ public class NewAppointmentWindow {
 
 	private int fieldVal(DatePicker field, Function<LocalDate, Integer> function,
 			DatePicker standard) {
-		return this.fieldVal(field, function, fieldVal(standard, function));
+		return this.fieldVal(field, function, this.fieldVal(standard, function));
 	}
 }

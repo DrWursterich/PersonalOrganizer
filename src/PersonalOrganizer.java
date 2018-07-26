@@ -46,6 +46,10 @@ public class PersonalOrganizer extends Application {
 			stage.show();
 		} catch (Exception e) {
 			e.printStackTrace();
+			OptionsDialog.showMessage(
+					Translator.translate("dialogs", "unexpectedError", "title"),
+					Translator.translate("dialogs", "unexpectedError", "message"));
+			System.exit(0);
 		}
 	}
 
