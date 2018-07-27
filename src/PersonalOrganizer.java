@@ -1,10 +1,12 @@
 import javafx.application.Application;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import logging.LoggingController;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.Priority;
 import java.util.GregorianCalendar;
+import java.util.logging.Level;
 import appointments.NewAppointmentWindow;
 import settings.SettingsWindow;
 import util.Translator;
@@ -45,7 +47,7 @@ public class PersonalOrganizer extends Application {
 			stage.setScene(this.scene);
 			stage.show();
 		} catch (Exception e) {
-			e.printStackTrace();
+			LoggingController.log(Level.SEVERE, "A unexpected Error occoured: " + e.getMessage());
 			OptionsDialog.showMessage(
 					Translator.translate("dialogs", "unexpectedError", "title"),
 					Translator.translate("dialogs", "unexpectedError", "message"));

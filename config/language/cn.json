@@ -23,6 +23,37 @@
 		}
 	},
 
+	"logging": {
+		"dialogs": {
+			"dirIsFile": {
+				"title": "警告",
+				"message": "日誌文件夾的創建被同名文件阻止.",
+				"buttons": {
+					"delete": "刪除文件",
+					"disable": "禁用日誌記錄",
+					"quit": "結束該計劃"
+				}
+			},
+			"fileNotDeletable": {
+				"title": "錯誤",
+				"message": "該文件無法刪除."
+			},
+			"fileIsDir": {
+				"title": "警告",
+				"message": "日誌文件的創建被同名的文件夾阻止.",
+				"buttons": {
+					"delete": "刪除文件夾",
+					"disable": "禁用日誌記錄",
+					"quit": "結束該計劃"
+				}
+			},
+			"dirNotDeletable": {
+				"title": "錯誤",
+				"message": "無法刪除該文件夾."
+			}
+		}
+	},
+
 	"settings": {
 		"title": "設置",
 		"buttons": {
@@ -31,9 +62,29 @@
 			"restoreDefault": "回報"
 		},
 		"dialogs": {
+			"fileIsDir": {
+				"title" : "警告",
+				"message" : "配置文件的創建被同名的文件夾阻止.",
+				"buttons": {
+					"delete": "刪除文件夾",
+					"quit": "結束該計劃"
+				}
+			},
+			"dirNotDeletable": {
+				"title": "錯誤",
+				"message": "無法刪除該文件夾."
+			},
 			"unsavedChanges": {
 				"title": "警告",
 				"message": "你想保存更改嗎？"
+			},
+			"langSettingInvalid": {
+				"title": "錯誤",
+				"message": "所選語言的配置不正確."
+			},
+			"restoreLang": {
+				"title": "錯誤",
+				"message": "恢復語言選項時發生錯誤."
 			}
 		},
 		"general": {

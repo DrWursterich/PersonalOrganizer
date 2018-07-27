@@ -3,6 +3,8 @@ package settings;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.logging.Level;
+import logging.LoggingController;
 import util.Translator;
 
 /**
@@ -16,10 +18,10 @@ public class LanguageSetting extends Setting<String> {
 	public LanguageSetting(String defaultValue) {
 		super(defaultValue);
 		this.addListener((v, o, n) -> {
-			System.out.println("new language = " + n);
 			try {
 				Translator.setLanguage(n);
-			} catch (IOException | IllegalArgumentException e) {
+				LoggingController.log(Level.INFO, "Language changed to " + n);
+			} catch (Exception e) {
 				this.setValue(o);
 			}
 		});

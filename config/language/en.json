@@ -23,6 +23,37 @@
 		}
 	},
 
+	"logging": {
+		"dialogs": {
+			"dirIsFile": {
+				"title": "Warning",
+				"message": "The Log-Folder cannot be created due to a File with a equal Name.",
+				"buttons": {
+					"delete": "Delete the File",
+					"disable": "Deactivate Logging",
+					"quit": "Terminate"
+				}
+			},
+			"fileNotDeletable": {
+				"title": "Error",
+				"message": "The File could not be deleted."
+			},
+			"fileIsDir": {
+				"title": "Warning",
+				"message": "The Log-File cannot be created due to a Folder with a equal Name.",
+				"buttons": {
+					"delete": "Delete the Folder",
+					"disable": "Deactivate Logging",
+					"quit": "Terminate"
+				}
+			},
+			"dirNotDeletable": {
+				"title": "Error",
+				"message": "The Folder could not be deleted."
+			}
+		}
+	},
+
 	"settings": {
 		"title": "Settings",
 		"buttons": {
@@ -31,9 +62,29 @@
 			"restoreDefault": "Restore Defaults"
 		},
 		"dialogs": {
+			"fileIsDir": {
+				"title" : "Warning",
+				"message" : "The Config-File cannot be created due to a Folder with a equal Name.",
+				"buttons": {
+					"delete": "Delete Folder",
+					"quit": "Terminate"
+				}
+			},
+			"dirNotDeletable": {
+				"title": "Error",
+				"message": "The Folder could not be deleted."
+			},
 			"unsavedChanges": {
 				"title": "Warning",
 				"message": "Do you want to save your changes?"
+			},
+			"langSettingInvalid": {
+				"title": "Error",
+				"message": "The Configuration of the selected Language is corrupted."
+			},
+			"restoreLang": {
+				"title": "Error",
+				"message": "An error occurred while restoring the language option."
 			}
 		},
 		"general": {

@@ -11,11 +11,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.logging.Level;
 import appointments.Category;
 import appointments.Priority;
 import containerItem.Appointment;
+import logging.LoggingController;
 import util.Duration;
 
 import static java.util.GregorianCalendar.DAY_OF_MONTH;
@@ -40,15 +43,17 @@ public abstract class DatabaseController {
 	static {
 		try {
 			connection = DriverManager.getConnection("jdbc:sqlite:appointments.db");
-			DatabaseController.runScript("CREATE_TABLE");
-			DatabaseController.runScript("INSERT_INTO");
-			DatabaseController.runScript("CREATE_TRIGGER");
-			DatabaseController.runScript("CREATE_VIEW");
+			LoggingController.log(Level.FINE, "Database connection established.");
 		} catch (SQLException e) {
-			System.out.println("Connection to database could not be established");
-			e.printStackTrace();
+			LoggingController.log(Level.SEVERE,
+					"Connection to database could not be established: " + e.getMessage());
 			System.exit(0);
 		}
+		DatabaseController.runScript("CREATE_TABLE");
+		DatabaseController.runScript("INSERT_INTO");
+		DatabaseController.runScript("CREATE_TRIGGER");
+		DatabaseController.runScript("CREATE_VIEW");
+		LoggingController.log(Level.FINE, "Database initialized.");
 	}
 
 	/**
@@ -73,23 +78,23 @@ public abstract class DatabaseController {
 		}
 
 		public String getSubject() {
-			return subject;
+			return this.subject;
 		}
 
 		public String getDescription() {
-			return description;
+			return this.description;
 		}
 
 		public Category getCategory() {
-			return category;
+			return this.category;
 		}
 
 		public Priority getPriority() {
-			return priority;
+			return this.priority;
 		}
 
 		public ArrayList<AppointmentItem> getAppointmentItems() {
-			return appointmentItems;
+			return this.appointmentItems;
 		}
 	}
 
@@ -118,19 +123,19 @@ public abstract class DatabaseController {
 		}
 
 		public GregorianCalendar getStartDate() {
-			return startDate;
+			return this.startDate;
 		}
 
 		public GregorianCalendar getEndDate() {
-			return endDate;
+			return this.endDate;
 		}
 
 		public Duration getRepetition() {
-			return repetition;
+			return this.repetition;
 		}
 
 		public GregorianCalendar getRepetitionEnd() {
-			return repetitionEnd;
+			return this.repetitionEnd;
 		}
 	}
 
@@ -171,13 +176,16 @@ public abstract class DatabaseController {
 				statement.close();
 			}
 			connection.commit();
+			LoggingController.log(Level.FINE, "Added Appointment to Database.");
 		} catch (SQLException e) {
-			System.out.println("unable to add appointment: " + e.getMessage());
-			e.printStackTrace();
+			LoggingController.log(Level.WARNING,
+					"Failed to add Appointment to Database: " + e.getMessage());
 			if (savepoint != null) {
 				try {
 					connection.rollback(savepoint);
-				} catch (SQLException ex) {}
+				} catch (SQLException ex) {
+					LoggingController.log(Level.SEVERE, "Rollback failed: " + ex.getMessage());
+				}
 			}
 		} finally {
 			try {
@@ -216,7 +224,9 @@ public abstract class DatabaseController {
 						0, 0, result.getInt("REPETITION_MINUTES"));
 				int div = (int)Math.ceil(Duration.divide(new Duration(start,
 						Duration.subtract(dateStart, appDuration)), repetition));
-				while (!Duration.add(end, Duration.multiply(repetition, ++div)).after(dateStart));
+				while (!Duration.add(end, Duration.multiply(repetition, ++div)).after(dateStart)) {
+					;
+				}
 				GregorianCalendar current =
 						Duration.add(start, Duration.multiply(repetition, --div));
 				do {
@@ -227,7 +237,9 @@ public abstract class DatabaseController {
 						.before(dateEnd));
 			}
 		} catch (SQLException e) {
-			System.out.println(e.getMessage());
+			LoggingController.log(Level.WARNING, "Unable to get Appointments for " +
+					(new SimpleDateFormat("YYYY-MM-dd")).format(date.getTime()) +
+					": " + e.getMessage());
 			return null;
 		}
 		return appointments;
@@ -272,12 +284,16 @@ public abstract class DatabaseController {
 			}
 			connection.commit();
 			results = currentResults;
+			LoggingController.log(Level.FINE, "Executed Script " + script + ".");
 		} catch (IOException | SQLException e) {
-			System.out.println("unable to execute script " + script + ": " + e.getMessage());
+			LoggingController.log(Level.WARNING,
+					"Executing Script " + script + " failed: " + e.getMessage());
 			if (savepoint != null) {
 				try {
 					connection.rollback(savepoint);
-				} catch (SQLException ex) {}
+				} catch (SQLException ex) {
+					LoggingController.log(Level.SEVERE, "Rollback failed: " + e.getMessage());
+				}
 			}
 		} finally {
 			try {

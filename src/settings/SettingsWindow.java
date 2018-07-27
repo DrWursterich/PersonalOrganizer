@@ -1,10 +1,9 @@
 package settings;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.logging.Level;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -31,6 +30,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import logging.LoggingController;
 import menus.FontPicker;
 import menus.OptionsDialog;
 import menus.TreeItem;
@@ -72,7 +72,7 @@ public class SettingsWindow {
 			customInputs.add(this);
 			this.setOnAction(e -> SettingsWindow.hasChanged = true);
 			this.setSetting(setting);
-			this.setValue(setting.getValue());
+			this.toSettingValue();
 		}
 
 		void setOnAction(EventHandler<ActionEvent> value);
@@ -92,12 +92,22 @@ public class SettingsWindow {
 		void setSetting(Setting<E> setting);
 
 		/**
+		 * Applies the Setting to the Value of the Input.
+		 */
+		default void toSettingValue() {
+			this.setValue(this.getSetting().getValue());
+		}
+
+		/**
 		 * Restores the default Setting.
 		 */
 		default void toDefault() {
 			this.setValue(this.getSetting().defaultValue);
 		}
 
+		/**
+		 * Applies the Value of the input to the Setting.
+		 */
 		default void applySetting() {
 			this.getSetting().setValue(this.getValue());
 		}
@@ -201,9 +211,10 @@ public class SettingsWindow {
 						yes, no, cancel);
 				if (cancel.getButtonData().equals(result.getButtonData())) {
 					e.consume();
-				}
-				if (yes.getButtonData().equals(result.getButtonData())) {
+				} else if (yes.getButtonData().equals(result.getButtonData())) {
 					this.tree.apply();
+				} else {
+					CustomInput.customInputs.stream().forEach(CustomInput::toSettingValue);
 				}
 			}
 		});
@@ -225,21 +236,28 @@ public class SettingsWindow {
 		this.restoreButton.setOnAction(e -> {
 			try {
 				Translator.setLanguage(Translator.DEFAULT_LANGUAGE);
-			} catch (final Exception ex) {
-				System.out.println("An Error occurred restoring the Language");
-			}
-			for (final CustomInput<?> inp : CustomInput.customInputs) {
-				inp.toDefault();
+			} catch (Exception ex) {
+				LoggingController.log(Level.WARNING, "An Error occurred restoring the Language");
+				OptionsDialog.showMessage(
+						Translator.translate("settings", "dialogs", "restoreLang", "title"),
+						Translator.translate("settings", "dialogs", "restoreLang", "message"));
 			}
 			SettingController.setDefaults();
 			SettingController.save();
+			for (CustomInput<?> inp : CustomInput.customInputs) {
+				inp.toDefault();
+			}
+			SettingsWindow.hasChanged = false;
 		});
 
 		this.buttonBox.getChildren().addAll(this.cancelButton, this.bufferRegionLeft,
 				this.restoreButton, this.bufferRegionRight, this.applyButton);
 
 		this.tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		this.tree.getItems().addAll(new TreeItem[]{this.generalItem(), this.languageItem(), this.viewsItem()});
+		this.tree.getItems().addAll(new TreeItem[]{
+				this.generalItem(),
+				this.languageItem(),
+				this.viewsItem()});
 		this.tree.getSelectionModel().selectedItemProperty().addListener((v, o, n) -> {
 			if (n instanceof TreeItem) {
 				this.scrollPane.setContent(((TreeItem)n).getContent());
@@ -302,8 +320,14 @@ public class SettingsWindow {
 			if (!Translator.getLanguage().equals(languageSelection.getValue())) {
 				try {
 					Translator.setLanguage(languageSelection.getValue());
-				} catch (final IOException ex) {
-					ex.printStackTrace();
+				} catch (Exception ex) {
+					LoggingController.log(Level.SEVERE, "Unable to load Language Settings for " +
+							languageSelection.getValue() + ": " + ex.getMessage());
+					OptionsDialog.showMessage(
+							Translator.translate(
+									"settings", "dialogs", "langSettingInvalid", "title"),
+							Translator.translate(
+									"settings", "dialogs", "langSettingInvalid", "message"));
 				}
 			}
 		});
@@ -313,8 +337,9 @@ public class SettingsWindow {
 	 * @return the {@link TreeItem TreeItem} for the "views" option
 	 */
 	private TreeItem viewsItem() {
-		final Pane pane = new Pane();
-		final TreeItem ti = new TreeItem(Translator.translationProperty("settings", "views", "name"), pane);
+		Pane pane = new Pane();
+		TreeItem ti = new TreeItem(
+				Translator.translationProperty("settings", "views", "name"), pane);
 		ti.getChildren().add(this.dayViewItem());
 		return ti;
 	}
@@ -385,10 +410,12 @@ public class SettingsWindow {
 		pane.setVgap(10);
 		return new TreeItem(Translator.translationProperty("settings", "views", "dayView", "name"),
 				pane, e -> {
-					for (CustomInput<?> inp : CustomInput.customInputs) {
-						inp.applySetting();
+					if (SettingsWindow.hasChanged) {
+						for (CustomInput<?> inp : CustomInput.customInputs) {
+							inp.applySetting();
+						}
+						SettingController.save();
 					}
-					SettingController.save();
 				});
 	}
 }

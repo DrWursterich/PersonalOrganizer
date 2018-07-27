@@ -45,7 +45,7 @@ public abstract class Setting<T extends Object> extends SimpleObjectProperty<T>
 		this.setValue((T)value);
 	}
 
-	public Class<?> getSettingClass() {
+	public Class<?> getSettingClass() throws NullPointerException {
 		return this.defaultValue.getClass();
 	}
 

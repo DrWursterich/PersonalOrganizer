@@ -11,8 +11,13 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.logging.Level;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import logging.LoggingController;
+import menus.OptionsDialog;
 import util.Translator;
 
 /**
@@ -25,15 +30,45 @@ public abstract class SettingController {
 	private static SettingsContainer SETTINGS;
 
 	static {
-		SETTINGS = new SettingsContainer();
+		try {
+			SETTINGS = new SettingsContainer();
+		} catch (Exception e) {
+			LoggingController.log(Level.SEVERE,
+					"Unable to initialize SettingsContainer: " + e.getMessage());
+			OptionsDialog.showMessage(
+					Translator.translate("dialogs", "unexpectedError", "title"),
+					Translator.translate("dialogs", "unexpectedError", "message"));
+			System.exit(0);
+		}
 		if (FILE.isDirectory()) {
-			System.out.println("cnfg file is a directory.");
-		} else {
-			if (FILE.exists()) {
-				SettingController.load();
-			} else {
-				SettingController.save();
+			LoggingController.log(Level.SEVERE, "Config-File is a Directory.");
+			ButtonType deleteButton = new ButtonType(Translator.translate(
+					"settings", "dialogs", "fileIsDir", "buttons", "delete"),
+					ButtonData.YES);
+			ButtonType quitButton = new ButtonType(Translator.translate(
+					"settings", "dialogs", "fileIsDir", "buttons", "quit"),
+					ButtonData.CANCEL_CLOSE);
+			if (!deleteButton.equals(OptionsDialog.getOption(
+					Translator.translate("settings", "dialogs", "fileIsDir", "title"),
+					Translator.translate("settings", "dialogs", "fileIsDir", "message"),
+					deleteButton, quitButton))) {
+				System.exit(0);
 			}
+			try {
+				FILE.delete();
+			} catch (Exception e) {
+				LoggingController.log(Level.SEVERE, "Unable to delete the Folder blocking"
+						+ " the Config-File from Creation: " + e.getMessage());
+				OptionsDialog.showMessage(
+						Translator.translate("settings", "dialogs", "dirNotDeletable", "title"),
+						Translator.translate("settings", "dialogs", "dirNotDeletable", "message"));
+				System.exit(0);
+			}
+		}
+		if (FILE.exists()) {
+			SettingController.load();
+		} else {
+			SettingController.save();
 		}
 	}
 
@@ -62,6 +97,8 @@ public abstract class SettingController {
 				new FontSetting(Font.font("Verdana", BOLD, 14));
 		public final Setting<Font>  DAYVIEW_APPOINTMENT_DESCRIPTION_FONT =
 				new FontSetting(Font.font("Verdana", 12));
+
+		public SettingsContainer() throws IllegalArgumentException {}
 
 		public void applyValues(SettingsContainer sc) {
 			Field[] fields = SettingsContainer.class.getDeclaredFields();
@@ -95,12 +132,13 @@ public abstract class SettingController {
 						try {
 							((Setting<?>)fieldValue).restoreDefault();
 						} catch (NullPointerException e) {
-							System.out.println(fields[i].getName() + " has no defaultValue!");
+							throw new Exception("Setting has no default Value");
 						}
 					}
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				LoggingController.log(Level.WARNING, "Unable to restore Default for Setting " +
+						fields[i].getName() + ": " + e.getMessage());
 			}
 		}
 	}
@@ -114,8 +152,9 @@ public abstract class SettingController {
 			ois = new ObjectInputStream(in);
 			SettingsContainer sc = (SettingsContainer)ois.readObject();
 			SETTINGS.applyValues(sc);
+			LoggingController.log(Level.FINE, "Config loaded");
 		} catch (ClassNotFoundException | IOException e) {
-			System.out.println("Unable to load Config.");
+			LoggingController.log(Level.WARNING, "Unable to load Config: " + e.getMessage());
 			deleteFile = !(e instanceof FileNotFoundException);
 		} finally {
 			try {
@@ -126,7 +165,7 @@ public abstract class SettingController {
 					try {
 						FILE.delete();
 					} catch (Exception e) {
-						System.out.println("Unable to delete corrupted config");
+						LoggingController.log(Level.WARNING, "Unable to delete corrupted config");
 					}
 				}
 			}
@@ -140,8 +179,9 @@ public abstract class SettingController {
 			out = new FileOutputStream(FILE);
 			oos = new ObjectOutputStream(out);
 			oos.writeObject(SETTINGS);
+			LoggingController.log(Level.INFO, "Config saved.");
 		} catch (Exception e) {
-			System.out.println("Unable to save Config.");
+			LoggingController.log(Level.WARNING, "Unable to save Config: " + e.getMessage());
 		} finally {
 			try {
 				oos.close();

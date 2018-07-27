@@ -48,11 +48,11 @@ public class FontPicker extends ComboBoxBase<Font> {
 	protected static final String OPEN_ACTION = "Open";
 	protected static final String CLOSE_ACTION = "Close";
 	protected static final List<KeyBinding> FONT_PICKER_BINDINGS = new ArrayList<>();
-	private FontPicker me = this;
 	private Tooltip tooltip = new Tooltip();
 	private GridPane content = new GridPane();
 	private CornerRadii contentRadii = new CornerRadii(5);
-	private ComboBox<String> fontBox = new ComboBox<>(FXCollections.observableList(Font.getFamilies()));
+	private ComboBox<String> fontBox = new ComboBox<>(
+			FXCollections.observableList(Font.getFamilies()));
 	private Label previewLabel = new Label();
 	private Label preview = new Label();
 	private Insets previewInsets = new Insets(0, 1, 0, 1);
@@ -69,7 +69,7 @@ public class FontPicker extends ComboBoxBase<Font> {
 	StringConverter<Integer> spinnerFormatter = new StringConverter<Integer>() {
 		@Override
 		public Integer fromString(String val) {
-			String oldVal = String.valueOf(me.sizeSpinner.getValue());
+			String oldVal = String.valueOf(FontPicker.this.sizeSpinner.getValue());
 			try {
 				int result = Integer.parseInt(val);
 				if (result >= 1 && result <= 100) {
@@ -77,8 +77,8 @@ public class FontPicker extends ComboBoxBase<Font> {
 				}
 				throw new Exception("Size out of Range.");
 			} catch (Exception e) {
-				me.sizeSpinner.getEditor().setText(oldVal);
-				return me.sizeSpinner.getValue();
+				FontPicker.this.sizeSpinner.getEditor().setText(oldVal);
+				return FontPicker.this.sizeSpinner.getValue();
 			}
 		}
 
@@ -111,7 +111,7 @@ public class FontPicker extends ComboBoxBase<Font> {
 		@Override
 		public void onAutoHide() {
 			((FontPickerPopupControl)this.getControl().getSkin()).syncWithAutoUpdate();
-			if (!me.isShowing()) {
+			if (!FontPicker.this.isShowing()) {
 				super.onAutoHide();
 			}
 		}
@@ -126,13 +126,13 @@ public class FontPicker extends ComboBoxBase<Font> {
 
 		public FontPickerPopupControl(ComboBoxBase<Font> arg0, ComboBoxBaseBehavior<Font> arg1) {
 			super(arg0, arg1);
-			this.registerChangeListener(me.valueProperty(), "VALUE");
+			this.registerChangeListener(FontPicker.this.valueProperty(), "VALUE");
 
 			this.displayNode.setManaged(false);
 			this.displayNode.setPadding(new Insets(4, 4, 4, 8));
 			this.displayNode.setFont(Font.font(this.displayNode.getFont().getFamily(), 12));
 
-			me.tooltip.textProperty().bind(this.displayNode.textProperty());
+			FontPicker.this.tooltip.textProperty().bind(this.displayNode.textProperty());
 
 			this.updateFont();
 		}
@@ -149,7 +149,7 @@ public class FontPicker extends ComboBoxBase<Font> {
 
 		@Override
 		protected Node getPopupContent() {
-			return me.content;
+			return FontPicker.this.content;
 		}
 
 		@Override
@@ -170,7 +170,7 @@ public class FontPicker extends ComboBoxBase<Font> {
 			this.displayNode.setText(String.format("%s, %s, %d",
 					font.getFamily(), font.getStyle(), (int)font.getSize()));
 		}
-		
+
 		public void syncWithAutoUpdate() {
 			if (!this.getPopup().isShowing() && this.getSkinnable().isShowing()) {
 				this.getSkinnable().hide();
@@ -190,9 +190,17 @@ public class FontPicker extends ComboBoxBase<Font> {
 		Tooltip.install(this, this.tooltip);
 
 		this.content.setPrefSize(200, 230);
-		this.content.getColumnConstraints().addAll(new ColumnConstraints(40), new ColumnConstraints(160));
-		this.content.getRowConstraints().addAll(new RowConstraints(20), new RowConstraints(35), new RowConstraints(35),
-				new RowConstraints(35), new RowConstraints(30), new RowConstraints(30), new RowConstraints(30));
+		this.content.getColumnConstraints().addAll(
+				new ColumnConstraints(40),
+				new ColumnConstraints(160));
+		this.content.getRowConstraints().addAll(
+				new RowConstraints(20),
+				new RowConstraints(35),
+				new RowConstraints(35),
+				new RowConstraints(35),
+				new RowConstraints(30),
+				new RowConstraints(30),
+				new RowConstraints(30));
 		this.content.setAlignment(Pos.CENTER);
 		this.content.setVgap(10);
 		this.content.setHgap(10);
@@ -201,21 +209,26 @@ public class FontPicker extends ComboBoxBase<Font> {
 				Color.WHITE.deriveColor(0, 1, 0.935, 1), this.contentRadii, this.previewInsets)));
 		this.content.setBorder(new Border(new BorderStroke(
 				Color.DARKGRAY, BorderStrokeStyle.SOLID, this.contentRadii, new BorderWidths(1))));
-		this.content.setEffect(new DropShadow(BlurType.GAUSSIAN, Color.color(0, 0, 0, 0.2), 12.0, 0.0, 0.0, 8.0));
+		this.content.setEffect(
+				new DropShadow(BlurType.GAUSSIAN, Color.color(0, 0, 0, 0.2), 12.0, 0.0, 0.0, 8.0));
 
-		this.previewLabel.textProperty().bind(Translator.translationProperty("general", "fontPicker", "previewLabel"));
-		this.preview.textProperty().bind(Translator.translationProperty("general", "fontPicker", "previewText"));
+		this.previewLabel.textProperty().bind(
+				Translator.translationProperty("general", "fontPicker", "previewLabel"));
+		this.preview.textProperty().bind(
+				Translator.translationProperty("general", "fontPicker", "previewText"));
 		this.preview.setMaxWidth(Double.MAX_VALUE);
 		this.preview.setMaxHeight(Double.MAX_VALUE);
 		this.preview.setAlignment(Pos.CENTER);
 		this.preview.setBorder(new Border(new BorderStroke(
 				Color.LIGHTGRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(1))));
-		this.preview.setBackground(new Background(new BackgroundFill(
-				Color.WHITE, CornerRadii.EMPTY, this.previewInsets)));
+		this.preview.setBackground(new Background(
+				new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, this.previewInsets)));
 
-		this.fontLabel.textProperty().bind(Translator.translationProperty("general", "fontPicker", "fontLabel"));
+		this.fontLabel.textProperty().bind(
+				Translator.translationProperty("general", "fontPicker", "fontLabel"));
 		this.fontBox.setMaxWidth(Double.MAX_VALUE);
-		this.fontBox.getSelectionModel().select(font == null ? Font.getDefault().getFamily() : font.getFamily());
+		this.fontBox.getSelectionModel().select(
+				font == null ? Font.getDefault().getFamily() : font.getFamily());
 		this.fontBox.valueProperty().addListener(o -> this.changeFont());
 		this.fontBox.setCellFactory((ListView<String> listView) -> {
 			final ListCell<String> cell = new ListCell<String>() {
@@ -232,18 +245,22 @@ public class FontPicker extends ComboBoxBase<Font> {
 			return cell;
 		});
 
-		this.sizeLabel.textProperty().bind(Translator.translationProperty("general", "fontPicker", "sizeLabel"));
+		this.sizeLabel.textProperty().bind(
+				Translator.translationProperty("general", "fontPicker", "sizeLabel"));
 		this.sizeSpinner = new Spinner<>(1, 100, (int)(font == null ? 12 : font.getSize()));
 		this.sizeSpinner.setEditable(true);
 		this.sizeSpinner.setPrefWidth(90);
 		this.sizeSpinner.getValueFactory().setConverter(this.spinnerFormatter);
 		this.sizeSpinner.valueProperty().addListener(o -> this.changeFont());
 
-		this.styleLabel.textProperty().bind(Translator.translationProperty("general", "fontPicker", "styleLabel"));
-		this.boldCheckBox.textProperty().bind(Translator.translationProperty("general", "fontPicker", "boldLabel"));
+		this.styleLabel.textProperty().bind(
+				Translator.translationProperty("general", "fontPicker", "styleLabel"));
+		this.boldCheckBox.textProperty().bind(
+				Translator.translationProperty("general", "fontPicker", "boldLabel"));
 		this.boldCheckBox.setSelected(font == null ? false : font.getStyle().contains("Bold"));
 		this.boldCheckBox.selectedProperty().addListener(o -> this.changeFont());
-		this.italicCheckBox.textProperty().bind(Translator.translationProperty("general", "fontPicker", "italicLabel"));
+		this.italicCheckBox.textProperty().bind(
+				Translator.translationProperty("general", "fontPicker", "italicLabel"));
 		this.italicCheckBox.setSelected(font == null ? false : font.getStyle().contains("Italic"));
 		this.italicCheckBox.selectedProperty().addListener(o -> this.changeFont());
 		this.styleBox.setAlignment(Pos.CENTER_LEFT);
@@ -261,15 +278,15 @@ public class FontPicker extends ComboBoxBase<Font> {
 		this.buttonBox.setAlignment(Pos.CENTER_RIGHT);
 		this.buttonBox.getChildren().addAll(this.okButton, this.cancelButton);
 
-		this.content.add(this.previewLabel, 0, 0, 2, 1);
-		this.content.add(this.preview, 		0, 1, 2, 2);
-		this.content.add(this.fontLabel, 	0, 3, 1, 1);
-		this.content.add(this.fontBox, 		1, 3, 1, 1);
-		this.content.add(this.sizeLabel, 	0, 4, 1, 1);
-		this.content.add(this.sizeSpinner, 	1, 4, 1, 1);
-		this.content.add(this.styleLabel, 	0, 5, 1, 1);
-		this.content.add(this.styleBox, 	1, 5, 1, 1);
-		this.content.add(this.buttonBox, 	1, 6, 1, 1);
+		this.content.add(this.previewLabel,	0, 0, 2, 1);
+		this.content.add(this.preview,		0, 1, 2, 2);
+		this.content.add(this.fontLabel,	0, 3, 1, 1);
+		this.content.add(this.fontBox,		1, 3, 1, 1);
+		this.content.add(this.sizeLabel,	0, 4, 1, 1);
+		this.content.add(this.sizeSpinner,	1, 4, 1, 1);
+		this.content.add(this.styleLabel,	0, 5, 1, 1);
+		this.content.add(this.styleBox,		1, 5, 1, 1);
+		this.content.add(this.buttonBox,	1, 6, 1, 1);
 
 		this.changeFont();
 	}

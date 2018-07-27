@@ -1,6 +1,7 @@
 package util;
 
 import java.util.Locale;
+import java.util.logging.Level;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,6 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import javafx.beans.property.StringProperty;
+import logging.LoggingController;
 import menus.OptionsDialog;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -31,12 +33,16 @@ public abstract class Translator {
 		try {
 			Translator.setLanguage(systemLocale);
 		} catch (Exception e) {
+			LoggingController.log(Level.INFO, "Unable to load default (" +
+					systemLocale + ") Language Settings: " + e.getMessage());
 			systemLocale = "en";
 			try {
 				Translator.setLanguage(systemLocale);
 			} catch (Exception ex) {
-				System.out.println("Unable to load Language settings");
-				OptionsDialog.showMessage("Error", "Unable to load default Language Settings");
+				LoggingController.log(Level.SEVERE,
+						"Unable to load English Language Settings: " + ex.getMessage());
+				OptionsDialog.showMessage("Error",
+						"Unable to load neither default nor english Language Settings");
 				System.exit(0);
 			}
 		}
@@ -62,9 +68,12 @@ public abstract class Translator {
 	 * @param language the new language
 	 * @throws IOException if the .json-file could not be loaded
 	 */
-	public static void setLanguage(String language) throws IOException {
+	public static void setLanguage(String language) throws Exception {
 		if (language == null) {
 			throw new IllegalArgumentException("Language cannot be Null");
+		}
+		if (language.equals(currentLanguage.getValue())) {
+			return;
 		}
 		File file = new File("config/language/" + language + ".json");
 		if (file.exists()) {

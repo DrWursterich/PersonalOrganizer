@@ -23,6 +23,37 @@
 		}
 	},
 
+	"logging": {
+		"dialogs": {
+			"dirIsFile": {
+				"title": "Warnung",
+				"message": "Das Erstellen des Log-Ordners wird durch eine gleichnamige Datei blockiert.",
+				"buttons": {
+					"delete": "Datei löschen",
+					"disable": "Logging deaktivieren",
+					"quit": "Programm beenden"
+				}
+			},
+			"fileNotDeletable": {
+				"title": "Fehler",
+				"message": "Die Datei konnte nicht gelöscht werden."
+			},
+			"fileIsDir": {
+				"title": "Warnung",
+				"message": "Das Erstellen der Log-Datei wird durch einen gleichnamigen Ordner blockiert.",
+				"buttons": {
+					"delete": "Ordner löschen",
+					"disable": "Logging deaktivieren",
+					"quit": "Programm beenden"
+				}
+			},
+			"dirNotDeletable": {
+				"title": "Fehler",
+				"message": "Der Ordner konnte nicht gelöscht werden."
+			}
+		}
+	},
+
 	"settings": {
 		"title": "Einstellungen",
 		"buttons": {
@@ -31,9 +62,29 @@
 			"restoreDefault": "Zurücksetzen"
 		},
 		"dialogs": {
+			"fileIsDir": {
+				"title" : "Warnung",
+				"message" : "Das Erstellen der Konfigurationsdatei wird durch einen gleichnamigen Ordner blockiert.",
+				"buttons": {
+					"delete": "Ordner Löschen",
+					"quit": "Programm beenden"
+				}
+			},
+			"dirNotDeletable": {
+				"title": "Fehler",
+				"message": "Der Ordner konnte nicht gelöscht werden."
+			},
 			"unsavedChanges": {
 				"title": "Warnung",
 				"message": "Möchten Sie die Änderungen speichern?"
+			},
+			"langSettingInvalid": {
+				"title": "Fehler",
+				"message": "Die Konfiguration der ausgewählten Sprache ist fehlerhaft."
+			},
+			"restoreLang": {
+				"title": "Fehler",
+				"message": "Beim Wiederherstellen der Sprach-Option ist ein Fehler aufgetreten."
 			}
 		},
 		"general": {
