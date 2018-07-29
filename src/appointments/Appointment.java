@@ -1,8 +1,6 @@
-package containerItem;
+package appointments;
 
-import container.Container;
-import container.DayContainer;
-import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import javafx.beans.property.StringProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -11,8 +9,7 @@ import javafx.beans.property.SimpleStringProperty;
  * Class representing an appointment.
  * @author Mario Schäper
  */
-public class Appointment implements ContainerItem {
-	private ArrayList<Container<?>> parents;
+public class Appointment {
 	private GregorianCalendar startDate;
 	private GregorianCalendar endDate;
 	private StringProperty subject;
@@ -27,7 +24,6 @@ public class Appointment implements ContainerItem {
 	 */
 	public Appointment(String subject, String description,
 			GregorianCalendar startDate, GregorianCalendar endDate) {
-		this.parents = new ArrayList<Container<?>>();
 		this.subject = new SimpleStringProperty(subject);
 		this.description = new SimpleStringProperty(description);
 		this.startDate = startDate;
@@ -63,22 +59,6 @@ public class Appointment implements ContainerItem {
 	}
 
 	/**
-	 * @return the number of milliseconds since January 1,
-	 * 1970, 00:00:00 GMT represented by the start date.
-	 */
-	public long getValue() {
-		return this.startDate.getTime().getTime();
-	}
-
-	/**
-	 * @return all {@link DayContainer DayContainers} this
-	 * 		{@link Appointment Appointment} is registered in
-	 */
-	public ArrayList<Container<?>> getParents() {
-		return this.parents;
-	}
-
-	/**
 	 * @return the subject property of the {@link Appointment Appointment}
 	 */
 	public StringProperty subjectProperty() {
@@ -111,7 +91,7 @@ public class Appointment implements ContainerItem {
 	 * {@link Appointment Appointments} beginns.
 	 */
 	public short getStartYear() {
-		return (short)this.startDate.get(GregorianCalendar.YEAR);
+		return (short)this.startDate.get(Calendar.YEAR);
 	}
 
 	/**
@@ -119,7 +99,7 @@ public class Appointment implements ContainerItem {
 	 * {@link Appointment Appointments} beginns.
 	 */
 	public short getStartMonth() {
-		return (short)this.startDate.get(GregorianCalendar.MONTH);
+		return (short)this.startDate.get(Calendar.MONTH);
 	}
 
 	/**
@@ -127,7 +107,7 @@ public class Appointment implements ContainerItem {
 	 * {@link Appointment Appointments} beginns.
 	 */
 	public short getStartDay() {
-		return (short)this.startDate.get(GregorianCalendar.DAY_OF_MONTH);
+		return (short)this.startDate.get(Calendar.DAY_OF_MONTH);
 	}
 
 	/**
@@ -135,7 +115,7 @@ public class Appointment implements ContainerItem {
 	 * {@link Appointment Appointments} beginns.
 	 */
 	public short getStartHour() {
-		return (short)this.startDate.get(GregorianCalendar.HOUR_OF_DAY);
+		return (short)this.startDate.get(Calendar.HOUR_OF_DAY);
 	}
 
 	/**
@@ -143,7 +123,7 @@ public class Appointment implements ContainerItem {
 	 * {@link Appointment Appointments} beginns.
 	 */
 	public short getStartMinute() {
-		return (short)this.startDate.get(GregorianCalendar.MINUTE);
+		return (short)this.startDate.get(Calendar.MINUTE);
 	}
 
 	/**
@@ -151,7 +131,7 @@ public class Appointment implements ContainerItem {
 	 * {@link Appointment Appointments} ends.
 	 */
 	public short getEndYear() {
-		return (short)this.endDate.get(GregorianCalendar.YEAR);
+		return (short)this.endDate.get(Calendar.YEAR);
 	}
 
 	/**
@@ -159,7 +139,7 @@ public class Appointment implements ContainerItem {
 	 * {@link Appointment Appointments} ends.
 	 */
 	public short getEndMonth() {
-		return (short)this.endDate.get(GregorianCalendar.MONTH);
+		return (short)this.endDate.get(Calendar.MONTH);
 	}
 
 	/**
@@ -167,7 +147,7 @@ public class Appointment implements ContainerItem {
 	 * {@link Appointment Appointments} ends.
 	 */
 	public short getEndDay() {
-		return (short)this.endDate.get(GregorianCalendar.DAY_OF_MONTH);
+		return (short)this.endDate.get(Calendar.DAY_OF_MONTH);
 	}
 
 	/**
@@ -175,7 +155,7 @@ public class Appointment implements ContainerItem {
 	 * {@link Appointment Appointments} ends.
 	 */
 	public short getEndHour() {
-		return (short)this.endDate.get(GregorianCalendar.HOUR_OF_DAY);
+		return (short)this.endDate.get(Calendar.HOUR_OF_DAY);
 	}
 
 	/**
@@ -183,6 +163,6 @@ public class Appointment implements ContainerItem {
 	 * {@link Appointment Appointments} ends.
 	 */
 	public short getEndMinute() {
-		return (short)this.endDate.get(GregorianCalendar.MINUTE);
+		return (short)this.endDate.get(Calendar.MINUTE);
 	}
 }
