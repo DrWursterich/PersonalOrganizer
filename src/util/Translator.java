@@ -58,7 +58,7 @@ public abstract class Translator {
 	 * A language consists of a String of two chars, as an abbreviation
 	 * for the language it represents (schould be according to ISO 639). A .json-file with
 	 * the same name has to be located in the ../config/language folder.
-	 * @return
+	 * @return the current language
 	 */
 	public static String getLanguage() {
 		return currentLanguage.getValue();
@@ -179,13 +179,13 @@ public abstract class Translator {
 	}
 
 	/**
-	 * Creates and returns a
-	 * {@link javafx.beans.property.SimpleStringProperty SimpleStringProperty},
-	 * which is bound to the translation of {@link #translate(String...) translate}
+	 * Returns a {@link javafx.beans.property.SimpleStringProperty SimpleStringProperty},
+	 * which is bound to the translation of {@link #translate(String) translate}
 	 * invoked with the given keys.
-	 * @param keys sequence of keywords representing the .json-structure
+	 * @param key dot-separated keywords representing the .json-structure
 	 * @return the translated property
 	 * @throws UnsetLanguageException if the language of this class is not set
+	 * @see Translator#translate(String)
 	 */
 	public static StringProperty translationProperty(String key)
 			throws UnsetLanguageException {

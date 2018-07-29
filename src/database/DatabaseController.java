@@ -305,7 +305,6 @@ public abstract class DatabaseController {
 		}
 	}
 
-
 	/**
 	 * Returns the ID of the given {@link Priority Priority} from the database.
 	 * If there is none, it will be inserted first.
@@ -318,7 +317,6 @@ public abstract class DatabaseController {
 		return 0;
 	}
 
-
 	/**
 	 * Returns the ID of the given {@link Category Category} from the database.
 	 * If there is none, it will be inserted first.
@@ -330,7 +328,6 @@ public abstract class DatabaseController {
 		//TODO
 		return 0;
 	}
-
 
 	/**
 	 * Returns the ID of the given {@link Duration Duration} from the database.
@@ -361,7 +358,6 @@ public abstract class DatabaseController {
 		return id;
 	}
 
-
 	/**
 	 * Returns the ID of the circle-entity with the given parameters from the database.
 	 * If there is none, it will be inserted first.
@@ -389,7 +385,6 @@ public abstract class DatabaseController {
 		result.close();
 		return id;
 	}
-
 
 	/**
 	 * Returns the highest ID in the given table of the database.
