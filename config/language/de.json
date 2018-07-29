@@ -143,7 +143,7 @@
 			}
 		},
 		"help": {
-		"name": "Hilfe",
+			"name": "Hilfe",
 			"manual": "Handbuch",
 			"about": "Über Personal Organizer"
 		}
