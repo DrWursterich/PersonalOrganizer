@@ -2,6 +2,7 @@ package util;
 
 import java.util.Locale;
 import java.util.logging.Level;
+import java.util.HashMap;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,8 +24,10 @@ import javafx.beans.property.SimpleStringProperty;
 public abstract class Translator {
 	private static StringProperty currentLanguage = new SimpleStringProperty();
 	private static JSONObject json;
+	private static final HashMap<String, StringProperty> TRANSLATION_PROPERTIES = new HashMap<>();
 	/**
-	 * The default Language as determined by {@link java.util.Locale#getDefault() Locale.getDefault()}.
+	 * The default Language as determined by
+	 * {@link java.util.Locale#getDefault() Locale.getDefault()}.
 	 */
 	public static final String DEFAULT_LANGUAGE;
 
@@ -47,6 +50,7 @@ public abstract class Translator {
 			}
 		}
 		DEFAULT_LANGUAGE = systemLocale;
+		LoggingController.log(Level.FINE, "Language Settings loaded for Language: " + systemLocale);
 	}
 
 	/**
@@ -100,13 +104,17 @@ public abstract class Translator {
 	 *        "title": "Personal Organizer"
 	 *    }
 	 * }</pre>
-	 * would have the the method call <pre>.translate("window", "title");</pre><br/>
-	 * To translate the "window" keyword use <pre>.translate("window", "name");</pre>
-	 * @param keys sequence of keywords representing the .json-structure
+	 * would have the the method call <pre>.translate("window.title");</pre><br/>
+	 * To translate the "window" keyword use <pre>.translate("window.name");</pre>
+	 * This also works for the following .json-structure:<pre>
+	 * {
+	 *    "window.title": "Personal Organizer"
+	 * }</pre>
+	 * @param key dot-separated keywords representing the .json-structure
 	 * @return the translated String
 	 * @throws UnsetLanguageException if the language of this class is not set
 	 */
-	public static String translate(String...keys) throws UnsetLanguageException {
+	public static String translate(String key) throws UnsetLanguageException {
 		if (json == null) {
 			throw new UnsetLanguageException(
 					currentLanguage != null || currentLanguage.getValue() != null
@@ -114,35 +122,60 @@ public abstract class Translator {
 							: "No Laguage is defined",
 					Translator.getLanguage());
 		}
-		JSONObject newJson = json;
-		String ret = keys[keys.length-1];
-		for (String key : keys) {
-			if (newJson.has(key)) {
-				try {
-					Object temp = newJson.get(key);
-					if (temp instanceof JSONArray) {
-						String[] strNames = new String[((JSONArray)temp).length()];
-						for (int i=strNames.length-1;i>=0;i--) {
-							strNames[i] = "" + i;
-						}
-						newJson = ((JSONArray)temp).toJSONObject(new JSONArray(strNames));
-					}
-					if (temp instanceof JSONObject) {
-						newJson = (JSONObject)temp;
-					}
-					if (temp instanceof String) {
-						ret = (String)temp;
-						break;
-					}
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-			} else {
-				System.out.println("key \"" + key + "\" not found");
-				break;
-			}
+		if (key.startsWith(".") || key.endsWith(".")) {
+			throw new IllegalArgumentException("Keys cannot start or end with a \".\"");
 		}
-		return ret;
+		JSONObject newJson = json;
+		String toSearch = key.contains(".") ? key.substring(key.indexOf('.') + 1) : "";
+		String searchString = key.contains(".") ? key.substring(0, key.indexOf('.')) : key;
+		while (!searchString.equals("")) {
+			boolean found = false;
+			while (!found) {
+				if (newJson.has(searchString)) {
+					try {
+						Object temp = newJson.get(searchString);
+						found = true;
+						if (temp instanceof JSONArray) {
+							String[] strNames = new String[((JSONArray)temp).length()];
+							for (int j=strNames.length-1;j>=0;j--) {
+								strNames[j] = ((JSONArray)temp).get(j).toString();
+							}
+							newJson = ((JSONArray)temp).toJSONObject(new JSONArray(strNames));
+						}
+						if (temp instanceof JSONObject) {
+							newJson = (JSONObject)temp;
+						}
+						if (temp instanceof String) {
+							if (toSearch.equals("")) {
+								return (String)temp;
+							} else {
+								LoggingController.log(Level.WARNING, "Key \"" + key +
+										"\" for Language \"" + Translator.getLanguage() +
+										"\" contains a unexpected String for Subkey \"" +
+										searchString + "\"");
+								return key;
+							}
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				} else if (!toSearch.equals("")) {
+					searchString += "." + (toSearch.contains(".") ?
+							toSearch.substring(0, toSearch.indexOf('.')) : toSearch);
+					toSearch = toSearch.contains(".") ?
+							toSearch.substring(toSearch.indexOf('.') + 1) : "";
+				} else {
+					break;
+				}
+			}
+			searchString = toSearch.contains(".") ?
+					toSearch.substring(0, toSearch.indexOf('.')) : toSearch;
+			toSearch = toSearch.contains(".") ?
+					toSearch.substring(toSearch.indexOf('.') + 1) : "";
+		}
+		LoggingController.log(Level.WARNING,
+				"Key \"" + key + "\" not found for Language " + Translator.getLanguage());
+		return key;
 	}
 
 	/**
@@ -154,12 +187,17 @@ public abstract class Translator {
 	 * @return the translated property
 	 * @throws UnsetLanguageException if the language of this class is not set
 	 */
-	public static SimpleStringProperty translationProperty(String...keys)
+	public static StringProperty translationProperty(String key)
 			throws UnsetLanguageException {
-		SimpleStringProperty strP = new SimpleStringProperty(Translator.translate(keys));
+		StringProperty ret = TRANSLATION_PROPERTIES.get(key);
+		if (ret != null) {
+			return ret;
+		}
+		SimpleStringProperty strP = new SimpleStringProperty(Translator.translate(key));
 		currentLanguage.addListener((v, o, n) -> {
-			strP.setValue(Translator.translate(keys));
+			strP.setValue(Translator.translate(key));
 		});
+		TRANSLATION_PROPERTIES.put(key, strP);
 		return strP;
 	}
 }

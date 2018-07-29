@@ -1,6 +1,6 @@
 package menus;
 
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -10,13 +10,13 @@ public class TreeItem extends javafx.scene.control.TreeItem<String> {
 	private Pane content;
 	private EventHandler<Event> onApply;
 
-	public TreeItem(SimpleStringProperty title, Pane content) {
+	public TreeItem(StringProperty title, Pane content) {
 		super();
 		this.valueProperty().bind(title);
 		this.setContent(content);
 	}
 
-	public TreeItem(SimpleStringProperty title, Pane content, EventHandler<Event> onApply) {
+	public TreeItem(StringProperty title, Pane content, EventHandler<Event> onApply) {
 		this(title, content);
 		this.onApply = onApply;
 	}

@@ -35,8 +35,6 @@ public class PersonalOrganizer extends Application {
 		try {
 			this.parentStage = stage;
 
-			this.settings = new SettingsWindow(stage);
-
 			this.view = new DayView(new GregorianCalendar());
 			this.view.prefWidthProperty().bind(stage.widthProperty());
 			VBox.setVgrow(this.view, Priority.ALWAYS);
@@ -49,8 +47,8 @@ public class PersonalOrganizer extends Application {
 		} catch (Exception e) {
 			LoggingController.log(Level.SEVERE, "A unexpected Error occoured: " + e.getMessage());
 			OptionsDialog.showMessage(
-					Translator.translate("dialogs", "unexpectedError", "title"),
-					Translator.translate("dialogs", "unexpectedError", "message"));
+					Translator.translate("dialogs.unexpectedError.title"),
+					Translator.translate("dialogs.unexpectedError.message"));
 			System.exit(0);
 		}
 	}
@@ -61,67 +59,70 @@ public class PersonalOrganizer extends Application {
 	 */
 	private MenuBar menuBar() {
 		return new MenuBar(
-				new Menu(Translator.translationProperty("menuBar", "file", "name"),
-					new Menu(Translator.translationProperty("menuBar", "file", "new", "name"),
-						new MenuItem(Translator.translationProperty("menuBar", "file", "new", "meeting"), e -> {
+				new Menu("menuBar.file.name",
+					new Menu("menuBar.file.new.name",
+						new MenuItem("menuBar.file.new.meeting", e -> {
 							(new NewAppointmentWindow(this.parentStage)).show();
 						}, "Ctrl+N"),
-						new MenuItem(Translator.translationProperty("menuBar", "file", "new", "meetings"), e -> {
+						new MenuItem("menuBar.file.new.meetings", e -> {
 							System.out.println("Neue Termin Gruppe anlegen");
 						}, "Ctrl+Shift+N")),
-					new MenuItem(Translator.translationProperty("menuBar", "file", "open"), e -> {
+					new MenuItem("menuBar.file.open", e -> {
 						System.out.println("Datei öffnen");
 					}, "Ctrl+O"),
-					new MenuItem(Translator.translationProperty("menuBar", "file", "save"), e -> {
+					new MenuItem("menuBar.file.save", e -> {
 						System.out.println("Datei speichern");
 					}, "Ctrl+S"),
-					new MenuItem(Translator.translationProperty("menuBar", "file", "save as"), e -> {
+					new MenuItem("menuBar.file.save as", e -> {
 						System.out.println("Datei speichern unter");
 					}, "Ctrl+Shift+S"),
-					new MenuItem(Translator.translationProperty("menuBar", "file", "settings"), e -> {
+					new MenuItem("menuBar.file.settings", e -> {
+						if (this.settings == null) {
+							this.settings = new SettingsWindow(this.parentStage);
+						}
 						this.settings.show();
 					}, "Ctrl+E"),
-					new MenuItem(Translator.translationProperty("menuBar", "file", "exit"), e -> {
+					new MenuItem("menuBar.file.exit", e -> {
 						System.exit(0);
 					}, "Ctrl+Shift+Q")),
-				new Menu(Translator.translationProperty("menuBar", "edit", "name"),
-					new MenuItem(Translator.translationProperty("menuBar", "edit", "undo"), e -> {
+				new Menu("menuBar.edit.name",
+					new MenuItem("menuBar.edit.undo", e -> {
 						System.out.println("Aktion rückgängig machen");
 					}, "Ctrl+Z"),
-					new MenuItem(Translator.translationProperty("menuBar", "edit", "redo"), e -> {
+					new MenuItem("menuBar.edit.redo", e -> {
 						System.out.println("Aktion wiederholen");
 					}, "Ctrl+Y"),
-					new MenuItem(Translator.translationProperty("menuBar", "edit", "cut"), e -> {
+					new MenuItem("menuBar.edit.cut", e -> {
 						System.out.println("Element ausschneiden");
 					}, "Ctrl+X"),
-					new MenuItem(Translator.translationProperty("menuBar", "edit", "copy"), e -> {
+					new MenuItem("menuBar.edit.copy", e -> {
 						System.out.println("Element kopieren");
 					}, "Ctrl+C"),
-					new MenuItem(Translator.translationProperty("menuBar", "edit", "paste"), e -> {
+					new MenuItem("menuBar.edit.paste", e -> {
 						System.out.println("Element einfügen");
 					}, "Ctrl+V"),
-					new MenuItem(Translator.translationProperty("menuBar", "edit", "delete"), e -> {
+					new MenuItem("menuBar.edit.delete", e -> {
 						System.out.println("Element löschen");
 					}, "Ctrl+D"),
-					new MenuItem(Translator.translationProperty("menuBar", "edit", "search"), e -> {
+					new MenuItem("menuBar.edit.search", e -> {
 						System.out.println("Suchdialog öffnen");
 					}, "Ctrl+F")),
-				new Menu(Translator.translationProperty("menuBar", "view", "name"),
-					new Menu(Translator.translationProperty("menuBar", "view", "switch to", "name"),
-						new MenuItem(Translator.translationProperty("menuBar", "view", "switch to", "day view"), e -> {
+				new Menu("menuBar.view.name",
+					new Menu("menuBar.view.switch to.name",
+						new MenuItem("menuBar.view.switch to.day view", e -> {
 							System.out.println("Zur Tages Ansicht wechseln");
 						}),
-						new MenuItem(Translator.translationProperty("menuBar", "view", "switch to", "week view"), e -> {
+						new MenuItem("menuBar.view.switch to.week view", e -> {
 							System.out.println("Zur Wochen Ansicht wechseln");
 						}),
-						new MenuItem(Translator.translationProperty("menuBar", "view", "switch to", "month view"), e ->{
+						new MenuItem("menuBar.view.switch to.month view", e ->{
 							System.out.println("Zur Monats Ansicht wechseln");
 						}))),
-				new Menu(Translator.translationProperty("menuBar", "help", "name"),
-					new MenuItem(Translator.translationProperty("menuBar", "help", "manual"), e -> {
+				new Menu("menuBar.help.name",
+					new MenuItem("menuBar.help.manual", e -> {
 						System.out.println("Handbuch öffnen");
 					}, "F1"),
-					new MenuItem(Translator.translationProperty("menuBar", "help", "about"), e -> {
+					new MenuItem("menuBar.help.about", e -> {
 						System.out.println("Über Personal Organizer");
 					}, "F2")));
 	}

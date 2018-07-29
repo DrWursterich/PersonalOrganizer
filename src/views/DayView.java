@@ -3,6 +3,7 @@ package views;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import appointments.Appointment;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.layout.Pane;
@@ -15,7 +16,6 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import settings.SettingController;
 import database.DatabaseController;
-import containerItem.Appointment;
 import util.ResizableRectangle;
 import util.Time;
 

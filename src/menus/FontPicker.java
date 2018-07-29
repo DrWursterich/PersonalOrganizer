@@ -213,9 +213,9 @@ public class FontPicker extends ComboBoxBase<Font> {
 				new DropShadow(BlurType.GAUSSIAN, Color.color(0, 0, 0, 0.2), 12.0, 0.0, 0.0, 8.0));
 
 		this.previewLabel.textProperty().bind(
-				Translator.translationProperty("general", "fontPicker", "previewLabel"));
+				Translator.translationProperty("general.fontPicker.previewLabel"));
 		this.preview.textProperty().bind(
-				Translator.translationProperty("general", "fontPicker", "previewText"));
+				Translator.translationProperty("general.fontPicker.previewText"));
 		this.preview.setMaxWidth(Double.MAX_VALUE);
 		this.preview.setMaxHeight(Double.MAX_VALUE);
 		this.preview.setAlignment(Pos.CENTER);
@@ -225,7 +225,7 @@ public class FontPicker extends ComboBoxBase<Font> {
 				new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, this.previewInsets)));
 
 		this.fontLabel.textProperty().bind(
-				Translator.translationProperty("general", "fontPicker", "fontLabel"));
+				Translator.translationProperty("general.fontPicker.fontLabel"));
 		this.fontBox.setMaxWidth(Double.MAX_VALUE);
 		this.fontBox.getSelectionModel().select(
 				font == null ? Font.getDefault().getFamily() : font.getFamily());
@@ -246,7 +246,7 @@ public class FontPicker extends ComboBoxBase<Font> {
 		});
 
 		this.sizeLabel.textProperty().bind(
-				Translator.translationProperty("general", "fontPicker", "sizeLabel"));
+				Translator.translationProperty("general.fontPicker.sizeLabel"));
 		this.sizeSpinner = new Spinner<>(1, 100, (int)(font == null ? 12 : font.getSize()));
 		this.sizeSpinner.setEditable(true);
 		this.sizeSpinner.setPrefWidth(90);
@@ -254,25 +254,25 @@ public class FontPicker extends ComboBoxBase<Font> {
 		this.sizeSpinner.valueProperty().addListener(o -> this.changeFont());
 
 		this.styleLabel.textProperty().bind(
-				Translator.translationProperty("general", "fontPicker", "styleLabel"));
+				Translator.translationProperty("general.fontPicker.styleLabel"));
 		this.boldCheckBox.textProperty().bind(
-				Translator.translationProperty("general", "fontPicker", "boldLabel"));
+				Translator.translationProperty("general.fontPicker.boldLabel"));
 		this.boldCheckBox.setSelected(font == null ? false : font.getStyle().contains("Bold"));
 		this.boldCheckBox.selectedProperty().addListener(o -> this.changeFont());
 		this.italicCheckBox.textProperty().bind(
-				Translator.translationProperty("general", "fontPicker", "italicLabel"));
+				Translator.translationProperty("general.fontPicker.italicLabel"));
 		this.italicCheckBox.setSelected(font == null ? false : font.getStyle().contains("Italic"));
 		this.italicCheckBox.selectedProperty().addListener(o -> this.changeFont());
 		this.styleBox.setAlignment(Pos.CENTER_LEFT);
 		this.styleBox.getChildren().addAll(this.boldCheckBox, this.italicCheckBox);
 
-		this.okButton.textProperty().bind(Translator.translationProperty("general", "ok"));
+		this.okButton.textProperty().bind(Translator.translationProperty("general.ok"));
 		this.okButton.setPrefWidth(90);
 		this.okButton.setOnAction(e -> {
 			this.setValue(this.preview.getFont());
 			this.hide();
 		});
-		this.cancelButton.textProperty().bind(Translator.translationProperty("general", "cancel"));
+		this.cancelButton.textProperty().bind(Translator.translationProperty("general.cancel"));
 		this.cancelButton.setPrefWidth(90);
 		this.cancelButton.setOnAction(e -> this.hide());
 		this.buttonBox.setAlignment(Pos.CENTER_RIGHT);

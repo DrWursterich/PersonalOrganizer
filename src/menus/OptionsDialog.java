@@ -42,8 +42,8 @@ public class OptionsDialog {
 	 * @return the users choice
 	 */
 	public static boolean getBoolean(String title, String message) {
-		ButtonType yes = new ButtonType(Translator.translate("general", "yes"), ButtonData.YES);
-		ButtonType no = new ButtonType(Translator.translate("general", "no"), ButtonData.NO);
+		ButtonType yes = new ButtonType(Translator.translate("general.yes"), ButtonData.YES);
+		ButtonType no = new ButtonType(Translator.translate("general.no"), ButtonData.NO);
 		return yes.getButtonData().equals(
 				OptionsDialog.getOption(title, message, yes, no).getButtonData());
 	}
@@ -55,6 +55,6 @@ public class OptionsDialog {
 	 */
 	public static void showMessage(String title, String message) {
 		OptionsDialog.getOption(title, message,
-				new ButtonType(Translator.translate("general", "ok"), ButtonData.CANCEL_CLOSE));
+				new ButtonType(Translator.translate("general.ok"), ButtonData.CANCEL_CLOSE));
 	}
 }

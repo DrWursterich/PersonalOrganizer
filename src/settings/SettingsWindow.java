@@ -193,21 +193,21 @@ public class SettingsWindow {
 
 		this.stage.setMinWidth(250);
 		this.stage.setMinHeight(100);
-		this.stage.titleProperty().bind(Translator.translationProperty("settings", "title"));
+		this.stage.titleProperty().bind(Translator.translationProperty("settings.title"));
 		this.stage.initModality(Modality.WINDOW_MODAL);
 		this.stage.initOwner(parentStage);
 		this.stage.setScene(this.scene);
 		this.stage.setOnCloseRequest(e -> {
 			if (SettingsWindow.hasChanged) {
 				ButtonType yes = new ButtonType(
-						Translator.translate("general", "yes"), ButtonData.YES);
+						Translator.translate("general.yes"), ButtonData.YES);
 				ButtonType no = new ButtonType(
-						Translator.translate("general", "no"), ButtonData.NO);
+						Translator.translate("general.no"), ButtonData.NO);
 				ButtonType cancel = new ButtonType(
-						Translator.translate("general", "cancel"), ButtonData.CANCEL_CLOSE);
+						Translator.translate("general.cancel"), ButtonData.CANCEL_CLOSE);
 				ButtonType result = OptionsDialog.getOption(
-						Translator.translate("settings", "dialogs", "unsavedChanges", "title"),
-						Translator.translate("settings", "dialogs", "unsavedChanges", "message"),
+						Translator.translate("settings.dialogs.unsavedChanges.title"),
+						Translator.translate("settings.dialogs.unsavedChanges.message"),
 						yes, no, cancel);
 				if (cancel.getButtonData().equals(result.getButtonData())) {
 					e.consume();
@@ -219,28 +219,29 @@ public class SettingsWindow {
 			}
 		});
 
-		this.applyButton.textProperty().bind(Translator.translationProperty("settings", "buttons", "apply"));
+		this.applyButton.textProperty().bind(
+				Translator.translationProperty("settings.buttons.apply"));
 		this.applyButton.setOnAction(e -> {
 			this.tree.apply();
 			SettingsWindow.hasChanged = false;
 		});
 
 		this.cancelButton.textProperty().bind(
-				Translator.translationProperty("settings", "buttons", "cancel"));
+				Translator.translationProperty("settings.buttons.cancel"));
 		this.cancelButton.setOnAction(e -> {
 			this.stage.hide();
 		});
 
 		this.restoreButton.textProperty().bind(
-				Translator.translationProperty("settings", "buttons", "restoreDefault"));
+				Translator.translationProperty("settings.buttons.restoreDefault"));
 		this.restoreButton.setOnAction(e -> {
 			try {
 				Translator.setLanguage(Translator.DEFAULT_LANGUAGE);
 			} catch (Exception ex) {
 				LoggingController.log(Level.WARNING, "An Error occurred restoring the Language");
 				OptionsDialog.showMessage(
-						Translator.translate("settings", "dialogs", "restoreLang", "title"),
-						Translator.translate("settings", "dialogs", "restoreLang", "message"));
+						Translator.translate("settings.dialogs.restoreLang.title"),
+						Translator.translate("settings.dialogs.restoreLang.message"));
 			}
 			SettingController.setDefaults();
 			SettingController.save();
@@ -287,7 +288,7 @@ public class SettingsWindow {
 	 */
 	private TreeItem generalItem() {
 		final Pane pane = new Pane();
-		return new TreeItem(Translator.translationProperty("settings", "general", "name"), pane);
+		return new TreeItem(Translator.translationProperty("settings.general.name"), pane);
 	}
 
 	/**
@@ -307,7 +308,7 @@ public class SettingsWindow {
 				FXCollections.observableList(options), SettingController.get().LANGUAGE);
 		final Label languageSelectionLabel = new Label();
 		languageSelectionLabel.textProperty().bind(
-				Translator.translationProperty("settings", "language", "languageLabel"));
+				Translator.translationProperty("settings.language.languageLabel"));
 		columnLeft.setHalignment(HPos.LEFT);
 		columnRight.setHalignment(HPos.LEFT);
 		columnLeft.setHgrow(Priority.ALWAYS);
@@ -316,7 +317,7 @@ public class SettingsWindow {
 		pane.addColumn(1, languageSelection);
 		pane.setHgap(20);
 		pane.setVgap(10);
-		return new TreeItem(Translator.translationProperty("settings", "language", "name"), pane, e -> {
+		return new TreeItem(Translator.translationProperty("settings.language.name"), pane, e -> {
 			if (!Translator.getLanguage().equals(languageSelection.getValue())) {
 				try {
 					Translator.setLanguage(languageSelection.getValue());
@@ -324,10 +325,8 @@ public class SettingsWindow {
 					LoggingController.log(Level.SEVERE, "Unable to load Language Settings for " +
 							languageSelection.getValue() + ": " + ex.getMessage());
 					OptionsDialog.showMessage(
-							Translator.translate(
-									"settings", "dialogs", "langSettingInvalid", "title"),
-							Translator.translate(
-									"settings", "dialogs", "langSettingInvalid", "message"));
+							Translator.translate("settings.dialogs.langSettingInvalid.title"),
+							Translator.translate("settings.dialogs.langSettingInvalid.message"));
 				}
 			}
 		});
@@ -339,7 +338,7 @@ public class SettingsWindow {
 	private TreeItem viewsItem() {
 		Pane pane = new Pane();
 		TreeItem ti = new TreeItem(
-				Translator.translationProperty("settings", "views", "name"), pane);
+				Translator.translationProperty("settings.views.name"), pane);
 		ti.getChildren().add(this.dayViewItem());
 		return ti;
 	}
@@ -373,19 +372,19 @@ public class SettingsWindow {
 		FontPicker timeStampFontPicker = new InpFontPicker(
 				SettingController.get().DAYVIEW_TIMESTAMP_FONT);
 		topBarBackgroundColorPickerLabel.textProperty().bind(Translator.translationProperty(
-				"settings", "views", "dayView", "topBarBackgroundColorLabel"));
+				"settings.views.dayView.topBarBackgroundColorLabel"));
 		topBarStrokeColorPickerLabel.textProperty().bind(Translator.translationProperty(
-				"settings", "views", "dayView", "topBarStrokeColorLabel"));
+				"settings.views.dayView.topBarStrokeColorLabel"));
 		backgroundLeftColorPickerLabel.textProperty().bind(Translator.translationProperty(
-				"settings", "views", "dayView", "backgroundLeftColorLabel"));
+				"settings.views.dayView.backgroundLeftColorLabel"));
 		backgroundRightColorPickerLabel.textProperty().bind(Translator.translationProperty(
-				"settings", "views", "dayView", "backgroundRightColorLabel"));
+				"settings.views.dayView.backgroundRightColorLabel"));
 		appointmentBackgroundColorPickerLabel.textProperty().bind(Translator.translationProperty(
-				"settings", "views", "dayView", "appointmentBackgroundColorLabel"));
+				"settings.views.dayView.appointmentBackgroundColorLabel"));
 		appointmentStrokeColorPickerLabel.textProperty().bind(Translator.translationProperty(
-				"settings", "views", "dayView", "appointmentStrokeColorLabel"));
+				"settings.views.dayView.appointmentStrokeColorLabel"));
 		timeStampFontPickerLabel.textProperty().bind(Translator.translationProperty(
-				"settings", "views", "dayView", "timeStampFontLabel"));
+				"settings.views.dayView.timeStampFontLabel"));
 		columnLeft.setHalignment(HPos.LEFT);
 		columnRight.setHalignment(HPos.LEFT);
 		columnLeft.setHgrow(Priority.ALWAYS);
@@ -408,7 +407,7 @@ public class SettingsWindow {
 				timeStampFontPicker);
 		pane.setHgap(20);
 		pane.setVgap(10);
-		return new TreeItem(Translator.translationProperty("settings", "views", "dayView", "name"),
+		return new TreeItem(Translator.translationProperty("settings.views.dayView.name"),
 				pane, e -> {
 					if (SettingsWindow.hasChanged) {
 						for (CustomInput<?> inp : CustomInput.customInputs) {

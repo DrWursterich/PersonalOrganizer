@@ -36,21 +36,21 @@ public abstract class SettingController {
 			LoggingController.log(Level.SEVERE,
 					"Unable to initialize SettingsContainer: " + e.getMessage());
 			OptionsDialog.showMessage(
-					Translator.translate("dialogs", "unexpectedError", "title"),
-					Translator.translate("dialogs", "unexpectedError", "message"));
+					Translator.translate("dialogs.unexpectedError.title"),
+					Translator.translate("dialogs.unexpectedError.message"));
 			System.exit(0);
 		}
 		if (FILE.isDirectory()) {
 			LoggingController.log(Level.SEVERE, "Config-File is a Directory.");
 			ButtonType deleteButton = new ButtonType(Translator.translate(
-					"settings", "dialogs", "fileIsDir", "buttons", "delete"),
+					"settings.dialogs.fileIsDir.buttons.delete"),
 					ButtonData.YES);
 			ButtonType quitButton = new ButtonType(Translator.translate(
-					"settings", "dialogs", "fileIsDir", "buttons", "quit"),
+					"settings.dialogs.fileIsDir.buttons.quit"),
 					ButtonData.CANCEL_CLOSE);
 			if (!deleteButton.equals(OptionsDialog.getOption(
-					Translator.translate("settings", "dialogs", "fileIsDir", "title"),
-					Translator.translate("settings", "dialogs", "fileIsDir", "message"),
+					Translator.translate("settings.dialogs.fileIsDir.title"),
+					Translator.translate("settings.dialogs.fileIsDir.message"),
 					deleteButton, quitButton))) {
 				System.exit(0);
 			}
@@ -60,8 +60,8 @@ public abstract class SettingController {
 				LoggingController.log(Level.SEVERE, "Unable to delete the Folder blocking"
 						+ " the Config-File from Creation: " + e.getMessage());
 				OptionsDialog.showMessage(
-						Translator.translate("settings", "dialogs", "dirNotDeletable", "title"),
-						Translator.translate("settings", "dialogs", "dirNotDeletable", "message"));
+						Translator.translate("settings.dialogs.dirNotDeletable.title"),
+						Translator.translate("settings.dialogs.dirNotDeletable.message"));
 				System.exit(0);
 			}
 		}

@@ -15,9 +15,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.logging.Level;
+import appointments.Appointment;
 import appointments.Category;
 import appointments.Priority;
-import containerItem.Appointment;
 import logging.LoggingController;
 import util.Duration;
 

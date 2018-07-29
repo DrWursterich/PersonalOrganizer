@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -38,19 +37,20 @@ import util.Translator;
 
 public class NewAppointmentWindow {
 	private static final String ADD_TAB_TEXT = " + ";
-	private TextField titleField = this.textField(this.trans("titlePrompt"), true, -1);
+	private TextField titleField = this.textField("newAppointment.titlePrompt", true, -1);
 	private TextArea descriptionArea = new TextArea();
-	private Label categoryLabel = this.label(this.trans("category", "label"));
+	private Label categoryLabel = this.label("newAppointment.category.label");
 	private ComboBox<Category> categoryBox = new ComboBox<>();
 	private VBox categoryContainer = this.box(new VBox(this.categoryLabel, this.categoryBox));
-	private Label priorityLabel = this.label(this.trans("priority", "label"));
+	private Label priorityLabel = this.label("newAppointment.priority.label");
 	private ComboBox<Priority> priorityBox = new ComboBox<>();
 	private Button createPriorityButton = new Button(NewAppointmentWindow.ADD_TAB_TEXT);
 	private Tooltip createPriorityButtonTooltip = new Tooltip();
 	private HBox priorityInputs = this.box(new HBox(this.priorityBox, this.createPriorityButton));
 	private VBox priorityContainer = this.box(new VBox(this.priorityLabel, this.priorityInputs));
 	private HBox comboBoxPane = this.box(new HBox(this.categoryContainer, this.priorityContainer));
-	private VBox leftPane = this.box(new VBox(this.titleField, this.descriptionArea, this.comboBoxPane));
+	private VBox leftPane = this.box(
+			new VBox(this.titleField, this.descriptionArea, this.comboBoxPane));
 	private TabPane tabPane = new TabPane();
 	private Button cancelButton = new Button();
 	private Button acceptButton = new Button();
@@ -60,96 +60,76 @@ public class NewAppointmentWindow {
 	private SplitPane root = new SplitPane(this.leftPane, this.rightPane);
 	private Scene scene = new Scene(this.root);
 
-	private StringProperty dateFromLabelText = this.trans("dateFrom", "label");
-	private StringProperty dateFromHourFieldText = this.trans("dateFrom", "hourPrompt");
-	private StringProperty dateFromMinuteFieldText = this.trans("dateFrom", "minutePrompt");
-	private StringProperty dateToLabelText = this.trans("dateTo", "label");
-	private StringProperty dateToHourFieldText = this.trans("dateTo", "hourPrompt");
-	private StringProperty dateToMinuteFieldText = this.trans("dateTo", "minutePrompt");
-	private StringProperty durationLabelText = this.trans("duration", "label");
-	private StringProperty durationMonthsFieldText = this.trans("duration", "monthsPrompt");
-	private StringProperty durationDaysFieldText = this.trans("duration", "daysPrompt");
-	private StringProperty durationHoursFieldText = this.trans("duration", "hoursPrompt");
-	private StringProperty durationMinutesFieldText = this.trans("duration", "minutesPrompt");
-	private StringProperty repetetionLabelText = this.trans("repetetion", "label");
-	private StringProperty repetetionMonthsFieldText = this.trans("repetetion", "monthsPrompt");
-	private StringProperty repetetionDaysFieldText = this.trans("repetetion", "daysPrompt");
-	private StringProperty repetetionHoursFieldText = this.trans("repetetion", "hoursPrompt");
-	private StringProperty repetetionMinutesFieldText = this.trans("repetetion", "minutesPrompt");
-	private StringProperty repetetionEndLabelText = this.trans("repetetion", "endDateLabel");
-
 	private class CustomTab extends Tab {
-		private Label dateFromLabel = NewAppointmentWindow.this.label(
-				NewAppointmentWindow.this.dateFromLabelText);
+		private NewAppointmentWindow window = NewAppointmentWindow.this;
+		private ObservableList<Tab> tabs = this.window.tabPane.getTabs();
+		private Label dateFromLabel = this.window.label("newAppointment.dateFrom.label");
 		private DatePicker dateFromPicker = new DatePicker();
-		private TextField dateFromHourField = NewAppointmentWindow.this.textField(
-				NewAppointmentWindow.this.dateFromHourFieldText, false, 23);
-		private TextField dateFromMinuteField = NewAppointmentWindow.this.textField(
-				NewAppointmentWindow.this.dateFromMinuteFieldText, false, 59);
-		private HBox dateFromTimeBox = NewAppointmentWindow.this.box(
-				new HBox(this.dateFromHourField, this.dateFromMinuteField));
-		private Label dateToLabel = NewAppointmentWindow.this.label(
-				NewAppointmentWindow.this.dateToLabelText);
+		private TextField dateFromHourField =
+				this.window.textField("newAppointment.dateFrom.hourPrompt", false, 23);
+		private TextField dateFromMinuteField =
+				this.window.textField("newAppointment.dateFrom.minutePrompt", false, 59);
+		private HBox dateFromTimeBox =
+				this.window.box(new HBox(this.dateFromHourField, this.dateFromMinuteField));
+		private Label dateToLabel = this.window.label("newAppointment.dateTo.label");
 		private DatePicker dateToPicker = new DatePicker();
-		private TextField dateToHourField = NewAppointmentWindow.this.textField(
-				NewAppointmentWindow.this.dateToHourFieldText, false, 23);
-		private TextField dateToMinuteField = NewAppointmentWindow.this.textField(
-				NewAppointmentWindow.this.dateToMinuteFieldText, false, 59);
-		private HBox dateToTimeBox = NewAppointmentWindow.this.box(
-				new HBox(this.dateToHourField, this.dateToMinuteField));
-		private VBox tabContentLeft = NewAppointmentWindow.this.box(
-				new VBox(this.dateFromLabel, this.dateFromPicker, this.dateFromTimeBox,
-						this.dateToLabel, this.dateToPicker, this.dateToTimeBox));
-		private Label durationLabel = NewAppointmentWindow.this.label(
-				NewAppointmentWindow.this.durationLabelText);
-		private TextField durationMonthsField = NewAppointmentWindow.this.textField(
-				NewAppointmentWindow.this.durationMonthsFieldText, false, -1);
-		private TextField durationDaysField = NewAppointmentWindow.this.textField(
-				NewAppointmentWindow.this.durationDaysFieldText, false, 30);
-		private HBox durationDaysBox = NewAppointmentWindow.this.box(
-				new HBox(this.durationMonthsField, this.durationDaysField));
-		private TextField durationHoursField = NewAppointmentWindow.this.textField(
-				NewAppointmentWindow.this.durationHoursFieldText, false, 23);
-		private TextField durationMinutesField = NewAppointmentWindow.this.textField(
-				NewAppointmentWindow.this.durationMinutesFieldText, false, 59);
-		private HBox durationTimeBox = NewAppointmentWindow.this
-				.box(new HBox(this.durationHoursField, this.durationMinutesField));
-		private Label repetetionLabel = NewAppointmentWindow.this.label(
-				NewAppointmentWindow.this.repetetionLabelText);
-		private TextField repetetionMonthsField = NewAppointmentWindow.this.textField(
-				NewAppointmentWindow.this.repetetionMonthsFieldText, false, -1);
-		private TextField repetetionDaysField = NewAppointmentWindow.this.textField(
-				NewAppointmentWindow.this.repetetionDaysFieldText, false, 30);
-		private HBox repetetionDaysBox = NewAppointmentWindow.this
-				.box(new HBox(this.repetetionMonthsField, this.repetetionDaysField));
-		private TextField repetetionHoursField = NewAppointmentWindow.this.textField(
-				NewAppointmentWindow.this.repetetionHoursFieldText, false, 23);
-		private TextField repetetionMinutesField = NewAppointmentWindow.this.textField(
-				NewAppointmentWindow.this.repetetionMinutesFieldText, false, 59);
-		private HBox repetetionTimeBox = NewAppointmentWindow.this.box(
-				new HBox(this.repetetionHoursField, this.repetetionMinutesField));
-		private Label repetetionEndLabel = NewAppointmentWindow.this.label(
-				NewAppointmentWindow.this.repetetionEndLabelText);
+		private TextField dateToHourField =
+				this.window.textField("newAppointment.dateTo.hourPrompt", false, 23);
+		private TextField dateToMinuteField =
+				this.window.textField("newAppointment.dateTo.minutePrompt", false, 59);
+		private HBox dateToTimeBox =
+				this.window.box(new HBox(this.dateToHourField, this.dateToMinuteField));
+		private VBox tabContentLeft = this.window.box(new VBox(
+				this.dateFromLabel, this.dateFromPicker, this.dateFromTimeBox,
+				this.dateToLabel, this.dateToPicker, this.dateToTimeBox));
+		private Label durationLabel = this.window.label("newAppointment.duration.label");
+		private TextField durationMonthsField =
+				this.window.textField("newAppointment.duration.monthsPrompt", false, -1);
+		private TextField durationDaysField =
+				this.window.textField("newAppointment.duration.daysPrompt", false, 30);
+		private HBox durationDaysBox = this.window.box(new HBox(
+				this.durationMonthsField, this.durationDaysField));
+		private TextField durationHoursField =
+				this.window.textField("newAppointment.duration.hoursPrompt", false, 23);
+		private TextField durationMinutesField =
+				this.window.textField("newAppointment.duration.minutesPrompt", false, 59);
+		private HBox durationTimeBox = this.window.box(new HBox(
+				this.durationHoursField, this.durationMinutesField));
+		private Label repetetionLabel = this.window.label("newAppointment.repetetion.label");
+		private TextField repetetionMonthsField =
+				this.window.textField("newAppointment.repetetion.monthsPrompt", false, -1);
+		private TextField repetetionDaysField =
+				this.window.textField("newAppointment.repetetion.daysPrompt", false, 30);
+		private HBox repetetionDaysBox = this.window.box(new HBox(
+				this.repetetionMonthsField, this.repetetionDaysField));
+		private TextField repetetionHoursField =
+				this.window.textField("newAppointment.repetetion.hoursPrompt", false, 23);
+		private TextField repetetionMinutesField =
+				this.window.textField("newAppointment.repetetion.minutesPrompt", false, 59);
+		private HBox repetetionTimeBox = this.window.box(new HBox(
+				this.repetetionHoursField, this.repetetionMinutesField));
+		private Label repetetionEndLabel =
+				this.window.label("newAppointment.repetetion.endDateLabel");
 		private DatePicker repetetionEndPicker = new DatePicker();
-		private VBox tabContentRight = NewAppointmentWindow.this.box(
-				new VBox(this.durationLabel, this.durationDaysBox, this.durationTimeBox,
-						this.repetetionLabel, this.repetetionDaysBox, this.repetetionTimeBox,
-						this.repetetionEndLabel, this.repetetionEndPicker));
-		private HBox tabContent = NewAppointmentWindow.this.box(
-				new HBox(this.tabContentLeft, this.tabContentRight));
+		private VBox tabContentRight = this.window.box(new VBox(
+				this.durationLabel, this.durationDaysBox, this.durationTimeBox,
+				this.repetetionLabel, this.repetetionDaysBox, this.repetetionTimeBox,
+				this.repetetionEndLabel, this.repetetionEndPicker));
+		private HBox tabContent = this.window.box(new HBox(
+				this.tabContentLeft, this.tabContentRight));
 
 		private ChangeListener<Object> updateDateTo = (observable, oldValue, newValue) -> {
 			if ((oldValue == null || !oldValue.equals(newValue))
 					&& this.dateFromPicker.getValue() != null) {
-				int result = NewAppointmentWindow.this.fieldVal(this.dateFromMinuteField)
-						+ NewAppointmentWindow.this.fieldVal(this.durationMinutesField);
+				int result = this.window.fieldVal(this.dateFromMinuteField)
+						+ this.window.fieldVal(this.durationMinutesField);
 				this.dateToMinuteField.setText("" + (result % 60));
-				result = result / 60 + NewAppointmentWindow.this.fieldVal(this.dateFromHourField)
-						+ NewAppointmentWindow.this.fieldVal(this.durationHoursField);
+				result = result / 60 + this.window.fieldVal(this.dateFromHourField)
+						+ this.window.fieldVal(this.durationHoursField);
 				this.dateToHourField.setText("" + (result % 24));
-				this.dateToPicker.setValue(this.dateFromPicker.getValue().plusDays(
-						result / 24 + NewAppointmentWindow.this.fieldVal(this.durationDaysField))
-						.plusMonths(NewAppointmentWindow.this.fieldVal(this.durationMonthsField)));
+				this.dateToPicker.setValue(this.dateFromPicker.getValue().plusDays(result / 24
+						+ this.window.fieldVal(this.durationDaysField)).plusMonths(
+								this.window.fieldVal(this.durationMonthsField)));
 			}
 		};
 
@@ -157,20 +137,19 @@ public class NewAppointmentWindow {
 			if ((oldValue == null || !oldValue.equals(newValue))
 					&& this.dateFromPicker.getValue() != null
 					&& this.dateToPicker.getValue() != null) {
-				int startMinute = NewAppointmentWindow.this.fieldVal(this.dateFromMinuteField);
-				int startHour = NewAppointmentWindow.this.fieldVal(this.dateFromHourField);
-				int endMinute = NewAppointmentWindow.this.fieldVal(this.dateToMinuteField);
-				int endHour = NewAppointmentWindow.this.fieldVal(this.dateToHourField);
-				long minutes = TimeUnit.MINUTES.convert(
-						(new GregorianCalendar(this.dateToPicker.getValue().getYear(),
-								this.dateToPicker.getValue().getMonthValue(),
-								this.dateToPicker.getValue().getDayOfMonth(), endHour, endMinute))
-										.getTimeInMillis()
-								- (new GregorianCalendar(this.dateFromPicker.getValue().getYear(),
-										this.dateFromPicker.getValue().getMonthValue(),
-										this.dateFromPicker.getValue().getDayOfMonth(), startHour,
-										startMinute)).getTimeInMillis(),
-								TimeUnit.MILLISECONDS);
+				int startMinute = this.window.fieldVal(this.dateFromMinuteField);
+				int startHour = this.window.fieldVal(this.dateFromHourField);
+				int endMinute = this.window.fieldVal(this.dateToMinuteField);
+				int endHour = this.window.fieldVal(this.dateToHourField);
+				long minutes = TimeUnit.MINUTES.convert((new GregorianCalendar(
+							this.dateToPicker.getValue().getYear(),
+							this.dateToPicker.getValue().getMonthValue(),
+							this.dateToPicker.getValue().getDayOfMonth(), endHour, endMinute)
+						).getTimeInMillis() - (new GregorianCalendar(
+							this.dateFromPicker.getValue().getYear(),
+							this.dateFromPicker.getValue().getMonthValue(),
+							this.dateFromPicker.getValue().getDayOfMonth(), startHour, startMinute)
+						).getTimeInMillis(), TimeUnit.MILLISECONDS);
 
 				this.durationHoursField.setText("" + (int)(TimeUnit.HOURS.convert(
 						minutes - (minutes % 60), TimeUnit.MINUTES) % 24));
@@ -195,20 +174,15 @@ public class NewAppointmentWindow {
 			this.setClosable(false);
 			this.setOnSelectionChanged(e -> {
 				if (this.isSelected()) {
-					this.setText(String.format("#%02d",
-							NewAppointmentWindow.this.tabPane.getTabs().size()));
+					this.setText(String.format("#%02d", this.tabs.size()));
 					this.setOnSelectionChanged(f -> {});
 					this.setClosable(true);
 					this.setContextMenu();
 					this.setOnCloseRequest(f -> {
-						for (int i = NewAppointmentWindow.this.tabPane.getTabs().indexOf(this);
-								i < NewAppointmentWindow.this.tabPane.getTabs().size() - 1; i++) {
-							NewAppointmentWindow.this.tabPane.getTabs().get(i).setText(
-									String.format("#%02d", i));
-						}
-					});
-					NewAppointmentWindow.this.tabPane.getTabs().add(
-							NewAppointmentWindow.this.tabPane.getTabs().size(), new CustomTab());
+						for (int i = this.tabs.indexOf(this); i < this.tabs.size() - 1; i++) {
+							this.tabs.get(i).setText(String.format("#%02d", i));
+						}});
+					this.tabs.add(this.tabs.size(), new CustomTab());
 				}
 			});
 		}
@@ -246,16 +220,14 @@ public class NewAppointmentWindow {
 
 		private void setContextMenu() {
 			this.setContextMenu(new ContextMenu(
-					new MenuItem(NewAppointmentWindow.this.trans("tabContextMenu", "close"), e -> {
-						this.close();
-					}), new SeparatorMenuItem(), new MenuItem(
-							NewAppointmentWindow.this.trans("tabContextMenu", "closeAll"), e -> {
-								for (int i = NewAppointmentWindow.this.tabPane.getTabs().size() - 2;
-										i > 0; i--) {
-									((CustomTab)NewAppointmentWindow.this.tabPane.getTabs().get(i))
-											.close();
-								};
-							})));
+					new MenuItem("newAppointment.tabContextMenu.close", e -> {
+								this.close();
+							}),
+					new SeparatorMenuItem(),
+					new MenuItem("newAppointment.tabContextMenu.closeAll", e -> {
+							for (int i = this.tabs.size() - 2;i > 0; i--) {
+								((CustomTab)this.tabs.get(i)).close();
+							};})));
 		}
 
 		void close() {
@@ -265,45 +237,42 @@ public class NewAppointmentWindow {
 			if (this.getOnClosed() != null) {
 				this.getOnClosed().handle(null);
 			}
-			NewAppointmentWindow.this.tabPane.getTabs().remove(this);
+			this.tabs.remove(this);
 		}
 
 		GregorianCalendar getDateFrom() {
 			return new GregorianCalendar(
-					NewAppointmentWindow.this.fieldVal(
-							this.dateFromPicker, o -> o.getYear()),
-					NewAppointmentWindow.this.fieldVal(
-							this.dateFromPicker, o -> o.getMonthValue()-1),
-					NewAppointmentWindow.this.fieldVal(
-							this.dateFromPicker, o -> o.getDayOfMonth()),
-					NewAppointmentWindow.this.fieldVal(this.dateFromHourField),
-					NewAppointmentWindow.this.fieldVal(this.dateFromMinuteField));
+					this.window.fieldVal(this.dateFromPicker, o -> o.getYear()),
+					this.window.fieldVal(this.dateFromPicker, o -> o.getMonthValue()-1),
+					this.window.fieldVal(this.dateFromPicker, o -> o.getDayOfMonth()),
+					this.window.fieldVal(this.dateFromHourField),
+					this.window.fieldVal(this.dateFromMinuteField));
 		}
 
 		GregorianCalendar getDateTo() {
 			return new GregorianCalendar(
-					NewAppointmentWindow.this.fieldVal(this.dateToPicker, o -> o.getYear()),
-					NewAppointmentWindow.this.fieldVal(this.dateToPicker, o -> o.getMonthValue()-1),
-					NewAppointmentWindow.this.fieldVal(this.dateToPicker, o -> o.getDayOfMonth()),
-					NewAppointmentWindow.this.fieldVal(this.dateToHourField),
-					NewAppointmentWindow.this.fieldVal(this.dateToMinuteField));
+					this.window.fieldVal(this.dateToPicker, o -> o.getYear()),
+					this.window.fieldVal(this.dateToPicker, o -> o.getMonthValue()-1),
+					this.window.fieldVal(this.dateToPicker, o -> o.getDayOfMonth()),
+					this.window.fieldVal(this.dateToHourField),
+					this.window.fieldVal(this.dateToMinuteField));
 		}
 
 		Duration getRepetition() {
 			return new Duration(
-					NewAppointmentWindow.this.fieldVal(this.repetetionMonthsField),
-					NewAppointmentWindow.this.fieldVal(this.repetetionDaysField),
-					NewAppointmentWindow.this.fieldVal(this.repetetionHoursField),
-					NewAppointmentWindow.this.fieldVal(this.repetetionMinutesField));
+					this.window.fieldVal(this.repetetionMonthsField),
+					this.window.fieldVal(this.repetetionDaysField),
+					this.window.fieldVal(this.repetetionHoursField),
+					this.window.fieldVal(this.repetetionMinutesField));
 		}
 
 		GregorianCalendar getRepetitionEnd() {
 			return new GregorianCalendar(
-					NewAppointmentWindow.this.fieldVal(this.repetetionEndPicker,
+					this.window.fieldVal(this.repetetionEndPicker,
 							o -> o.getYear(), this.dateFromPicker),
-					NewAppointmentWindow.this.fieldVal(this.repetetionEndPicker,
+					this.window.fieldVal(this.repetetionEndPicker,
 							o -> o.getMonthValue()-1, this.dateFromPicker),
-					NewAppointmentWindow.this.fieldVal(this.repetetionEndPicker,
+					this.window.fieldVal(this.repetetionEndPicker,
 							o -> o.getDayOfMonth(), this.dateFromPicker));
 		}
 	}
@@ -323,7 +292,8 @@ public class NewAppointmentWindow {
 
 		this.descriptionArea.setPrefWidth(300);
 		this.descriptionArea.setMaxWidth(Double.MAX_VALUE);
-		this.descriptionArea.promptTextProperty().bind(this.trans("descriptionPrompt"));
+		this.descriptionArea.promptTextProperty().bind(
+				Translator.translationProperty("newAppointment.descriptionPrompt"));
 
 		this.categoryBox.setMaxWidth(Double.MAX_VALUE);
 		this.categoryBox.setPrefWidth(250);
@@ -335,7 +305,7 @@ public class NewAppointmentWindow {
 		this.createPriorityButton.setMinWidth(25);
 
 		this.createPriorityButtonTooltip.textProperty().bind(
-				this.trans("priority", "createTooltip"));
+				Translator.translationProperty("newAppointment.priority.createTooltip"));
 		Tooltip.install(this.createPriorityButton, this.createPriorityButtonTooltip);
 
 		this.rightPane.setPadding(new Insets(10));
@@ -351,19 +321,18 @@ public class NewAppointmentWindow {
 
 		firstTab.setClosable(false);
 		firstTab.setContextMenu(new ContextMenu(
-				new MenuItem(this.trans("tabContextMenu", "closeAll"),
-						e -> {for (int i=this.tabPane.getTabs().size()-2;i>0;i--) {
-							((CustomTab)this.tabPane.getTabs().get(i)).close();
-						};})
-				));
+				new MenuItem("newAppointment.tabContextMenu.closeAll", e -> {
+					for (int i=this.tabPane.getTabs().size()-2;i>0;i--) {
+						((CustomTab)this.tabPane.getTabs().get(i)).close();
+					};})));
 
-		this.cancelButton.textProperty().bind(Translator.translationProperty("general", "cancel"));
+		this.cancelButton.textProperty().bind(Translator.translationProperty("general.cancel"));
 		this.cancelButton.setMaxWidth(Double.MAX_VALUE);
 		this.cancelButton.setOnAction(e -> {
 			this.stage.close();
 		});
 
-		this.acceptButton.textProperty().bind(Translator.translationProperty("general", "ok"));
+		this.acceptButton.textProperty().bind(Translator.translationProperty("general.ok"));
 		this.acceptButton.setMaxWidth(Double.MAX_VALUE);
 		this.acceptButton.setOnAction(e -> {
 			if (this.titleField.getText() != null && this.titleField.getText() != "" &&
@@ -388,16 +357,14 @@ public class NewAppointmentWindow {
 				this.stage.close();
 			} else {
 				OptionsDialog.showMessage(
-						Translator.translate(
-								"newAppointment", "dialogs", "invalidData", "title"),
-						Translator.translate(
-								"newAppointment", "dialogs", "invalidData", "message"));
+						Translator.translate("newAppointment.dialogs.invalidData.title"),
+						Translator.translate("newAppointment.dialogs.invalidData.message"));
 			}
 		});
 
 		this.stage.setMinHeight(350);
 		this.stage.setMinWidth(380);
-		this.stage.titleProperty().bind(this.trans("title"));
+		this.stage.titleProperty().bind(Translator.translationProperty("newAppointment.title"));
 		this.stage.initModality(Modality.WINDOW_MODAL);
 		this.stage.initOwner(parentStage);
 		this.stage.setScene(this.scene);
@@ -407,19 +374,19 @@ public class NewAppointmentWindow {
 		this.stage.showAndWait();
 	}
 
-	private Label label(StringProperty text) {
+	private Label label(String text) {
 		Label ret = new Label();
-		ret.textProperty().bind(text);
+		ret.textProperty().bind(Translator.translationProperty(text));
 		return ret;
 	}
 
-	private TextField textField(StringProperty promptText, boolean allowText, int maxValue) {
+	private TextField textField(String promptText, boolean allowText, int maxValue) {
 		TextField ret = new TextField();
 		ret.setMaxWidth(Double.MAX_VALUE);
 		HBox.setHgrow(ret, ALWAYS);
-		ret.promptTextProperty().bind(promptText);
+		ret.promptTextProperty().bind(Translator.translationProperty(promptText));
 		Tooltip tooltip = new Tooltip();
-		tooltip.textProperty().bind(promptText);
+		tooltip.textProperty().bind(Translator.translationProperty(promptText));
 		ret.setTooltip(tooltip);
 		if (!allowText) {
 			ret.setTextFormatter(new TextFormatter<>(new StringConverter<String>() {
@@ -461,13 +428,6 @@ public class NewAppointmentWindow {
 	private VBox box(VBox box) {
 		box.setSpacing(5);
 		return box;
-	}
-
-	private StringProperty trans(String...keys) {
-		String[] newKeys = new String[keys.length+1];
-		newKeys[0] = "newAppointment";
-		System.arraycopy(keys, 0, newKeys, 1, keys.length);
-		return Translator.translationProperty(newKeys);
 	}
 
 	private int fieldVal(TextField field) {
