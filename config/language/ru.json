@@ -22,6 +22,13 @@
 			"italicLabel": "курсивный"
 		}
 	},
+	
+	"ressources": {
+		"priorities": {
+			
+		},
+		"categories.none": "нет категории"
+	},
 
 	"logging": {
 		"dialogs": {
@@ -115,7 +122,12 @@
 			"new": {
 				"name": "новый",
 				"meeting": "встреча",
-				"meetings": "встречи"
+				"category": "категория"
+			},
+			"manage": {
+				"name": "управлять",
+				"categories": "категории",
+				"priorities": "приоритеты"
 			},
 			"open": "открыто",
 			"save": "Сохранить",
@@ -154,11 +166,12 @@
 		"titlePrompt": "заглавие",
 		"descriptionPrompt": "Описание",
 		"category": {
-			"label": "категория"
+			"label": "категория",
+			"manageTooltip": "Управление категориями"
 		},
 		"priority": {
 			"label": "приоритет",
-			"createTooltip": "Создать новый приоритет"
+			"manageTooltip": "Управление приоритетами"
 		},
 		"dateFrom": {
 			"label": "Дата начала",
@@ -194,6 +207,49 @@
 				"title": "предупреждение",
 				"message": "Введенные данные недействительны или неполны."
 			}
+		}
+	},
+
+	"manageCategories": {
+		"title": "Управление категориями",
+		"menu": {
+			"edit": {
+				"name": "редактировать",
+				"add": "добавлять",
+				"delete": "удалять"
+			}
+		},
+		"properties": {
+			"name": "черты",
+			"title": {
+				"label": "название",
+				"prompt": "Название категории"
+			},
+			"description": {
+				"label": "описание",
+				"prompt": "Описание категории"
+			}
+		},
+		"appointments": {
+			"name": "события"
+		},
+		"dialogs": {
+			"delete": {
+				"title": "Внимание!",
+				"message": "Вы действительно хотите удалить категорию?"
+			}
+		}
+	},
+
+	"createCategory": {
+		"title": "Создать категорию",
+		"name": {
+			"label": "название",
+			"prompt": "Название категории"
+		},
+		"description": {
+			"label": "описание",
+			"prompt": "Описание категории"
 		}
 	}
 }

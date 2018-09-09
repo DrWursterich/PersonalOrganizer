@@ -22,6 +22,13 @@
 			"italicLabel": "Kursiv"
 		}
 	},
+	
+	"ressources": {
+		"priorities": {
+			
+		},
+		"categories.none": "keine Kategorie"
+	},
 
 	"logging": {
 		"dialogs": {
@@ -115,7 +122,12 @@
 			"new": {
 				"name": "Neu",
 				"meeting": "Termin",
-				"meetings": "Termin Gruppe"
+				"category": "Kategorie"
+			},
+			"manage": {
+				"name": "Verwalten",
+				"categories": "Kategorien",
+				"priorities": "Prioritäten"
 			},
 			"open": "Öffnen",
 			"save": "Speichern",
@@ -154,11 +166,12 @@
 		"titlePrompt": "Titel",
 		"descriptionPrompt": "Beschreibung",
 		"category": {
-			"label": "Kategorie"
+			"label": "Kategorie",
+			"manageTooltip": "Kategorien verwalten"
 		},
 		"priority": {
 			"label": "Priorität",
-			"createTooltip": "Neue Priorität erstellen"
+			"manageTooltip": "Prioritäten verwalten"
 		},
 		"dateFrom": {
 			"label": "Start-Datum",
@@ -194,6 +207,49 @@
 				"title": "Warnung",
 				"message": "Die eingegebenen Daten sind ungültig oder unvollständig."
 			}
+		}
+	},
+
+	"manageCategories": {
+		"title": "Kategorien verwalten",
+		"menu": {
+			"edit": {
+				"name": "Bearbeiten",
+				"add": "Hinzufügen",
+				"delete": "Löschen"
+			}
+		},
+		"properties": {
+			"name": "Eigenschaften",
+			"title": {
+				"label": "Titel",
+				"prompt": "Titel der Kategorie"
+			},
+			"description": {
+				"label": "Beschreibung",
+				"prompt": "Beschreibung der Kategorie"
+			}
+		},
+		"appointments": {
+			"name": "Termine"
+		},
+		"dialogs": {
+			"delete": {
+				"title": "Warnung!",
+				"message": "Sind Sie sicher, dass Sie die Kategorie löschen möchten?"
+			}
+		}
+	},
+
+	"createCategory": {
+		"title": "Kategorie erstellen",
+		"name": {
+			"label": "Titel",
+			"prompt": "Titel der Kategorie"
+		},
+		"description": {
+			"label": "Beschreibung",
+			"prompt": "Beschreibung der Kategorie"
 		}
 	}
 }

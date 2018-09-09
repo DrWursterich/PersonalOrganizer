@@ -22,6 +22,13 @@
 			"italicLabel": "斜體"
 		}
 	},
+	
+	"ressources": {
+		"priorities": {
+			
+		},
+		"categories.none": "沒有類別"
+	},
 
 	"logging": {
 		"dialogs": {
@@ -115,7 +122,12 @@
 			"new": {
 				"name": "新",
 				"meeting": "約會",
-				"meetings": "日期"
+				"category": "類別"
+			},
+			"manage": {
+				"name": "管理",
+				"categories": "分類",
+				"priorities": "優先"
 			},
 			"open": "開放",
 			"save": "保存",
@@ -154,11 +166,12 @@
 		"titlePrompt": "標題",
 		"descriptionPrompt": "描述",
 		"category": {
-			"label": "類別"
+			"label": "類別",
+			"manageTooltip": "管理類別"
 		},
 		"priority": {
 			"label": "優先",
-			"createTooltip": "創建一個新的優先級"
+			"manageTooltip": "管理優先事項"
 		},
 		"dateFrom": {
 			"label": "開始日期",
@@ -194,6 +207,49 @@
 				"title": "警告",
 				"message": "輸入的數據不完整或無效."
 			}
+		}
+	},
+
+	"manageCategories": {
+		"title": "管理類別",
+		"menu": {
+			"edit": {
+				"name": "編輯",
+				"add": "添加",
+				"delete": "刪除"
+			}
+		},
+		"properties": {
+			"name": "功能",
+			"title": {
+				"label": "標題",
+				"prompt": "該類別的標題"
+			},
+			"description": {
+				"label": "描述",
+				"prompt": "類別描述"
+			}
+		},
+		"appointments": {
+			"name": "活動"
+		},
+		"dialogs": {
+			"delete": {
+				"title": "警告！",
+				"message": "您確定要刪除該類別嗎？"
+			}
+		}
+	},
+
+	"createCategory": {
+		"title": "創建一個類別",
+		"name": {
+			"label": "標題",
+			"prompt": "該類別的標題"
+		},
+		"description": {
+			"label": "描述",
+			"prompt": "類別描述"
 		}
 	}
 }
