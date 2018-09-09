@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import category.CategoryListCell;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -28,7 +29,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
+import database.AppointmentGroup;
+import database.AppointmentItem;
+import database.Category;
 import database.DatabaseController;
+import database.Priority;
 import menus.ContextMenu;
 import menus.MenuItem;
 import menus.OptionsDialog;
@@ -41,12 +46,15 @@ public class NewAppointmentWindow {
 	private TextArea descriptionArea = new TextArea();
 	private Label categoryLabel = this.label("newAppointment.category.label");
 	private ComboBox<Category> categoryBox = new ComboBox<>();
-	private VBox categoryContainer = this.box(new VBox(this.categoryLabel, this.categoryBox));
+	private Button manageCategoryButton = new Button(NewAppointmentWindow.ADD_TAB_TEXT);
+	private Tooltip manageCategoryButtonTooltip = new Tooltip();
+	private HBox categoryInputs = this.box(new HBox(this.categoryBox, this.manageCategoryButton));
+	private VBox categoryContainer = this.box(new VBox(this.categoryLabel, this.categoryInputs));
 	private Label priorityLabel = this.label("newAppointment.priority.label");
 	private ComboBox<Priority> priorityBox = new ComboBox<>();
-	private Button createPriorityButton = new Button(NewAppointmentWindow.ADD_TAB_TEXT);
-	private Tooltip createPriorityButtonTooltip = new Tooltip();
-	private HBox priorityInputs = this.box(new HBox(this.priorityBox, this.createPriorityButton));
+	private Button managePriorityButton = new Button(NewAppointmentWindow.ADD_TAB_TEXT);
+	private Tooltip managePriorityButtonTooltip = new Tooltip();
+	private HBox priorityInputs = this.box(new HBox(this.priorityBox, this.managePriorityButton));
 	private VBox priorityContainer = this.box(new VBox(this.priorityLabel, this.priorityInputs));
 	private HBox comboBoxPane = this.box(new HBox(this.categoryContainer, this.priorityContainer));
 	private VBox leftPane = this.box(
@@ -279,6 +287,7 @@ public class NewAppointmentWindow {
 
 	public NewAppointmentWindow(Stage parentStage) {
 		VBox.setVgrow(this.descriptionArea, ALWAYS);
+		HBox.setHgrow(this.categoryInputs, ALWAYS);
 		HBox.setHgrow(this.categoryBox, ALWAYS);
 		HBox.setHgrow(this.categoryContainer, ALWAYS);
 		HBox.setHgrow(this.priorityInputs, ALWAYS);
@@ -296,17 +305,24 @@ public class NewAppointmentWindow {
 				Translator.translationProperty("newAppointment.descriptionPrompt"));
 
 		this.categoryBox.setMaxWidth(Double.MAX_VALUE);
-		this.categoryBox.setPrefWidth(250);
-		this.categoryBox.setEditable(true);
+		this.categoryBox.setPrefWidth(210);
+		this.manageCategoryButton.setMaxWidth(30);
+		this.manageCategoryButton.setMinWidth(30);
+		this.manageCategoryButtonTooltip.textProperty().bind(
+				Translator.translationProperty("newAppointment.category.manageTooltip"));
+		Tooltip.install(this.manageCategoryButton, this.manageCategoryButtonTooltip);
+		this.categoryBox.getItems().addAll(DatabaseController.getCategories());
+		this.categoryBox.setCellFactory(e -> new CategoryListCell());
+		this.categoryBox.setButtonCell(new CategoryListCell());
+		this.categoryBox.getSelectionModel().select(Category.NONE);
 
 		this.priorityBox.setMaxWidth(Double.MAX_VALUE);
 		this.priorityBox.setPrefWidth(210);
-
-		this.createPriorityButton.setMinWidth(25);
-
-		this.createPriorityButtonTooltip.textProperty().bind(
-				Translator.translationProperty("newAppointment.priority.createTooltip"));
-		Tooltip.install(this.createPriorityButton, this.createPriorityButtonTooltip);
+		this.managePriorityButton.setMaxWidth(30);
+		this.managePriorityButton.setMinWidth(30);
+		this.managePriorityButtonTooltip.textProperty().bind(
+				Translator.translationProperty("newAppointment.priority.manageTooltip"));
+		Tooltip.install(this.managePriorityButton, this.managePriorityButtonTooltip);
 
 		this.rightPane.setPadding(new Insets(10));
 
@@ -324,7 +340,8 @@ public class NewAppointmentWindow {
 				new MenuItem("newAppointment.tabContextMenu.closeAll", e -> {
 					for (int i=this.tabPane.getTabs().size()-2;i>0;i--) {
 						((CustomTab)this.tabPane.getTabs().get(i)).close();
-					};})));
+					};
+				})));
 
 		this.cancelButton.textProperty().bind(Translator.translationProperty("general.cancel"));
 		this.cancelButton.setMaxWidth(Double.MAX_VALUE);
@@ -337,18 +354,18 @@ public class NewAppointmentWindow {
 		this.acceptButton.setOnAction(e -> {
 			if (this.titleField.getText() != null && this.titleField.getText() != "" &&
 					firstTab.getDateFrom().before(firstTab.getDateTo())) {
-				ArrayList<DatabaseController.AppointmentItem> appointments = new ArrayList<>();
+				ArrayList<AppointmentItem> appointments = new ArrayList<>();
 				ObservableList<Tab> tabs = this.tabPane.getTabs();
 				for (int i=0;i<tabs.size();i++) {
 					if (!ADD_TAB_TEXT.equals(tabs.get(i).getText())) {
-						appointments.add(new DatabaseController.AppointmentItem(
+						appointments.add(new AppointmentItem(
 								((CustomTab)tabs.get(i)).getDateFrom(),
 								((CustomTab)tabs.get(i)).getDateTo(),
 								((CustomTab)tabs.get(i)).getRepetition(),
 								((CustomTab)tabs.get(i)).getRepetitionEnd()));
 					}
 				}
-				DatabaseController.addAppointment(new DatabaseController.AppointmentContainer(
+				DatabaseController.addAppointment(new AppointmentGroup(
 						this.titleField.getText(),
 						this.descriptionArea.getText(),
 						this.categoryBox.getValue(),
