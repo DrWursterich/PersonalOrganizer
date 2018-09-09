@@ -1,4 +1,4 @@
-package appointments;
+package database;
 
 import java.time.Period;
 
@@ -7,12 +7,10 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 
-public class Priority {
+public class Priority extends DatabaseItem {
 	private StringProperty name = new SimpleStringProperty();
-	private ObservableList<Period> alarms = new SortedList<Period>(null);
-	
-	public Priority() {
-		
-	}
+	private ObservableList<Period> alarms = new SortedList<>(null);
 
+	public Priority() {
+	}
 }
