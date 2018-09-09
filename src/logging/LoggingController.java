@@ -179,7 +179,7 @@ public class LoggingController {
 		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 		StackTraceElement ret = stackTrace[stackTrace.length - 1];
 		for (int i = stackTrace.length - 1; i >= 0
-				&& !(stackTrace[i].getClassName().equals(CLASS_NAME)
+				&& !(stackTrace[i].getClassName().equals(LoggingController.CLASS_NAME)
 						&& stackTrace[i].getMethodName().equals("log")); i--) {
 			ret = stackTrace[i];
 		}

@@ -26,7 +26,6 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
-import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import database.DatabaseController;
 import database.appointment.AppointmentGroup;
@@ -39,7 +38,7 @@ import menus.MenuItem;
 import util.Duration;
 import util.Translator;
 
-public class NewAppointmentWindow {
+public class NewAppointmentWindow extends Window {
 	private static final String ADD_TAB_TEXT = " + ";
 	private TextField titleField = this.textField("newAppointment.titlePrompt", true, -1);
 	private TextArea descriptionArea = new TextArea();
@@ -63,7 +62,6 @@ public class NewAppointmentWindow {
 	private Button acceptButton = new Button();
 	private HBox buttonBox = this.box(new HBox(this.cancelButton, this.acceptButton));
 	private VBox rightPane = this.box(new VBox(this.tabPane, this.buttonBox));
-	private Stage stage = new Stage();
 	private SplitPane root = new SplitPane(this.leftPane, this.rightPane);
 	private Scene scene = new Scene(this.root);
 
@@ -284,7 +282,7 @@ public class NewAppointmentWindow {
 		}
 	}
 
-	public NewAppointmentWindow(Stage parentStage) {
+	protected NewAppointmentWindow() {
 		VBox.setVgrow(this.descriptionArea, ALWAYS);
 		HBox.setHgrow(this.categoryInputs, ALWAYS);
 		HBox.setHgrow(this.categoryBox, ALWAYS);
@@ -378,14 +376,18 @@ public class NewAppointmentWindow {
 			}
 		});
 
+		this.manageCategoryButton.setOnAction(e -> {
+			WindowController.showWindow(ManageCategoriesWindow.class, this.stage);
+		});
+
 		this.stage.setMinHeight(350);
 		this.stage.setMinWidth(380);
 		this.stage.titleProperty().bind(Translator.translationProperty("newAppointment.title"));
 		this.stage.initModality(Modality.WINDOW_MODAL);
-		this.stage.initOwner(parentStage);
 		this.stage.setScene(this.scene);
 	}
 
+	@Override
 	public void show() {
 		this.stage.showAndWait();
 	}

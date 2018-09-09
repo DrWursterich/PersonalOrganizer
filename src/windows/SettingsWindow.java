@@ -42,7 +42,7 @@ import util.Translator;
  * Class that represents a Window for the SettingController.
  * @author Mario Schäper
  */
-public class SettingsWindow {
+public class SettingsWindow extends Window {
 	private final Stage stage = new Stage();
 	private final VBox root = new VBox();
 	private final Scene scene = new Scene(this.root);
@@ -185,7 +185,7 @@ public class SettingsWindow {
 		}
 	}
 
-	public SettingsWindow (Stage parentStage) {
+	protected SettingsWindow () {
 		HBox.setHgrow(this.bufferRegionLeft, Priority.ALWAYS);
 		HBox.setHgrow(this.bufferRegionRight, Priority.ALWAYS);
 		HBox.setHgrow(this.scrollPane, Priority.ALWAYS);
@@ -195,7 +195,6 @@ public class SettingsWindow {
 		this.stage.setMinHeight(100);
 		this.stage.titleProperty().bind(Translator.translationProperty("settings.title"));
 		this.stage.initModality(Modality.WINDOW_MODAL);
-		this.stage.initOwner(parentStage);
 		this.stage.setScene(this.scene);
 		this.stage.setOnCloseRequest(e -> {
 			if (SettingsWindow.hasChanged) {
@@ -278,6 +277,7 @@ public class SettingsWindow {
 	/**
 	 * Invokes {@link javafx.stage.Stage#showAndWait() showAndWait}.
 	 */
+	@Override
 	public void show() {
 		SettingsWindow.hasChanged = false;
 		this.stage.showAndWait();

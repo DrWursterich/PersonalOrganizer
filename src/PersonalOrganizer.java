@@ -15,6 +15,7 @@ import windows.ManageCategoriesWindow;
 import windows.NewAppointmentWindow;
 import windows.OptionsDialog;
 import windows.SettingsWindow;
+import windows.WindowController;
 
 /**
  * Static Main Class for the Personal Organizer.
@@ -26,9 +27,7 @@ public class PersonalOrganizer extends Application {
 			0.75*Screen.getPrimary().getBounds().getWidth(),
 			0.60*Screen.getPrimary().getBounds().getHeight());
 	private View view;
-	private SettingsWindow settings;
-	private ManageCategoriesWindow manageCategories;
-	private Stage parentStage;
+	private Stage stage;
 
 	public static void main(String...args) throws Exception {
 		Application.launch(args);
@@ -37,7 +36,7 @@ public class PersonalOrganizer extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 		try {
-			this.parentStage = stage;
+			this.stage = stage;
 
 			this.view = new DayView(new GregorianCalendar());
 			this.view.prefWidthProperty().bind(stage.widthProperty());
@@ -66,18 +65,14 @@ public class PersonalOrganizer extends Application {
 				new Menu("menuBar.file.name",
 					new Menu("menuBar.file.new.name",
 						new MenuItem("menuBar.file.new.meeting", e -> {
-							(new NewAppointmentWindow(this.parentStage)).show();
+							WindowController.showWindow(NewAppointmentWindow.class, this.stage);
 						}, "Ctrl+N"),
 						new MenuItem("menuBar.file.new.category", e -> {
-							(new CreateCategoryWindow(this.parentStage)).show();
+							WindowController.showWindow(CreateCategoryWindow.class, this.stage);
 						}, "Ctrl+Shift+N")),
 					new Menu("menuBar.file.manage.name",
 						new MenuItem("menuBar.file.manage.categories", e -> {
-							if (this.manageCategories == null) {
-								this.manageCategories = new ManageCategoriesWindow(
-										this.parentStage);
-							}
-							this.manageCategories.show();
+							WindowController.showWindow(ManageCategoriesWindow.class, this.stage);
 						}),
 						new MenuItem("menuBar.file.manage.priorities", e -> {
 							System.out.println("Prioritäten bearbeiten");
@@ -92,10 +87,7 @@ public class PersonalOrganizer extends Application {
 						System.out.println("Datei speichern unter");
 					}, "Ctrl+Shift+S"),
 					new MenuItem("menuBar.file.settings", e -> {
-						if (this.settings == null) {
-							this.settings = new SettingsWindow(this.parentStage);
-						}
-						this.settings.show();
+						WindowController.showWindow(SettingsWindow.class, this.stage);
 					}, "Ctrl+E"),
 					new MenuItem("menuBar.file.exit", e -> {
 						System.exit(0);

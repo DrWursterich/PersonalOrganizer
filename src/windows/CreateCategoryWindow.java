@@ -16,7 +16,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import util.Translator;
 
-public class CreateCategoryWindow {
+public class CreateCategoryWindow extends Window {
 	private Stage stage = new Stage();
 	private Label nameLabel = this.label("createCategory.name.label");
 	private TextField nameField = this.textField("createCategory.name.prompt");
@@ -33,13 +33,12 @@ public class CreateCategoryWindow {
 	private VBox root = new VBox(this.nameVBox, this.descriptionVBox, this.buttonHBox);
 	private Scene scene = new Scene(this.root);
 
-	public CreateCategoryWindow(Stage parentStage) {
+	protected CreateCategoryWindow() {
 		this.stage.setMinHeight(350);
 		this.stage.setMinWidth(380);
 		this.stage.titleProperty().bind(
 				Translator.translationProperty("createCategory.title"));
-		this.stage.initModality(Modality.WINDOW_MODAL);
-		this.stage.initOwner(parentStage);
+		this.stage.initModality(Modality.APPLICATION_MODAL);
 		this.stage.setScene(this.scene);
 
 		VBox.setVgrow(this.descriptionVBox, Priority.ALWAYS);
@@ -67,6 +66,7 @@ public class CreateCategoryWindow {
 		});
 	}
 
+	@Override
 	public void show() {
 		this.stage.showAndWait();
 	}

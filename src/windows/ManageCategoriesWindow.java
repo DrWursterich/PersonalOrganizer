@@ -23,7 +23,6 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
-import javafx.stage.Stage;
 import javafx.util.Callback;
 import menus.ContextMenu;
 import menus.Menu;
@@ -31,8 +30,7 @@ import menus.MenuBar;
 import menus.MenuItem;
 import util.Translator;
 
-public class ManageCategoriesWindow {
-	private Stage stage = new Stage();
+public class ManageCategoriesWindow extends Window {
 	private ListView<Category> categoriesList = new ListView<>();
 	private Label nameLabel = this.label("manageCategories.properties.title.label");
 	private TextField nameField = this.textField("manageCategories.properties.title.prompt");
@@ -79,13 +77,12 @@ public class ManageCategoriesWindow {
 		}
 	}
 
-	public ManageCategoriesWindow(Stage parentStage) {
+	protected ManageCategoriesWindow() {
 		this.stage.setMinHeight(320);
 		this.stage.setMinWidth(380);
 		this.stage.titleProperty().bind(
 				Translator.translationProperty("manageCategories.title"));
-		this.stage.initModality(Modality.WINDOW_MODAL);
-		this.stage.initOwner(parentStage);
+		this.stage.initModality(Modality.APPLICATION_MODAL);
 		this.stage.setScene(this.scene);
 
 		VBox.setVgrow(this.contentPane, Priority.ALWAYS);
@@ -151,6 +148,7 @@ public class ManageCategoriesWindow {
 		});
 	}
 
+	@Override
 	public void show() {
 		this.propertiesAccordion.setDisable(true);
 		ObservableList<Category> items = FXCollections.observableArrayList(
@@ -188,7 +186,7 @@ public class ManageCategoriesWindow {
 		return new MenuBar(
 				new Menu("manageCategories.menu.edit.name",
 					new MenuItem("manageCategories.menu.edit.add", e -> {
-						(new CreateCategoryWindow(this.stage)).show();
+						WindowController.showWindow(CreateCategoryWindow.class, this.stage);
 						this.propertiesAccordion.setDisable(true);
 						this.categoriesList.setItems(FXCollections.observableArrayList(
 								DatabaseController.getCategories()));
