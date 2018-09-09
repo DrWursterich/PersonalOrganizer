@@ -14,10 +14,9 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.logging.Level;
 import appointments.Appointment;
-import appointments.Category;
-import appointments.Priority;
 import logging.LoggingController;
 import util.Duration;
 
@@ -36,9 +35,17 @@ public abstract class DatabaseController {
 			+ "(START_DATE, END_DATE, CIRCLE_FK) VALUES (?, ?, ?);";
 	private static final String INSERT_APPOINTMENT_APPOINTMENT_GROUP = "INSERT INTO "
 			+ "APPOINTMENT_APPOINTMENT_GROUP (APPOINTMENT_FK, APPOINTMENT_GROUP_FK) VALUES (?, ?);";
+	private static final String INSERT_CATEGORY = "INSERT INTO "
+			+ "CATEGORY (NAME, DESCRIPTION) VALUES (?, ?);";
+	private static final String UPDATE_CATEGORY = "UPDATE CATEGORY " +
+			"SET NAME = ?, DESCRIPTION = ? WHERE ID = ?";
+	private static final String DELETE_CATEGORY = "DELETE FROM CATEGORY WHERE ID = ?;";
 	private static Connection connection;
 	@SuppressWarnings("unused")
 	private static ArrayList<ResultSet> results = new ArrayList<>();
+
+	//TODO: Datenbankzugriffe sollten zusammengefasst werden, indem der eigentliche zugriff in
+	//		einer eigenen Methode statt findet. eventuell ist der rollback ect. auch extrahierbar.
 
 	static {
 		try {
@@ -57,106 +64,34 @@ public abstract class DatabaseController {
 	}
 
 	/**
-	 * A class to hold data.
-	 * Serves the purposes of readability and structure.
-	 * @author Mario Schäper
+	 * Adds an {@link AppointmentGroup Appointment} to the Database.
+	 * @param appointment the Appointment
 	 */
-	public static class AppointmentContainer {
-		private String subject;
-		private String description;
-		private Category category;
-		private Priority priority;
-		private ArrayList<AppointmentItem> appointmentItems;
-
-		public AppointmentContainer(String subject, String description, Category category,
-				Priority priority, ArrayList<AppointmentItem> appointmentItems) {
-			this.subject = subject;
-			this.description = description;
-			this.category = category;
-			this.priority = priority;
-			this.appointmentItems = appointmentItems;
-		}
-
-		public String getSubject() {
-			return this.subject;
-		}
-
-		public String getDescription() {
-			return this.description;
-		}
-
-		public Category getCategory() {
-			return this.category;
-		}
-
-		public Priority getPriority() {
-			return this.priority;
-		}
-
-		public ArrayList<AppointmentItem> getAppointmentItems() {
-			return this.appointmentItems;
-		}
-	}
-
-	/**
-	 * A class to hold data.
-	 * Serves the purposes of readability and structure.
-	 * @author Mario Schäper
-	 */
-	public static class AppointmentItem {
-		public static final Duration NO_REPETITION = new Duration(0, 0, 0, 0);
-		private GregorianCalendar startDate;
-		private GregorianCalendar endDate;
-		private Duration repetition;
-		private GregorianCalendar repetitionEnd;
-
-		public AppointmentItem(GregorianCalendar startDate, GregorianCalendar endDate,
-				Duration repetition, GregorianCalendar repetitionEnd) {
-			this.startDate = startDate;
-			this.endDate = endDate;
-			this.repetition = repetition;
-			this.repetitionEnd = repetitionEnd;
-		}
-
-		public AppointmentItem(GregorianCalendar startDate, GregorianCalendar endDate) {
-			this(startDate, endDate, AppointmentItem.NO_REPETITION, null);
-		}
-
-		public GregorianCalendar getStartDate() {
-			return this.startDate;
-		}
-
-		public GregorianCalendar getEndDate() {
-			return this.endDate;
-		}
-
-		public Duration getRepetition() {
-			return this.repetition;
-		}
-
-		public GregorianCalendar getRepetitionEnd() {
-			return this.repetitionEnd;
-		}
-	}
-
-	/**
-	 * Adds an {@link Appointment Appointments} to the Database.
-	 * @param subject the subject
-	 * @param description a description
-	 * @param startDate the date, at which the appointment beginns
-	 * @param endDate the date, at which the appointment ends
-	 */
-	public static void addAppointment(AppointmentContainer appointment) {
+	public static void addAppointment(AppointmentGroup appointment) {
 		PreparedStatement statement = null;
 		Savepoint savepoint = null;
+		Priority priority = appointment.getPriority();
+		Category category = appointment.getCategory();
+//		if (priority == null) {
+//			priority = Priority.NONE;
+//		}
+//		if (!priority.hasId()) {
+//			DatabaseController.addPriority(priority);
+//		}
+		if (category == null) {
+			category = Category.NONE;
+		}
+		if (!category.hasId()) {
+			DatabaseController.addCategory(category);
+		}
 		try {
 			savepoint = connection.setSavepoint();
 			connection.setAutoCommit(false);
 			statement = connection.prepareStatement(INSERT_APPOINTMENTGROUP);
 			statement.setString(1, appointment.getSubject());
 			statement.setString(2,appointment.getDescription());
-			statement.setInt(3, DatabaseController.getPriorityId(appointment.getPriority()));
-			statement.setInt(4, DatabaseController.getCategoryId(appointment.getCategory()));
+			statement.setInt(3, 0/*priority.getId()*/);
+			statement.setInt(4, category.getId());
 			statement.executeUpdate();
 			statement.close();
 			int appointmentGroupId = DatabaseController.getMaxId("APPOINTMENT_GROUP");
@@ -164,9 +99,10 @@ public abstract class DatabaseController {
 				statement = connection.prepareStatement(INSERT_APPOINTMENT);
 				statement.setLong(1, app.getStartDate().getTimeInMillis());
 				statement.setLong(2, app.getEndDate().getTimeInMillis());
-				statement.setInt(3, DatabaseController.getCircleId(
-						DatabaseController.getDurationId(app.getRepetition()),
-						app.getRepetitionEnd()));
+				statement.setInt(3,
+						DatabaseController.getCircleId(
+							DatabaseController.getDurationId(app.getRepetition()),
+							app.getRepetitionEnd()));
 				statement.executeUpdate();
 				statement.close();
 				statement = connection.prepareStatement(INSERT_APPOINTMENT_APPOINTMENT_GROUP);
@@ -222,19 +158,24 @@ public abstract class DatabaseController {
 				Duration appDuration = new Duration(start, end);
 				Duration repetition = new Duration(result.getInt("REPETITION_MONTHS"),
 						0, 0, result.getInt("REPETITION_MINUTES"));
-				int div = (int)Math.ceil(Duration.divide(new Duration(start,
-						Duration.subtract(dateStart, appDuration)), repetition));
-				while (!Duration.add(end, Duration.multiply(repetition, ++div)).after(dateStart)) {
-					;
-				}
-				GregorianCalendar current =
-						Duration.add(start, Duration.multiply(repetition, --div));
-				do {
+				if (!repetition.equals(Duration.NONE)) {
+					int div = (int)Math.ceil(Duration.divide(
+							new Duration(start, Duration.subtract(dateStart, appDuration)),
+							repetition));
+					while (!Duration.add(end, Duration.multiply(repetition, ++div)).after(dateStart)) {
+					}
+					GregorianCalendar current =
+							Duration.add(start, Duration.multiply(repetition, --div));
+					do {
+						appointments.add(new Appointment(result.getString("NAME"),
+								result.getString("DESCRIPTION"), current,
+								Duration.add(current, appDuration)));
+					} while ((current = Duration.add(start, Duration.multiply(repetition, ++div)))
+							.before(dateEnd));
+				} else {
 					appointments.add(new Appointment(result.getString("NAME"),
-							result.getString("DESCRIPTION"), current,
-							Duration.add(current, appDuration)));
-				} while ((current = Duration.add(start, Duration.multiply(repetition, ++div)))
-						.before(dateEnd));
+							result.getString("DESCRIPTION"), start, end));
+				}
 			}
 		} catch (SQLException e) {
 			LoggingController.log(Level.WARNING, "Unable to get Appointments for " +
@@ -243,6 +184,157 @@ public abstract class DatabaseController {
 			return null;
 		}
 		return appointments;
+	}
+
+	public static ArrayList<AppointmentGroup> getCategoryAppointments(Category category) {
+		ArrayList<AppointmentGroup> ret = new ArrayList<>();
+		try {
+			if (!category.hasId()) {
+				throw new SQLException("Category does not exist in the Database");
+			}
+			Statement statement = connection.createStatement();
+			ResultSet result = statement.executeQuery("SELECT ID, NAME, DESCRIPTION " +
+					"FROM APPOINTMENT_GROUP " +
+					"WHERE CATEGORY_FK = " + category.getId());
+			while (result.next()) {
+				ret.add(new AppointmentGroup(result.getInt("ID"), result.getString("NAME"),
+						result.getString("DESCRIPTION"), category, null, null));
+			}
+		} catch (SQLException e) {
+			LoggingController.log(Level.WARNING, "Unable to get Appointments for Category(id=" +
+					category.getId() + " name=\"" + category.getName() + "\"):" + e.getMessage());
+			return null;
+		}
+		return ret;
+	}
+
+	public static Category getCategoryById(int id) {
+		String name = "NONE";
+		String description = "";
+		try {
+			ResultSet result = connection.createStatement().executeQuery(
+					"SELECT NAME, DESCRIPTION FROM CATEGORY WHERE ID = " + id + ";");
+			if (!result.isClosed()) {
+				name = result.getString("NAME");
+				description = result.getString("DESCRIPTION");
+			} else {
+				throw new SQLException("Category does not exist");
+			}
+		} catch (SQLException e) {
+			LoggingController.log(Level.INFO,
+					"Unable to return Category for id " + id + ": " + e.getMessage());
+			id = DatabaseItem.UNASSIGNED_ID;
+		}
+		return Category.createInstance(id, name, description);
+	}
+
+	public static ArrayList<Category> getCategories() {
+		ArrayList<Category> ret = new ArrayList<>();
+		try {
+			ResultSet result = connection.createStatement().executeQuery("SELECT * FROM CATEGORY;");
+			if (!result.isClosed()) {
+				while (result.next()) {
+					ret.add(Category.createInstance(
+							result.getInt("ID"),
+							result.getString("NAME"),
+							result.getString("DESCRIPTION")));
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return ret;
+	}
+
+	public static void addPriority(Priority priority) {
+		//TODO
+	}
+
+	/**
+	 * Adds a {@link Category Category} to the Database.
+	 * @param category the Category
+	 */
+	public static void addCategory(Category category) {
+		PreparedStatement statement = null;
+		Savepoint savepoint = null;
+		try {
+			savepoint = connection.setSavepoint();
+			connection.setAutoCommit(false);
+			if (category.hasId()) {
+				statement = connection.prepareStatement(UPDATE_CATEGORY);
+				statement.setInt(3, category.getId());
+			} else {
+				statement = connection.prepareStatement(INSERT_CATEGORY);
+			}
+			statement.setString(1, category.getName());
+			statement.setString(2,category.getDescription());
+			statement.executeUpdate();
+			statement.close();
+			connection.commit();
+			category.initializeId(DatabaseController.getMaxId("CATEGORY"));
+			LoggingController.log(Level.FINE, "Added Category to Database.");
+		} catch (SQLException e) {
+			LoggingController.log(Level.WARNING,
+					"Failed to add Category to Database: " + e.getMessage());
+			if (savepoint != null) {
+				try {
+					connection.rollback(savepoint);
+				} catch (SQLException ex) {
+					LoggingController.log(Level.SEVERE, "Rollback failed: " + ex.getMessage());
+				}
+			}
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+				if (statement != null) {
+					statement.close();
+				}
+			} catch (SQLException e) {}
+		}
+	}
+
+	public static void addCategories(List<Category> categories) {
+		for (Category category : categories) {
+			DatabaseController.addCategory(category);
+		}
+	}
+
+	public static void removeCategory(Category category) {
+		PreparedStatement statement = null;
+		Savepoint savepoint = null;
+		try {
+			if (!category.hasId()) {
+				throw new SQLException("Category does not exist in the Database");
+			}
+			savepoint = connection.setSavepoint();
+			connection.setAutoCommit(false);
+			statement = connection.prepareStatement(DELETE_CATEGORY);
+			statement.setInt(1, category.getId());
+			int amountRemoved = statement.executeUpdate();
+			statement.close();
+			connection.commit();
+			if (amountRemoved == 0) {
+				throw new SQLException("Category does not exist in the Database");
+			}
+			LoggingController.log(Level.FINE, "Removed Category from Database.");
+		} catch (SQLException e) {
+			LoggingController.log(Level.WARNING,
+					"Failed to remove Category from Database: " + e.getMessage());
+			if (savepoint != null) {
+				try {
+					connection.rollback(savepoint);
+				} catch (SQLException ex) {
+					LoggingController.log(Level.SEVERE, "Rollback failed: " + ex.getMessage());
+				}
+			}
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+				if (statement != null) {
+					statement.close();
+				}
+			} catch (SQLException e) {}
+		}
 	}
 
 	/**
@@ -303,30 +395,6 @@ public abstract class DatabaseController {
 				}
 			} catch (SQLException e) {}
 		}
-	}
-
-	/**
-	 * Returns the ID of the given {@link Priority Priority} from the database.
-	 * If there is none, it will be inserted first.
-	 * @param priority the priority to get the ID from
-	 * @return the ID of the priority
-	 * @throws SQLException
-	 */
-	private static int getPriorityId(Priority priority) throws SQLException {
-		//TODO
-		return 0;
-	}
-
-	/**
-	 * Returns the ID of the given {@link Category Category} from the database.
-	 * If there is none, it will be inserted first.
-	 * @param category the category to get the ID from
-	 * @return the ID of the category
-	 * @throws SQLException
-	 */
-	private static int getCategoryId(Category category) throws SQLException {
-		//TODO
-		return 0;
 	}
 
 	/**

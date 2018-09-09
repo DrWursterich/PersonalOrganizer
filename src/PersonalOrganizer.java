@@ -8,6 +8,8 @@ import javafx.scene.layout.Priority;
 import java.util.GregorianCalendar;
 import java.util.logging.Level;
 import appointments.NewAppointmentWindow;
+import category.CreateCategoryWindow;
+import category.ManageCategoriesWindow;
 import settings.SettingsWindow;
 import util.Translator;
 import menus.*;
@@ -24,6 +26,7 @@ public class PersonalOrganizer extends Application {
 			0.60*Screen.getPrimary().getBounds().getHeight());
 	private View view;
 	private SettingsWindow settings;
+	private ManageCategoriesWindow manageCategories;
 	private Stage parentStage;
 
 	public static void main(String...args) throws Exception {
@@ -64,9 +67,20 @@ public class PersonalOrganizer extends Application {
 						new MenuItem("menuBar.file.new.meeting", e -> {
 							(new NewAppointmentWindow(this.parentStage)).show();
 						}, "Ctrl+N"),
-						new MenuItem("menuBar.file.new.meetings", e -> {
-							System.out.println("Neue Termin Gruppe anlegen");
+						new MenuItem("menuBar.file.new.category", e -> {
+							(new CreateCategoryWindow(this.parentStage)).show();
 						}, "Ctrl+Shift+N")),
+					new Menu("menuBar.file.manage.name",
+						new MenuItem("menuBar.file.manage.categories", e -> {
+							if (this.manageCategories == null) {
+								this.manageCategories = new ManageCategoriesWindow(
+										this.parentStage);
+							}
+							this.manageCategories.show();
+						}),
+						new MenuItem("menuBar.file.manage.priorities", e -> {
+							System.out.println("Prioritäten bearbeiten");
+						}, "Ctrl+Shift+P")),
 					new MenuItem("menuBar.file.open", e -> {
 						System.out.println("Datei öffnen");
 					}, "Ctrl+O"),
