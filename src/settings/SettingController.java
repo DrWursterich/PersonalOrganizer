@@ -17,8 +17,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import logging.LoggingController;
-import menus.OptionsDialog;
 import util.Translator;
+import windows.OptionsDialog;
 
 /**
  * Static Class that holds Information for all SettingController.

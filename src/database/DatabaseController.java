@@ -16,7 +16,11 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.logging.Level;
-import appointments.Appointment;
+import database.appointment.Appointment;
+import database.appointment.AppointmentGroup;
+import database.appointment.AppointmentItem;
+import database.category.Category;
+import database.priority.Priority;
 import logging.LoggingController;
 import util.Duration;
 

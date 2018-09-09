@@ -13,9 +13,9 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.control.ButtonBar.ButtonData;
-import menus.OptionsDialog;
 import javafx.scene.control.ButtonType;
 import util.Translator;
+import windows.OptionsDialog;
 
 /**
  * Static Controller-Class for Logging.<br/>

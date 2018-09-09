@@ -1,7 +1,7 @@
-package category;
+package windows;
 
-import database.Category;
 import database.DatabaseController;
+import database.category.Category;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;

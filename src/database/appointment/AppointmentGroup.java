@@ -1,6 +1,9 @@
-package database;
+package database.appointment;
 
 import java.util.ArrayList;
+import database.DatabaseItem;
+import database.category.Category;
+import database.priority.Priority;
 
 /**
  * A class to hold data.

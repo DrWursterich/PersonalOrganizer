@@ -1,5 +1,7 @@
-package database;
+package database.category;
 
+import database.DatabaseController;
+import database.DatabaseItem;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import util.Translator;

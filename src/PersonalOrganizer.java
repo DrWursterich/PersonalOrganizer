@@ -7,13 +7,14 @@ import javafx.scene.layout.VBox;
 import javafx.scene.layout.Priority;
 import java.util.GregorianCalendar;
 import java.util.logging.Level;
-import appointments.NewAppointmentWindow;
-import category.CreateCategoryWindow;
-import category.ManageCategoriesWindow;
-import settings.SettingsWindow;
 import util.Translator;
 import menus.*;
 import views.*;
+import windows.CreateCategoryWindow;
+import windows.ManageCategoriesWindow;
+import windows.NewAppointmentWindow;
+import windows.OptionsDialog;
+import windows.SettingsWindow;
 
 /**
  * Static Main Class for the Personal Organizer.

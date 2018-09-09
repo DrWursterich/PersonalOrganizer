@@ -1,4 +1,4 @@
-package menus;
+package windows;
 
 import javafx.beans.property.StringProperty;
 import javafx.scene.control.ButtonType;

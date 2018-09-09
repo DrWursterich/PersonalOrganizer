@@ -1,4 +1,4 @@
-package appointments;
+package windows;
 
 import static javafx.scene.layout.Priority.ALWAYS;
 
@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-import category.CategoryListCell;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -29,14 +28,14 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
-import database.AppointmentGroup;
-import database.AppointmentItem;
-import database.Category;
 import database.DatabaseController;
-import database.Priority;
+import database.appointment.AppointmentGroup;
+import database.appointment.AppointmentItem;
+import database.category.Category;
+import database.category.CategoryListCell;
+import database.priority.Priority;
 import menus.ContextMenu;
 import menus.MenuItem;
-import menus.OptionsDialog;
 import util.Duration;
 import util.Translator;
 

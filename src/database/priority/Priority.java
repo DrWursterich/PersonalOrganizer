@@ -1,7 +1,7 @@
-package database;
+package database.priority;
 
 import java.time.Period;
-
+import database.DatabaseItem;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;

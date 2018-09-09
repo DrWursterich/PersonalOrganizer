@@ -1,4 +1,4 @@
-package settings;
+package windows;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -32,10 +32,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import logging.LoggingController;
 import menus.FontPicker;
-import menus.OptionsDialog;
 import menus.TreeItem;
 import menus.TreeView;
 import settings.Setting;
+import settings.SettingController;
 import util.Translator;
 
 /**
@@ -102,7 +102,7 @@ public class SettingsWindow {
 		 * Restores the default Setting.
 		 */
 		default void toDefault() {
-			this.setValue(this.getSetting().defaultValue);
+			this.setValue(this.getSetting().getDefault());
 		}
 
 		/**

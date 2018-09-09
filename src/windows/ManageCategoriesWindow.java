@@ -1,10 +1,11 @@
-package category;
+package windows;
 
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
-import database.AppointmentGroup;
-import database.Category;
 import database.DatabaseController;
+import database.appointment.AppointmentGroup;
+import database.category.Category;
+import database.category.CategoryListCell;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -28,7 +29,6 @@ import menus.ContextMenu;
 import menus.Menu;
 import menus.MenuBar;
 import menus.MenuItem;
-import menus.OptionsDialog;
 import util.Translator;
 
 public class ManageCategoriesWindow {

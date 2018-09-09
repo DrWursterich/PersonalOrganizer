@@ -1,7 +1,6 @@
-package category;
+package database.category;
 
 import java.util.logging.Level;
-import database.Category;
 import javafx.scene.control.ListCell;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;

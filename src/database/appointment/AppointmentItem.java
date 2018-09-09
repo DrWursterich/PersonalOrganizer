@@ -1,4 +1,4 @@
-package database;
+package database.appointment;
 
 import java.util.GregorianCalendar;
 import util.Duration;

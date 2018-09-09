@@ -11,7 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import javafx.beans.property.StringProperty;
 import logging.LoggingController;
-import menus.OptionsDialog;
+import windows.OptionsDialog;
 import javafx.beans.property.SimpleStringProperty;
 
 /**

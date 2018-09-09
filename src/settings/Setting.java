@@ -40,6 +40,10 @@ public abstract class Setting<T extends Object> extends SimpleObjectProperty<T>
 		}
 	}
 
+	public T getDefault() {
+		return this.defaultValue;
+	}
+
 	@SuppressWarnings("unchecked")
 	protected void setObject(Object value) {
 		this.setValue((T)value);
