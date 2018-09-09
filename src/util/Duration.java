@@ -8,6 +8,7 @@ import java.util.GregorianCalendar;
  * @author Mario Schäper
  */
 public class Duration implements Comparable<Duration> {
+	public final static Duration NONE = new Duration(0, 0, 0, 0);
 	private final static int MIN_MINUTES_PER_MONTH = 27 * 24 * 60;
 	private final static int MAX_MINUTES_PER_MONTH = 31 * 24 * 60;
 
