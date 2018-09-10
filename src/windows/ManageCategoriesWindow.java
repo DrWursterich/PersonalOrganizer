@@ -82,7 +82,6 @@ public class ManageCategoriesWindow extends Window {
 		this.stage.setMinWidth(380);
 		this.stage.titleProperty().bind(
 				Translator.translationProperty("manageCategories.title"));
-		this.stage.initModality(Modality.APPLICATION_MODAL);
 		this.stage.setScene(this.scene);
 
 		VBox.setVgrow(this.contentPane, Priority.ALWAYS);

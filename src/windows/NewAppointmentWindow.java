@@ -383,7 +383,6 @@ public class NewAppointmentWindow extends Window {
 		this.stage.setMinHeight(350);
 		this.stage.setMinWidth(380);
 		this.stage.titleProperty().bind(Translator.translationProperty("newAppointment.title"));
-		this.stage.initModality(Modality.WINDOW_MODAL);
 		this.stage.setScene(this.scene);
 	}
 

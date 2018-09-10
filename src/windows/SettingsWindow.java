@@ -194,7 +194,6 @@ public class SettingsWindow extends Window {
 		this.stage.setMinWidth(250);
 		this.stage.setMinHeight(100);
 		this.stage.titleProperty().bind(Translator.translationProperty("settings.title"));
-		this.stage.initModality(Modality.WINDOW_MODAL);
 		this.stage.setScene(this.scene);
 		this.stage.setOnCloseRequest(e -> {
 			if (SettingsWindow.hasChanged) {

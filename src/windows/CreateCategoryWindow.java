@@ -38,7 +38,6 @@ public class CreateCategoryWindow extends Window {
 		this.stage.setMinWidth(380);
 		this.stage.titleProperty().bind(
 				Translator.translationProperty("createCategory.title"));
-		this.stage.initModality(Modality.APPLICATION_MODAL);
 		this.stage.setScene(this.scene);
 
 		VBox.setVgrow(this.descriptionVBox, Priority.ALWAYS);

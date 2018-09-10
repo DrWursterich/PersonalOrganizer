@@ -1,5 +1,6 @@
 package windows;
 
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public abstract class Window {
@@ -8,8 +9,8 @@ public abstract class Window {
 	protected Window() {
 	}
 
-	protected final void initOwner(Stage parentStage) {
-		this.stage.initOwner(parentStage);
+	protected final void initModality() {
+		this.stage.initModality(Modality.APPLICATION_MODAL);
 	}
 
 	public abstract void show();

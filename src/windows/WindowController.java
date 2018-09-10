@@ -18,9 +18,9 @@ public class WindowController {
 			Window window = WindowController.windows.get(windowClass);
 			if (window == null) {
 				window = windowClass.newInstance();
+				window.initModality();
 				WindowController.windows.put(windowClass, window);
 			}
-			window.initOwner(parentStage);
 			window.show();
 		} catch (Exception e) {
 			LoggingController.log(Level.SEVERE,
