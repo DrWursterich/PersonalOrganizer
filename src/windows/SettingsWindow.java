@@ -9,7 +9,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ColorPicker;
@@ -28,8 +27,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import logging.LoggingController;
 import menus.FontPicker;
 import menus.TreeItem;
@@ -43,18 +40,17 @@ import util.Translator;
  * @author Mario Schäper
  */
 public class SettingsWindow extends Window {
-	private final Stage stage = new Stage();
-	private final VBox root = new VBox();
-	private final Scene scene = new Scene(this.root);
-	private final HBox buttonBox = new HBox();
-	private final TreeView tree = new TreeView();
-	private final ScrollPane scrollPane = new ScrollPane();
-	private final SplitPane contentBox = new SplitPane(this.tree, this.scrollPane);
-	private final Button applyButton = new Button();
-	private final Button cancelButton = new Button();
-	private final Button restoreButton = new Button();
-	private final Region bufferRegionLeft = new Region();
-	private final Region bufferRegionRight = new Region();
+	private final TreeView tree = this.treeViewEx();
+	private final ScrollPane scrollPane = this.scrollPane();
+	private final SplitPane contentBox = this.splitPane(this.tree, this.scrollPane);
+	private final Button applyButton = this.buttonTranslatable("settings.buttons.apply");
+	private final Button cancelButton = this.buttonTranslatable("settings.buttons.cancel");
+	private final Button restoreButton = this.buttonTranslatable("settings.buttons.restore");
+	private final Region bufferRegionLeft = this.region();
+	private final Region bufferRegionRight = this.region();
+	private final HBox buttonBox = this.hBox(
+			this.cancelButton, this.bufferRegionLeft, this.restoreButton,
+			this.bufferRegionRight, this.applyButton);
 	private static boolean hasChanged = false;
 
 	/**
@@ -186,15 +182,12 @@ public class SettingsWindow extends Window {
 	}
 
 	protected SettingsWindow () {
+		this.root(new VBox(this.contentBox, this.buttonBox), 250, 100, "settings.title");
 		HBox.setHgrow(this.bufferRegionLeft, Priority.ALWAYS);
 		HBox.setHgrow(this.bufferRegionRight, Priority.ALWAYS);
 		HBox.setHgrow(this.scrollPane, Priority.ALWAYS);
 		VBox.setVgrow(this.contentBox, Priority.ALWAYS);
 
-		this.stage.setMinWidth(250);
-		this.stage.setMinHeight(100);
-		this.stage.titleProperty().bind(Translator.translationProperty("settings.title"));
-		this.stage.setScene(this.scene);
 		this.stage.setOnCloseRequest(e -> {
 			if (SettingsWindow.hasChanged) {
 				ButtonType yes = new ButtonType(
@@ -217,21 +210,15 @@ public class SettingsWindow extends Window {
 			}
 		});
 
-		this.applyButton.textProperty().bind(
-				Translator.translationProperty("settings.buttons.apply"));
 		this.applyButton.setOnAction(e -> {
 			this.tree.apply();
 			SettingsWindow.hasChanged = false;
 		});
 
-		this.cancelButton.textProperty().bind(
-				Translator.translationProperty("settings.buttons.cancel"));
 		this.cancelButton.setOnAction(e -> {
 			this.stage.hide();
 		});
 
-		this.restoreButton.textProperty().bind(
-				Translator.translationProperty("settings.buttons.restoreDefault"));
 		this.restoreButton.setOnAction(e -> {
 			try {
 				Translator.setLanguage(Translator.DEFAULT_LANGUAGE);
@@ -248,29 +235,6 @@ public class SettingsWindow extends Window {
 			}
 			SettingsWindow.hasChanged = false;
 		});
-
-		this.buttonBox.getChildren().addAll(this.cancelButton, this.bufferRegionLeft,
-				this.restoreButton, this.bufferRegionRight, this.applyButton);
-
-		this.tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		this.tree.getItems().addAll(new TreeItem[]{
-				this.generalItem(),
-				this.languageItem(),
-				this.viewsItem()});
-		this.tree.getSelectionModel().selectedItemProperty().addListener((v, o, n) -> {
-			if (n instanceof TreeItem) {
-				this.scrollPane.setContent(((TreeItem)n).getContent());
-			}
-		});
-		this.tree.getSelectionModel().clearAndSelect(0);
-		this.tree.setMinWidth(100);
-
-		this.scrollPane.setMinWidth(100);
-		this.scrollPane.setFitToWidth(true);
-
-		this.contentBox.setPrefWidth(600);
-		this.contentBox.setDividerPositions(0.3);
-		this.root.getChildren().addAll(this.contentBox, this.buttonBox);
 	}
 
 	/**
@@ -406,6 +370,7 @@ public class SettingsWindow extends Window {
 				timeStampFontPicker);
 		pane.setHgap(20);
 		pane.setVgap(10);
+
 		return new TreeItem(Translator.translationProperty("settings.views.dayView.name"),
 				pane, e -> {
 					if (SettingsWindow.hasChanged) {
@@ -415,5 +380,33 @@ public class SettingsWindow extends Window {
 						SettingController.save();
 					}
 				});
+	}
+
+	@Override
+	public void initSplitPane(SplitPane splitPane) {
+		splitPane.setPrefWidth(600);
+		splitPane.setDividerPositions(0.3);
+	}
+
+	@Override
+	public void initTreeViewEx(TreeView treeView) {
+		treeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		treeView.getItems().addAll(new TreeItem[]{
+				this.generalItem(),
+				this.languageItem(),
+				this.viewsItem()});
+		treeView.getSelectionModel().selectedItemProperty().addListener((v, o, n) -> {
+			if (n instanceof TreeItem) {
+				this.scrollPane.setContent(((TreeItem)n).getContent());
+			}
+		});
+		treeView.getSelectionModel().clearAndSelect(0);
+		treeView.setMinWidth(100);
+	}
+
+	@Override
+	public void initScrollPane(ScrollPane scrollPane) {
+		scrollPane.setMinWidth(100);
+		scrollPane.setFitToWidth(true);
 	}
 }

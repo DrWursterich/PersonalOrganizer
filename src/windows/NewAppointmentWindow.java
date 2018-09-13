@@ -2,139 +2,130 @@ package windows;
 
 import static javafx.scene.layout.Priority.ALWAYS;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.util.StringConverter;
 import database.DatabaseController;
 import database.appointment.AppointmentGroup;
 import database.appointment.AppointmentItem;
 import database.category.Category;
 import database.category.CategoryListCell;
 import database.priority.Priority;
+import menus.DatePicker;
 import menus.ContextMenu;
 import menus.MenuItem;
 import util.Duration;
+import util.NumberField;
 import util.Translator;
 
 public class NewAppointmentWindow extends Window {
 	private static final String ADD_TAB_TEXT = " + ";
-	private TextField titleField = this.textField("newAppointment.titlePrompt", true, -1);
+	private TextField titleField = this.textFieldTranslatable("newAppointment.titlePrompt");
 	private TextArea descriptionArea = new TextArea();
-	private Label categoryLabel = this.label("newAppointment.category.label");
+	private Label categoryLabel = this.labelTranslatable("newAppointment.category.label");
 	private ComboBox<Category> categoryBox = new ComboBox<>();
 	private Button manageCategoryButton = new Button(NewAppointmentWindow.ADD_TAB_TEXT);
 	private Tooltip manageCategoryButtonTooltip = new Tooltip();
-	private HBox categoryInputs = this.box(new HBox(this.categoryBox, this.manageCategoryButton));
-	private VBox categoryContainer = this.box(new VBox(this.categoryLabel, this.categoryInputs));
-	private Label priorityLabel = this.label("newAppointment.priority.label");
+	private HBox categoryInputs = this.hBox(this.categoryBox, this.manageCategoryButton);
+	private VBox categoryContainer = this.vBox(this.categoryLabel, this.categoryInputs);
+	private Label priorityLabel = this.labelTranslatable("newAppointment.priority.label");
 	private ComboBox<Priority> priorityBox = new ComboBox<>();
 	private Button managePriorityButton = new Button(NewAppointmentWindow.ADD_TAB_TEXT);
 	private Tooltip managePriorityButtonTooltip = new Tooltip();
-	private HBox priorityInputs = this.box(new HBox(this.priorityBox, this.managePriorityButton));
-	private VBox priorityContainer = this.box(new VBox(this.priorityLabel, this.priorityInputs));
-	private HBox comboBoxPane = this.box(new HBox(this.categoryContainer, this.priorityContainer));
-	private VBox leftPane = this.box(
-			new VBox(this.titleField, this.descriptionArea, this.comboBoxPane));
+	private HBox priorityInputs = this.hBox(this.priorityBox, this.managePriorityButton);
+	private VBox priorityContainer = this.vBox(this.priorityLabel, this.priorityInputs);
+	private HBox comboBoxPane = this.hBox(this.categoryContainer, this.priorityContainer);
+	private VBox leftPane = this.vBox(this.titleField, this.descriptionArea, this.comboBoxPane);
 	private TabPane tabPane = new TabPane();
 	private Button cancelButton = new Button();
 	private Button acceptButton = new Button();
-	private HBox buttonBox = this.box(new HBox(this.cancelButton, this.acceptButton));
-	private VBox rightPane = this.box(new VBox(this.tabPane, this.buttonBox));
-	private SplitPane root = new SplitPane(this.leftPane, this.rightPane);
-	private Scene scene = new Scene(this.root);
+	private HBox buttonBox = this.hBox(this.cancelButton, this.acceptButton);
+	private VBox rightPane = this.vBox(this.tabPane, this.buttonBox);
 
-	private class CustomTab extends Tab {
+	private class CustomTab extends Tab implements NodeInitializer {
 		private NewAppointmentWindow window = NewAppointmentWindow.this;
 		private ObservableList<Tab> tabs = this.window.tabPane.getTabs();
-		private Label dateFromLabel = this.window.label("newAppointment.dateFrom.label");
-		private DatePicker dateFromPicker = new DatePicker();
-		private TextField dateFromHourField =
-				this.window.textField("newAppointment.dateFrom.hourPrompt", false, 23);
-		private TextField dateFromMinuteField =
-				this.window.textField("newAppointment.dateFrom.minutePrompt", false, 59);
-		private HBox dateFromTimeBox =
-				this.window.box(new HBox(this.dateFromHourField, this.dateFromMinuteField));
-		private Label dateToLabel = this.window.label("newAppointment.dateTo.label");
-		private DatePicker dateToPicker = new DatePicker();
-		private TextField dateToHourField =
-				this.window.textField("newAppointment.dateTo.hourPrompt", false, 23);
-		private TextField dateToMinuteField =
-				this.window.textField("newAppointment.dateTo.minutePrompt", false, 59);
-		private HBox dateToTimeBox =
-				this.window.box(new HBox(this.dateToHourField, this.dateToMinuteField));
-		private VBox tabContentLeft = this.window.box(new VBox(
+		private Label dateFromLabel = this.labelTranslatable("newAppointment.dateFrom.label");
+		private DatePicker dateFromPicker = this.datePicker();
+		private NumberField dateFromHourField = this.numberFieldTranslatable(
+				"newAppointment.dateFrom.hourPrompt", 0, 23);
+		private NumberField dateFromMinuteField = this.numberFieldTranslatable(
+				"newAppointment.dateFrom.minutePrompt", 0, 59);
+		private HBox dateFromTimeBox =this.hBox(
+				this.dateFromHourField, this.dateFromMinuteField);
+		private Label dateToLabel = this.labelTranslatable("newAppointment.dateTo.label");
+		private DatePicker dateToPicker = this.datePicker();
+		private NumberField dateToHourField = this.numberFieldTranslatable(
+				"newAppointment.dateTo.hourPrompt", 0, 23);
+		private NumberField dateToMinuteField = this.numberFieldTranslatable(
+				"newAppointment.dateTo.minutePrompt", 0, 59);
+		private HBox dateToTimeBox = this.hBox(this.dateToHourField, this.dateToMinuteField);
+		private VBox tabContentLeft = this.vBox(
 				this.dateFromLabel, this.dateFromPicker, this.dateFromTimeBox,
-				this.dateToLabel, this.dateToPicker, this.dateToTimeBox));
-		private Label durationLabel = this.window.label("newAppointment.duration.label");
-		private TextField durationMonthsField =
-				this.window.textField("newAppointment.duration.monthsPrompt", false, -1);
-		private TextField durationDaysField =
-				this.window.textField("newAppointment.duration.daysPrompt", false, 30);
-		private HBox durationDaysBox = this.window.box(new HBox(
-				this.durationMonthsField, this.durationDaysField));
-		private TextField durationHoursField =
-				this.window.textField("newAppointment.duration.hoursPrompt", false, 23);
-		private TextField durationMinutesField =
-				this.window.textField("newAppointment.duration.minutesPrompt", false, 59);
-		private HBox durationTimeBox = this.window.box(new HBox(
-				this.durationHoursField, this.durationMinutesField));
-		private Label repetetionLabel = this.window.label("newAppointment.repetetion.label");
-		private TextField repetetionMonthsField =
-				this.window.textField("newAppointment.repetetion.monthsPrompt", false, -1);
-		private TextField repetetionDaysField =
-				this.window.textField("newAppointment.repetetion.daysPrompt", false, 30);
-		private HBox repetetionDaysBox = this.window.box(new HBox(
-				this.repetetionMonthsField, this.repetetionDaysField));
-		private TextField repetetionHoursField =
-				this.window.textField("newAppointment.repetetion.hoursPrompt", false, 23);
-		private TextField repetetionMinutesField =
-				this.window.textField("newAppointment.repetetion.minutesPrompt", false, 59);
-		private HBox repetetionTimeBox = this.window.box(new HBox(
-				this.repetetionHoursField, this.repetetionMinutesField));
+				this.dateToLabel, this.dateToPicker, this.dateToTimeBox);
+		private Label durationLabel = this.labelTranslatable("newAppointment.duration.label");
+		private NumberField durationMonthsField =
+				this.numberFieldTranslatable("newAppointment.duration.monthsPrompt", 0, Integer.MAX_VALUE);
+		private NumberField durationDaysField =
+				this.numberFieldTranslatable("newAppointment.duration.daysPrompt", 0, 30);
+		private HBox durationDaysBox = this.hBox(this.durationMonthsField, this.durationDaysField);
+		private NumberField durationHoursField =
+				this.numberFieldTranslatable("newAppointment.duration.hoursPrompt", 0, 23);
+		private NumberField durationMinutesField =
+				this.numberFieldTranslatable("newAppointment.duration.minutesPrompt", 0, 59);
+		private HBox durationTimeBox = this.hBox(this.durationHoursField, this.durationMinutesField);
+		private Label repetetionLabel = this.labelTranslatable("newAppointment.repetetion.label");
+		private NumberField repetetionMonthsField =
+				this.numberFieldTranslatable("newAppointment.repetetion.monthsPrompt", 0, Integer.MAX_VALUE);
+		private NumberField repetetionDaysField =
+				this.numberFieldTranslatable("newAppointment.repetetion.daysPrompt", 0, 30);
+		private HBox repetetionDaysBox = this.hBox(
+				this.repetetionMonthsField, this.repetetionDaysField);
+		private NumberField repetetionHoursField =
+				this.numberFieldTranslatable("newAppointment.repetetion.hoursPrompt", 0, 23);
+		private NumberField repetetionMinutesField =
+				this.numberFieldTranslatable("newAppointment.repetetion.minutesPrompt", 0, 59);
+		private HBox repetetionTimeBox = this.hBox(
+				this.repetetionHoursField, this.repetetionMinutesField);
 		private Label repetetionEndLabel =
-				this.window.label("newAppointment.repetetion.endDateLabel");
-		private DatePicker repetetionEndPicker = new DatePicker();
-		private VBox tabContentRight = this.window.box(new VBox(
+				this.labelTranslatable("newAppointment.repetetion.endDateLabel");
+		private DatePicker repetetionEndPicker = this.datePicker();
+		private VBox tabContentRight = this.vBox(
 				this.durationLabel, this.durationDaysBox, this.durationTimeBox,
 				this.repetetionLabel, this.repetetionDaysBox, this.repetetionTimeBox,
-				this.repetetionEndLabel, this.repetetionEndPicker));
-		private HBox tabContent = this.window.box(new HBox(
-				this.tabContentLeft, this.tabContentRight));
+				this.repetetionEndLabel, this.repetetionEndPicker);
+		private HBox tabContent = this.hBox(this.tabContentLeft, this.tabContentRight);
 
 		private ChangeListener<Object> updateDateTo = (observable, oldValue, newValue) -> {
 			if ((oldValue == null || !oldValue.equals(newValue))
 					&& this.dateFromPicker.getValue() != null) {
-				int result = this.window.fieldVal(this.dateFromMinuteField)
-						+ this.window.fieldVal(this.durationMinutesField);
+				int result = this.dateFromMinuteField.getValue()
+						+ this.durationMinutesField.getValue();
 				this.dateToMinuteField.setText("" + (result % 60));
-				result = result / 60 + this.window.fieldVal(this.dateFromHourField)
-						+ this.window.fieldVal(this.durationHoursField);
+				result = result / 60
+						+ this.dateFromHourField.getValue()
+						+ this.durationHoursField.getValue();
 				this.dateToHourField.setText("" + (result % 24));
-				this.dateToPicker.setValue(this.dateFromPicker.getValue().plusDays(result / 24
-						+ this.window.fieldVal(this.durationDaysField)).plusMonths(
-								this.window.fieldVal(this.durationMonthsField)));
+				this.dateToPicker.setValue(
+						this.dateFromPicker.getValue().plusDays(
+								result / 24
+								+ this.durationDaysField.getValue()
+						).plusMonths(
+								this.durationMonthsField.getValue()));
 			}
 		};
 
@@ -142,10 +133,10 @@ public class NewAppointmentWindow extends Window {
 			if ((oldValue == null || !oldValue.equals(newValue))
 					&& this.dateFromPicker.getValue() != null
 					&& this.dateToPicker.getValue() != null) {
-				int startMinute = this.window.fieldVal(this.dateFromMinuteField);
-				int startHour = this.window.fieldVal(this.dateFromHourField);
-				int endMinute = this.window.fieldVal(this.dateToMinuteField);
-				int endHour = this.window.fieldVal(this.dateToHourField);
+				int startMinute = this.dateFromMinuteField.getValue();
+				int startHour = this.dateFromHourField.getValue();
+				int endMinute = this.dateToMinuteField.getValue();
+				int endHour = this.dateToHourField.getValue();
 				long minutes = TimeUnit.MINUTES.convert((new GregorianCalendar(
 							this.dateToPicker.getValue().getYear(),
 							this.dateToPicker.getValue().getMonthValue(),
@@ -201,10 +192,6 @@ public class NewAppointmentWindow extends Window {
 		private void initialize() {
 			this.tabContent.setPadding(new Insets(10));
 
-			this.dateFromPicker.setMaxWidth(Double.MAX_VALUE);
-			this.dateToPicker.setMaxWidth(Double.MAX_VALUE);
-			this.repetetionEndPicker.setMaxWidth(Double.MAX_VALUE);
-
 			this.durationMinutesField.textProperty().addListener(this.updateDateTo);
 			this.durationHoursField.textProperty().addListener(this.updateDateTo);
 			this.durationDaysField.textProperty().addListener(this.updateDateTo);
@@ -216,9 +203,6 @@ public class NewAppointmentWindow extends Window {
 			this.dateToPicker.valueProperty().addListener(this.updateDuration);
 			this.dateToHourField.textProperty().addListener(this.updateDuration);
 			this.dateToMinuteField.textProperty().addListener(this.updateDuration);
-
-			HBox.setHgrow(this.tabContentRight, ALWAYS);
-			HBox.setHgrow(this.tabContentLeft, ALWAYS);
 
 			this.setContent(this.tabContent);
 		}
@@ -247,42 +231,70 @@ public class NewAppointmentWindow extends Window {
 
 		GregorianCalendar getDateFrom() {
 			return new GregorianCalendar(
-					this.window.fieldVal(this.dateFromPicker, o -> o.getYear()),
-					this.window.fieldVal(this.dateFromPicker, o -> o.getMonthValue()-1),
-					this.window.fieldVal(this.dateFromPicker, o -> o.getDayOfMonth()),
-					this.window.fieldVal(this.dateFromHourField),
-					this.window.fieldVal(this.dateFromMinuteField));
+					this.dateFromPicker.getYear(),
+					this.dateFromPicker.getMonth(),
+					this.dateFromPicker.getDayOfMonth(),
+					this.dateFromHourField.getValue(),
+					this.dateFromMinuteField.getValue());
 		}
 
 		GregorianCalendar getDateTo() {
 			return new GregorianCalendar(
-					this.window.fieldVal(this.dateToPicker, o -> o.getYear()),
-					this.window.fieldVal(this.dateToPicker, o -> o.getMonthValue()-1),
-					this.window.fieldVal(this.dateToPicker, o -> o.getDayOfMonth()),
-					this.window.fieldVal(this.dateToHourField),
-					this.window.fieldVal(this.dateToMinuteField));
+					this.dateToPicker.getYear(),
+					this.dateToPicker.getMonth(),
+					this.dateToPicker.getDayOfMonth(),
+					this.dateToHourField.getValue(),
+					this.dateToMinuteField.getValue());
 		}
 
 		Duration getRepetition() {
 			return new Duration(
-					this.window.fieldVal(this.repetetionMonthsField),
-					this.window.fieldVal(this.repetetionDaysField),
-					this.window.fieldVal(this.repetetionHoursField),
-					this.window.fieldVal(this.repetetionMinutesField));
+					this.repetetionMonthsField.getValue(),
+					this.repetetionDaysField.getValue(),
+					this.repetetionHoursField.getValue(),
+					this.repetetionMinutesField.getValue());
 		}
 
 		GregorianCalendar getRepetitionEnd() {
 			return new GregorianCalendar(
-					this.window.fieldVal(this.repetetionEndPicker,
-							o -> o.getYear(), this.dateFromPicker),
-					this.window.fieldVal(this.repetetionEndPicker,
-							o -> o.getMonthValue()-1, this.dateFromPicker),
-					this.window.fieldVal(this.repetetionEndPicker,
-							o -> o.getDayOfMonth(), this.dateFromPicker));
+					this.repetetionEndPicker.getYear(
+							this.dateFromPicker.getYear()),
+					this.repetetionEndPicker.getMonth(
+							this.dateFromPicker.getMonth()),
+					this.repetetionEndPicker.getDayOfMonth(
+							this.dateFromPicker.getDayOfMonth()));
+		}
+
+		@Override
+		public void initHBox(HBox hBox) {
+			NewAppointmentWindow.this.initHBox(hBox);
+		}
+
+		@Override
+		public void initVBox(VBox vBox) {
+			NewAppointmentWindow.this.initVBox(vBox);
+			HBox.setHgrow(vBox, ALWAYS);
+		}
+
+		@Override
+		public void initTextField(TextField textField) {
+			NewAppointmentWindow.this.initTextField(textField);
+		}
+
+		@Override
+		public void initNumberField(NumberField numberField) {
+			this.initTextField(numberField);
+		}
+
+		@Override
+		public void initDatePicker(DatePicker datePicker) {
+			datePicker.setMaxWidth(Double.MAX_VALUE);
 		}
 	}
 
 	protected NewAppointmentWindow() {
+		this.rootTranslatable(this.splitPane(this.leftPane, this.rightPane),
+				350, 380, "newAppointment.title");
 		VBox.setVgrow(this.descriptionArea, ALWAYS);
 		HBox.setHgrow(this.categoryInputs, ALWAYS);
 		HBox.setHgrow(this.categoryBox, ALWAYS);
@@ -379,11 +391,6 @@ public class NewAppointmentWindow extends Window {
 		this.manageCategoryButton.setOnAction(e -> {
 			WindowController.showWindow(ManageCategoriesWindow.class, this.stage);
 		});
-
-		this.stage.setMinHeight(350);
-		this.stage.setMinWidth(380);
-		this.stage.titleProperty().bind(Translator.translationProperty("newAppointment.title"));
-		this.stage.setScene(this.scene);
 	}
 
 	@Override
@@ -391,80 +398,22 @@ public class NewAppointmentWindow extends Window {
 		this.stage.showAndWait();
 	}
 
-	private Label label(String text) {
-		Label ret = new Label();
-		ret.textProperty().bind(Translator.translationProperty(text));
-		return ret;
-	}
-
-	private TextField textField(String promptText, boolean allowText, int maxValue) {
-		TextField ret = new TextField();
-		ret.setMaxWidth(Double.MAX_VALUE);
-		HBox.setHgrow(ret, ALWAYS);
-		ret.promptTextProperty().bind(Translator.translationProperty(promptText));
+	@Override
+	public void initTextField(TextField textField) {
+		textField.setMaxWidth(Double.MAX_VALUE);
+		HBox.setHgrow(textField, ALWAYS);
 		Tooltip tooltip = new Tooltip();
-		tooltip.textProperty().bind(Translator.translationProperty(promptText));
-		ret.setTooltip(tooltip);
-		if (!allowText) {
-			ret.setTextFormatter(new TextFormatter<>(new StringConverter<String>() {
-				@Override
-				public String toString(String object) {
-					if ("".equals(object)) {
-						return "";
-					}
-					int ret = 0;
-					try {
-						ret = Math.max(0, Integer.parseInt(object));
-					} catch (NumberFormatException e) {
-						return "";
-					}
-					return "" + (maxValue == -1 ? ret : Math.min(ret, maxValue));
-				}
-
-				@Override
-				public String fromString(String string) {
-					if ("".equals(string)) {
-						return "";
-					}
-					int ret = 0;
-					try {
-						ret = Math.max(0, Integer.parseInt(string));
-					} catch (NumberFormatException e) {}
-					return "" + (maxValue == -1 ? ret : Math.min(ret, maxValue));
-				}
-			}));
-		}
-		return ret;
+		tooltip.textProperty().bind(textField.promptTextProperty());
+		textField.setTooltip(tooltip);
 	}
 
-	private HBox box(HBox box) {
-		box.setSpacing(5);
-		return box;
+	@Override
+	public void initHBox(HBox hBox) {
+		hBox.setSpacing(5);
 	}
 
-	private VBox box(VBox box) {
-		box.setSpacing(5);
-		return box;
-	}
-
-	private int fieldVal(TextField field) {
-		try {
-			return field.getText() == null ? 0 : Integer.parseInt(field.getText());
-		} catch (NumberFormatException e) {
-			return 0;
-		}
-	}
-
-	private int fieldVal(DatePicker field, Function<LocalDate, Integer> function, int standard) {
-		return field.getValue() != null ? function.apply(field.getValue()) : standard;
-	}
-
-	private int fieldVal(DatePicker field, Function<LocalDate, Integer> function) {
-		return this.fieldVal(field, function, function.apply(LocalDate.now()));
-	}
-
-	private int fieldVal(DatePicker field, Function<LocalDate, Integer> function,
-			DatePicker standard) {
-		return this.fieldVal(field, function, this.fieldVal(standard, function));
+	@Override
+	public void initVBox(VBox vBox) {
+		vBox.setSpacing(5);
 	}
 }

@@ -10,19 +10,16 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import menus.ContextMenu;
 import menus.Menu;
@@ -32,24 +29,28 @@ import util.Translator;
 
 public class ManageCategoriesWindow extends Window {
 	private ListView<Category> categoriesList = new ListView<>();
-	private Label nameLabel = this.label("manageCategories.properties.title.label");
-	private TextField nameField = this.textField("manageCategories.properties.title.prompt");
-	private VBox nameVBox = new VBox(this.nameLabel, this.nameField);
-	private Label descriptionLabel = this.label("manageCategories.properties.description.label");
-	private TextArea descriptionField = this.textArea(
+	private Label nameLabel = this.labelTranslatable(
+			"manageCategories.properties.title.label");
+	private TextField nameField = this.textFieldTranslatable(
+			"manageCategories.properties.title.prompt");
+	private VBox nameVBox = this.vBox(this.nameLabel, this.nameField);
+	private Label descriptionLabel = this.labelTranslatable(
+			"manageCategories.properties.description.label");
+	private TextArea descriptionField = this.textAreaTranslatable(
 			"manageCategories.properties.description.prompt");
-	private VBox descriptionVBox = new VBox(this.descriptionLabel, this.descriptionField);
-	private VBox propertiesVBox = new VBox(this.nameVBox, this.descriptionVBox);
-	private TitledPane propertiesPane = this.titledPane(
+	private VBox descriptionVBox = this.vBox(
+			this.descriptionLabel, this.descriptionField);
+	private VBox propertiesVBox = this.vBox(
+			this.nameVBox, this.descriptionVBox);
+	private TitledPane propertiesPane = this.titledPaneTranslatable(
 			"manageCategories.properties.name", this.propertiesVBox);
 	private ListView<AppointmentGroup> appointmentList = new ListView<>();
-	private TitledPane appointmentsPane = this.titledPane(
+	private TitledPane appointmentsPane = this.titledPaneTranslatable(
 			"manageCategories.appointments.name", this.appointmentList);
-	private Accordion propertiesAccordion = new Accordion(
+	private Accordion propertiesAccordion = this.accordion(
 			this.propertiesPane, this.appointmentsPane);
-	private SplitPane contentPane = new SplitPane(this.categoriesList, this.propertiesAccordion);
-	private VBox root = new VBox(this.menuBar(), this.contentPane);
-	private Scene scene = new Scene(this.root);
+	private SplitPane contentPane = this.splitPane(
+			this.categoriesList, this.propertiesAccordion);
 	private ArrayList<Category> changedCategories = new ArrayList<>();
 
 	private class CategoryChangeListener implements ChangeListener<String> {
@@ -78,13 +79,10 @@ public class ManageCategoriesWindow extends Window {
 	}
 
 	protected ManageCategoriesWindow() {
-		this.stage.setMinHeight(320);
-		this.stage.setMinWidth(380);
-		this.stage.titleProperty().bind(
-				Translator.translationProperty("manageCategories.title"));
-		this.stage.setScene(this.scene);
+		this.rootTranslatable(this.vBox(this.menuBar(), this.contentPane),
+				320, 380, "manageCategories.title");
 
-		VBox.setVgrow(this.contentPane, Priority.ALWAYS);
+		this.propertiesVBox.setSpacing(25);
 
 		this.categoriesList.setCellFactory(param -> {
 			CategoryListCell cell = new CategoryListCell() {
@@ -107,24 +105,6 @@ public class ManageCategoriesWindow extends Window {
 			};
 			return cell;
 		});
-
-		this.nameField.textProperty().addListener(
-				new CategoryChangeListener(Category::getName, Category::setName));
-
-		this.descriptionField.textProperty().addListener(
-				new CategoryChangeListener(Category::getDescription, Category::setDescription));
-
-		this.propertiesAccordion.expandedPaneProperty().addListener((v, o, n) -> {
-			Category selectedCategory = this.categoriesList.getSelectionModel().getSelectedItem();
-			if (this.appointmentsPane.equals(n) && selectedCategory != null) {
-				this.appointmentList.setItems(FXCollections.observableArrayList(
-						DatabaseController.getCategoryAppointments(selectedCategory)));
-			}
-		});
-
-		this.propertiesVBox.setSpacing(25);
-
-		this.categoriesList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		this.categoriesList.getSelectionModel().selectedItemProperty().addListener((v, o, n) -> {
 			if (n != null) {
 				if (n.equals(Category.NONE)) {
@@ -141,14 +121,10 @@ public class ManageCategoriesWindow extends Window {
 				this.propertiesAccordion.setDisable(true);
 			}
 		});
-
-		this.stage.setOnCloseRequest(e -> {
-			this.applyCategoryChanges();
-		});
 	}
 
 	@Override
-	public void show() {
+	public void initialize() {
 		this.propertiesAccordion.setDisable(true);
 		ObservableList<Category> items = FXCollections.observableArrayList(
 				DatabaseController.getCategories());
@@ -161,7 +137,6 @@ public class ManageCategoriesWindow extends Window {
 							? items.get(1)
 							: null);
 		}
-		this.stage.showAndWait();
 	}
 
 	private MenuBar menuBar() {
@@ -198,41 +173,6 @@ public class ManageCategoriesWindow extends Window {
 					deleteMenuItem));
 	}
 
-	private Label label(String translationPropertyText) {
-		Label ret = new Label();
-		ret.textProperty().bind(Translator.translationProperty(translationPropertyText));
-		return ret;
-	}
-
-//	private <E extends Labeled> E bind(E node, String titleTranslationText) {
-//		node.textProperty().bind(Translator.translationProperty(titleTranslationText));
-//		return node;
-//	}
-//
-//	private <E extends TextInputControl> E bind(E node, String titleTranslationText) {
-//		node.textProperty().bind(Translator.translationProperty(titleTranslationText));
-//		return node;
-//	}
-
-	private TextField textField(String textTranslationText) {
-		TextField ret = new TextField();
-		ret.promptTextProperty().bind(Translator.translationProperty(textTranslationText));
-		return ret;
-	}
-
-	private TextArea textArea(String textTranslationText) {
-		TextArea ret = new TextArea();
-		ret.promptTextProperty().bind(Translator.translationProperty(textTranslationText));
-		return ret;
-	}
-
-	private TitledPane titledPane(String titleTranslationPropertyText, Node node) {
-		TitledPane ret = new TitledPane();
-		ret.textProperty().bind(Translator.translationProperty(titleTranslationPropertyText));
-		ret.setContent(node);
-		return ret;
-	}
-
 	private void applyCategoryChanges() {
 		DatabaseController.addCategories(this.changedCategories);
 		this.changedCategories.clear();
@@ -241,5 +181,40 @@ public class ManageCategoriesWindow extends Window {
 	@Override
 	protected void finalize() {
 		this.applyCategoryChanges();
+	}
+
+	@Override
+	public void initStage(Stage stage) {
+		stage.setOnCloseRequest(e -> {
+			this.applyCategoryChanges();
+		});
+	}
+
+	@Override
+	public void initSplitPane(SplitPane splitPane) {
+		VBox.setVgrow(splitPane, Priority.ALWAYS);
+	}
+
+	@Override
+	public void initAccordion(Accordion accordion) {
+		accordion.expandedPaneProperty().addListener((v, o, n) -> {
+			Category selectedCategory = this.categoriesList.getSelectionModel().getSelectedItem();
+			if (this.appointmentsPane.equals(n) && selectedCategory != null) {
+				this.appointmentList.setItems(FXCollections.observableArrayList(
+						DatabaseController.getCategoryAppointments(selectedCategory)));
+			}
+		});
+	}
+
+	@Override
+	public void initTextField(TextField textField) {
+		textField.textProperty().addListener(
+				new CategoryChangeListener(Category::getName, Category::setName));
+	}
+
+	@Override
+	public void initTextArea(TextArea textArea) {
+		textArea.textProperty().addListener(
+				new CategoryChangeListener(Category::getDescription, Category::setDescription));
 	}
 }
