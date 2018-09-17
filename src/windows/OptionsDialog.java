@@ -1,5 +1,7 @@
 package windows;
 
+import java.util.Arrays;
+
 import javafx.beans.property.StringProperty;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
@@ -12,6 +14,32 @@ import util.Translator;
  * @author Mario Schäper
  */
 public class OptionsDialog {
+	/**
+	 * Immutable Class, that holds the Data of a executable Option of a Dialog.
+	 * @author Mario Schäper
+	 */
+	public static class Option {
+		private final ButtonType buttonType;
+		private final Runnable action;
+
+		public Option(ButtonType buttonType, Runnable action) {
+			this.buttonType = buttonType;
+			this.action = action;
+		}
+
+		public ButtonType getButtonType() {
+			return this.buttonType;
+		}
+
+		public Runnable getAction() {
+			return this.action;
+		}
+
+		public void execute() {
+			this.action.run();
+		}
+	}
+
 	/**
 	 * Prompts the User with a {@link javafx.scene.control.Dialog Dialog}, containing the
 	 * Title, Message and {@link javafx.scene.control.ButtonType ButtonTypes}.
@@ -31,6 +59,27 @@ public class OptionsDialog {
 		ButtonType ret = dialog.showAndWait().orElse(null);
 		dialog.close();
 		return ret;
+	}
+
+	/**
+	 * Uses {@link #getOption(String, String, ButtonType...) getOption()} to
+	 * prompt the User with a {@link javafx.scene.control.Dialog Dialog} containing
+	 * the {@link javafx.scene.control.ButtonType ButtonTypes} of the given
+	 * {@link Option Options}.<br/>
+	 * After the Userer has choosen a Option its {@link Runnable Runnable} will be executed.
+	 * @param title the title of the dialog
+	 * @param message the message of the dialog
+	 * @param options the options the user gets to choose from
+	 */
+	public static void executeOption(String title, String message, Option...options) {
+		ButtonType result = OptionsDialog.getOption(
+				title, message, Arrays.stream(options)
+						.map(Option::getButtonType)
+						.toArray(ButtonType[]::new));
+		Arrays.stream(options)
+				.filter(e -> e.getButtonType().getButtonData().equals(
+						result.getButtonData()))
+				.forEach(Option::execute);
 	}
 
 	/**
