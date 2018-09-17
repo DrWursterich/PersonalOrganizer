@@ -1,22 +1,22 @@
 package menus;
 
-import javafx.beans.property.StringProperty;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.layout.Pane;
+import util.Translator;
 
 public class TreeItem extends javafx.scene.control.TreeItem<String> {
 	private Pane content;
 	private EventHandler<Event> onApply;
 
-	public TreeItem(StringProperty title, Pane content) {
+	public TreeItem(String title, Pane content) {
 		super();
-		this.valueProperty().bind(title);
+		this.valueProperty().bind(Translator.translationProperty(title));
 		this.setContent(content);
 	}
 
-	public TreeItem(StringProperty title, Pane content, EventHandler<Event> onApply) {
+	public TreeItem(String title, Pane content, EventHandler<Event> onApply) {
 		this(title, content);
 		this.onApply = onApply;
 	}
