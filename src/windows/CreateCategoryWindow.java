@@ -14,7 +14,7 @@ import javafx.scene.layout.VBox;
 
 public class CreateCategoryWindow extends Window {
 	private Label nameLabel = this.labelTranslatable("createCategory.name.label");
-	private TextField nameField = this.textField("createCategory.name.prompt");
+	private TextField nameField = this.textFieldTranslatable("createCategory.name.prompt");
 	private VBox nameVBox = this.vBox(this.nameLabel, this.nameField);
 	private Label descriptionLabel = this.labelTranslatable(
 			"createCategory.description.label");
@@ -27,7 +27,7 @@ public class CreateCategoryWindow extends Window {
 	private Button cancelButton = this.buttonTranslatable("general.cancel");
 	private HBox buttonHBox = this.hBox(
 			this.cancelButton, this.buttonBufferRegion, this.acceptButton);
-	private VBox root = this.root(
+	private VBox root = this.rootTranslatable(
 			this.vBox(this.nameVBox, this.descriptionVBox, this.buttonHBox),
 			350, 380, "createCategory.title");
 
