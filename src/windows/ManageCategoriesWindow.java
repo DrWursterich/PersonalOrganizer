@@ -89,15 +89,9 @@ public class ManageCategoriesWindow extends Window {
 				@Override
 				protected void installContextMenu() {
 					MenuItem deleteMenuItem = new MenuItem("manageCategories.menu.edit.delete", e -> {
-							boolean consent = OptionsDialog.getBoolean(
-									Translator.translate(
-											"manageCategories.dialogs.delete.title"),
-									Translator.translate(
-											"manageCategories.dialogs.delete.message"));
-							if (consent) {
-								this.getListView().getItems().remove(this.getItem());
-								DatabaseController.removeCategory(this.getItem());
-							}
+							ManageCategoriesWindow.this.removeCategory(
+									ManageCategoriesWindow.this.categoriesList
+										.getSelectionModel().getSelectedItem());
 						});
 					deleteMenuItem.setDisable(Category.NONE.equals(this.getItem()));
 					this.setContextMenu(new ContextMenu(deleteMenuItem));
@@ -143,15 +137,7 @@ public class ManageCategoriesWindow extends Window {
 		MenuItem deleteMenuItem = new MenuItem("manageCategories.menu.edit.delete", e -> {
 				Category item = this.categoriesList.getSelectionModel().getSelectedItem();
 				if (item != null) {
-					boolean consent = OptionsDialog.getBoolean(
-							Translator.translate(
-									"manageCategories.dialogs.delete.title"),
-							Translator.translate(
-									"manageCategories.dialogs.delete.message"));
-					if (consent) {
-						this.categoriesList.getItems().remove(item);
-						DatabaseController.removeCategory(item);
-					}
+					this.removeCategory(item);
 				}
 			}, "Ctrl+D");
 		deleteMenuItem.disableProperty().bind(
@@ -171,6 +157,17 @@ public class ManageCategoriesWindow extends Window {
 						}
 					}, "Ctrl+N"),
 					deleteMenuItem));
+	}
+
+	private void removeCategory(Category category) {
+		if (OptionsDialog.getBoolean(
+				Translator.translate(
+						"manageCategories.dialogs.delete.title"),
+				Translator.translate(
+						"manageCategories.dialogs.delete.message"))) {
+			this.categoriesList.getItems().remove(category);
+			DatabaseController.removeCategory(category);
+		}
 	}
 
 	private void applyCategoryChanges() {
