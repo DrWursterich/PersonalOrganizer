@@ -4,6 +4,8 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
@@ -11,6 +13,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.TreeView;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -32,6 +36,8 @@ public interface NodeInitializer {
 
 	default void initAccordion(Accordion accordion) {};
 
+	default void initGridPane(GridPane gridPane) {};
+
 	default void initScrollPane(ScrollPane scrollPane) {};
 
 	default void initTreeView(TreeView<?> treeView) {};
@@ -42,6 +48,8 @@ public interface NodeInitializer {
 
 	default void initVBox(VBox vBox) {};
 
+	default void initColumnConstraints(ColumnConstraints columnConstraints) {};
+
 	default void initLabel(Label label) {};
 
 	default void initTextField(TextField textField) {};
@@ -49,6 +57,8 @@ public interface NodeInitializer {
 	default void initNumberField(NumberField numberField) {};
 
 	default void initTextArea(TextArea textArea) {};
+
+	default void initButtonType(ButtonType buttonType) {};
 
 	default void initButton(Button button) {};
 
@@ -286,5 +296,41 @@ public interface NodeInitializer {
 		menus.TreeView treeView = new menus.TreeView();
 		this.initTreeViewEx(treeView);
 		return treeView;
+	}
+
+	default GridPane gridPane() {
+		GridPane gridPane = new GridPane();
+		this.initGridPane(gridPane);
+		return gridPane;
+	}
+
+	default ColumnConstraints columnConstraints() {
+		ColumnConstraints columnConstraints = new ColumnConstraints();
+		this.initColumnConstraints(columnConstraints);
+		return columnConstraints;
+	}
+
+	default ButtonType buttonType(String text) {
+		ButtonType buttonType = new ButtonType(text);
+		this.initButtonType(buttonType);
+		return buttonType;
+	}
+
+	default ButtonType buttonTypeTranslatable(String text) {
+		ButtonType buttonType = new ButtonType(Translator.translate(text));
+		this.initButtonType(buttonType);
+		return buttonType;
+	}
+
+	default ButtonType buttonType(String text, ButtonData buttonData) {
+		ButtonType buttonType = new ButtonType(text, buttonData);
+		this.initButtonType(buttonType);
+		return buttonType;
+	}
+
+	default ButtonType buttonTypeTranslatable(String text, ButtonData buttonData) {
+		ButtonType buttonType = new ButtonType(Translator.translate(text), buttonData);
+		this.initButtonType(buttonType);
+		return buttonType;
 	}
 }
