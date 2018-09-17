@@ -85,7 +85,7 @@ public class ManageCategoriesWindow extends Window {
 		this.propertiesVBox.setSpacing(25);
 
 		this.categoriesList.setCellFactory(param -> {
-			CategoryListCell cell = new CategoryListCell() {
+			return new CategoryListCell() {
 				@Override
 				protected void installContextMenu() {
 					MenuItem deleteMenuItem = new MenuItem("manageCategories.menu.edit.delete", e -> {
@@ -97,7 +97,6 @@ public class ManageCategoriesWindow extends Window {
 					this.setContextMenu(new ContextMenu(deleteMenuItem));
 				}
 			};
-			return cell;
 		});
 		this.categoriesList.getSelectionModel().selectedItemProperty().addListener((v, o, n) -> {
 			if (n != null) {

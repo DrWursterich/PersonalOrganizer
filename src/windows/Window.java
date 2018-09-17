@@ -7,7 +7,6 @@ import javafx.stage.Stage;
 
 public abstract class Window implements NodeInitializer {
 	protected Stage stage;
-	protected Region root;
 	protected Scene scene;
 
 	protected Window() {
@@ -25,7 +24,6 @@ public abstract class Window implements NodeInitializer {
 	}
 
 	public <T extends Region> T root(T root, int width, int height, String title) {
-		this.root = root;
 		this.scene = this.scene(root);
 		this.stage = this.stage(title, width, height);
 		this.stage.setScene(this.scene);
@@ -33,7 +31,6 @@ public abstract class Window implements NodeInitializer {
 	}
 
 	public <T extends Region> T rootTranslatable(T root, int width, int height, String title) {
-		this.root = root;
 		this.scene = this.scene(root);
 		this.stage = this.stageTranslatable(title, width, height);
 		this.stage.setScene(this.scene);
