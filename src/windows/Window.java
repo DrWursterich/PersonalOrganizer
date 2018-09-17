@@ -32,10 +32,11 @@ public abstract class Window implements NodeInitializer {
 		return root;
 	}
 
-	public void rootTranslatable(Region root, int width, int height, String title) {
+	public <T extends Region> T rootTranslatable(T root, int width, int height, String title) {
 		this.root = root;
 		this.scene = this.scene(root);
 		this.stage = this.stageTranslatable(title, width, height);
 		this.stage.setScene(this.scene);
+		return root;
 	}
 }
