@@ -2,26 +2,27 @@ package windows;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -40,21 +41,21 @@ import util.Translator;
  * @author Mario Schäper
  */
 public class SettingsWindow extends Window {
-	private final TreeView tree = this.treeViewEx();
-	private final ScrollPane scrollPane = this.scrollPane();
-	private final SplitPane contentBox = this.splitPane(this.tree, this.scrollPane);
-	private final Button applyButton = this.buttonTranslatable("settings.buttons.apply");
-	private final Button cancelButton = this.buttonTranslatable("settings.buttons.cancel");
-	private final Button restoreButton = this.buttonTranslatable("settings.buttons.restore");
-	private final Region bufferRegionLeft = this.region();
-	private final Region bufferRegionRight = this.region();
-	private final HBox buttonBox = this.hBox(
+	private ScrollPane scrollPane = this.scrollPane();
+	private TreeView tree = this.treeViewEx();
+	private SplitPane contentBox = this.splitPane(this.tree, this.scrollPane);
+	private Button applyButton = this.buttonTranslatable("settings.buttons.apply");
+	private Button cancelButton = this.buttonTranslatable("settings.buttons.cancel");
+	private Button restoreButton = this.buttonTranslatable("settings.buttons.restoreDefault");
+	private Region bufferRegionLeft = this.region();
+	private Region bufferRegionRight = this.region();
+	private HBox buttonBox = this.hBox(
 			this.cancelButton, this.bufferRegionLeft, this.restoreButton,
 			this.bufferRegionRight, this.applyButton);
 	private static boolean hasChanged = false;
 
 	/**
-	 * Interface for Input-Nodes, which represent a Setting.
+	 * Interface for Input-Nodes that represent a Setting.
 	 * @author Mario Schäper
 	 */
 	private interface CustomInput<E> {
@@ -65,7 +66,7 @@ public class SettingsWindow extends Window {
 		 * Should be called when creating an Instance implementing this Interface.
 		 */
 		default void initialize(Setting<E> setting) {
-			customInputs.add(this);
+			CustomInput.customInputs.add(this);
 			this.setOnAction(e -> SettingsWindow.hasChanged = true);
 			this.setSetting(setting);
 			this.toSettingValue();
@@ -181,32 +182,82 @@ public class SettingsWindow extends Window {
 		}
 	}
 
+	/**
+	 * Wrapper Class for {@link javafx.scene.control.GridPane GridPane} allowing for
+	 * intuitive Creation of Panes for Settings.
+	 * @author Mario Schäper
+	 */
+	private class SettingsPane extends GridPane implements NodeInitializer {
+		public SettingsPane (SettingRow...settingRows) {
+			super();
+			this.setHgap(20);
+			this.setVgap(10);
+			ColumnConstraints columnLeft = SettingsWindow.this.columnConstraints();
+			ColumnConstraints columnRight = SettingsWindow.this.columnConstraints();
+			columnLeft.setHgrow(Priority.ALWAYS);
+			this.getColumnConstraints().addAll(columnLeft, columnRight);
+			Arrays.stream(settingRows).forEach(this::addSetting);
+		}
+
+		public void addSetting(SettingRow settingRow) {
+			this.addColumn(0, this.labelTranslatable(settingRow.getTranslatableLabel()));
+			this.addColumn(1, settingRow.getNode());
+		}
+
+		@Override
+		public void initColumnConstraints(ColumnConstraints columnConstraints) {
+			columnConstraints.setHalignment(HPos.LEFT);
+		}
+
+		@Override
+		public void initLabel(Label label) {
+
+		}
+	}
+
+	/**
+	 * Immutable Class, that groups the Data of a Row of
+	 * the {@link SettingsPane SettingsPane}.
+	 * @author Mario Schäper
+	 */
+	private class SettingRow {
+		private final String translatableLabel;
+		private final Node node;
+
+		public SettingRow(String translatableLabel, Node node) {
+			this.translatableLabel = translatableLabel;
+			this.node = node;
+		}
+
+		public String getTranslatableLabel() {
+			return this.translatableLabel;
+		}
+
+		public Node getNode() {
+			return this.node;
+		}
+	}
+
 	protected SettingsWindow () {
 		this.root(new VBox(this.contentBox, this.buttonBox), 250, 100, "settings.title");
-		HBox.setHgrow(this.bufferRegionLeft, Priority.ALWAYS);
-		HBox.setHgrow(this.bufferRegionRight, Priority.ALWAYS);
-		HBox.setHgrow(this.scrollPane, Priority.ALWAYS);
-		VBox.setVgrow(this.contentBox, Priority.ALWAYS);
 
 		this.stage.setOnCloseRequest(e -> {
 			if (SettingsWindow.hasChanged) {
-				ButtonType yes = new ButtonType(
-						Translator.translate("general.yes"), ButtonData.YES);
-				ButtonType no = new ButtonType(
-						Translator.translate("general.no"), ButtonData.NO);
-				ButtonType cancel = new ButtonType(
-						Translator.translate("general.cancel"), ButtonData.CANCEL_CLOSE);
-				ButtonType result = OptionsDialog.getOption(
+				OptionsDialog.executeOption(
 						Translator.translate("settings.dialogs.unsavedChanges.title"),
 						Translator.translate("settings.dialogs.unsavedChanges.message"),
-						yes, no, cancel);
-				if (cancel.getButtonData().equals(result.getButtonData())) {
-					e.consume();
-				} else if (yes.getButtonData().equals(result.getButtonData())) {
-					this.tree.apply();
-				} else {
-					CustomInput.customInputs.stream().forEach(CustomInput::toSettingValue);
-				}
+						new OptionsDialog.Option(
+							this.buttonTypeTranslatable("general.yes", ButtonData.YES),
+							this.tree::apply),
+						new OptionsDialog.Option(
+							this.buttonTypeTranslatable("general.no", ButtonData.NO),
+							() -> {
+								CustomInput.customInputs.stream()
+									.forEach(CustomInput::toSettingValue);}),
+						new OptionsDialog.Option(
+							this.buttonTypeTranslatable(
+								"general.cancel", ButtonData.CANCEL_CLOSE),
+							e::consume));
 			}
 		});
 
@@ -238,70 +289,48 @@ public class SettingsWindow extends Window {
 	}
 
 	/**
-	 * Invokes {@link javafx.stage.Stage#showAndWait() showAndWait}.
-	 */
-	@Override
-	public void show() {
-		SettingsWindow.hasChanged = false;
-		this.stage.showAndWait();
-	}
-
-	/**
 	 * @return the {@link TreeItem TreeItem} for the "general" option
 	 */
 	private TreeItem generalItem() {
-		final Pane pane = new Pane();
-		return new TreeItem(Translator.translationProperty("settings.general.name"), pane);
+		return new TreeItem("settings.general.name", new SettingsPane());
 	}
 
 	/**
 	 * @return the {@link TreeItem TreeItem} for the "language" option
 	 */
 	private TreeItem languageItem() {
-		final GridPane pane = new GridPane();
-		final ColumnConstraints columnLeft = new ColumnConstraints();
-		final ColumnConstraints columnRight = new ColumnConstraints();
-		final ArrayList<String> options = new ArrayList<>();
-		final File languageFolder = new File("config/language");
-		for (final File f : languageFolder.listFiles()) {
-			final String fileName = f.getName();
+		ArrayList<String> options = new ArrayList<>();
+		File languageFolder = new File("config/language");
+		for (File f : languageFolder.listFiles()) {
+			String fileName = f.getName();
 			options.add(fileName.substring(0, fileName.indexOf('.')));
 		}
-		final ComboBox<String> languageSelection = new InpComboBox<>(
+		ComboBox<String> languageSelection = new InpComboBox<>(
 				FXCollections.observableList(options), SettingController.get().LANGUAGE);
-		final Label languageSelectionLabel = new Label();
-		languageSelectionLabel.textProperty().bind(
-				Translator.translationProperty("settings.language.languageLabel"));
-		columnLeft.setHalignment(HPos.LEFT);
-		columnRight.setHalignment(HPos.LEFT);
-		columnLeft.setHgrow(Priority.ALWAYS);
-		pane.getColumnConstraints().addAll(columnLeft, columnRight);
-		pane.addColumn(0, languageSelectionLabel);
-		pane.addColumn(1, languageSelection);
-		pane.setHgap(20);
-		pane.setVgap(10);
-		return new TreeItem(Translator.translationProperty("settings.language.name"), pane, e -> {
-			if (!Translator.getLanguage().equals(languageSelection.getValue())) {
-				try {
-					Translator.setLanguage(languageSelection.getValue());
-				} catch (Exception ex) {
-					LoggingController.log(Level.SEVERE, "Unable to load Language Settings for " +
-							languageSelection.getValue() + ": " + ex.getMessage());
-					OptionsDialog.showMessage(
-							Translator.translate("settings.dialogs.langSettingInvalid.title"),
-							Translator.translate("settings.dialogs.langSettingInvalid.message"));
-				}
-			}
-		});
+		return new TreeItem(
+				"settings.language.name",
+				new SettingsPane(new SettingRow(
+						"settings.language.languageLabel", languageSelection)),
+				e -> {
+					if (!Translator.getLanguage().equals(languageSelection.getValue())) {
+						try {
+							Translator.setLanguage(languageSelection.getValue());
+						} catch (Exception ex) {
+							LoggingController.log(Level.SEVERE, "Unable to load Language Settings for " +
+									languageSelection.getValue() + ": " + ex.getMessage());
+							OptionsDialog.showMessage(
+									Translator.translate("settings.dialogs.langSettingInvalid.title"),
+									Translator.translate("settings.dialogs.langSettingInvalid.message"));
+						}
+					}
+				});
 	}
 
 	/**
 	 * @return the {@link TreeItem TreeItem} for the "views" option
 	 */
 	private TreeItem viewsItem() {
-		Pane pane = new Pane();
-		TreeItem ti = new TreeItem(
-				Translator.translationProperty("settings.views.name"), pane);
+		TreeItem ti = new TreeItem("settings.views.name", new SettingsPane());
 		ti.getChildren().add(this.dayViewItem());
 		return ti;
 	}
@@ -310,69 +339,38 @@ public class SettingsWindow extends Window {
 	 * @return the {@link TreeItem TreeItem} for the "dayView" option
 	 */
 	private TreeItem dayViewItem() {
-		GridPane pane = new GridPane();
-		ColumnConstraints columnLeft = new ColumnConstraints();
-		ColumnConstraints columnRight = new ColumnConstraints();
-		Label topBarBackgroundColorPickerLabel = new Label();
-		Label topBarStrokeColorPickerLabel = new Label();
-		Label backgroundLeftColorPickerLabel = new Label();
-		Label backgroundRightColorPickerLabel = new Label();
-		Label appointmentBackgroundColorPickerLabel = new Label();
-		Label appointmentStrokeColorPickerLabel = new Label();
-		Label timeStampFontPickerLabel = new Label();
-		ColorPicker topBarBackgroundColorPicker = new InpColorPicker(
-				SettingController.get().DAYVIEW_TOPBAR_BACKGROUND_COLOR);
-		ColorPicker topBarStrokeColorPicker = new InpColorPicker(
-				SettingController.get().DAYVIEW_TOPBAR_STROKE_COLOR);
-		ColorPicker backgroundLeftColorPicker = new InpColorPicker(
-				SettingController.get().DAYVIEW_BACKGROUND_LEFT_COLOR);
-		ColorPicker backgroundRightColorPicker = new InpColorPicker(
-				SettingController.get().DAYVIEW_BACKGROUND_RIGHT_COLOR);
-		ColorPicker appointmentBackgroundColorPicker = new InpColorPicker(
-				SettingController.get().DAYVIEW_APPOINTMENT_BACKGROUND_COLOR);
-		ColorPicker appointmentStrokeColorPicker = new InpColorPicker(
-				SettingController.get().DAYVIEW_APPOINTMENT_STROKE_COLOR);
-		FontPicker timeStampFontPicker = new InpFontPicker(
-				SettingController.get().DAYVIEW_TIMESTAMP_FONT);
-		topBarBackgroundColorPickerLabel.textProperty().bind(Translator.translationProperty(
-				"settings.views.dayView.topBarBackgroundColorLabel"));
-		topBarStrokeColorPickerLabel.textProperty().bind(Translator.translationProperty(
-				"settings.views.dayView.topBarStrokeColorLabel"));
-		backgroundLeftColorPickerLabel.textProperty().bind(Translator.translationProperty(
-				"settings.views.dayView.backgroundLeftColorLabel"));
-		backgroundRightColorPickerLabel.textProperty().bind(Translator.translationProperty(
-				"settings.views.dayView.backgroundRightColorLabel"));
-		appointmentBackgroundColorPickerLabel.textProperty().bind(Translator.translationProperty(
-				"settings.views.dayView.appointmentBackgroundColorLabel"));
-		appointmentStrokeColorPickerLabel.textProperty().bind(Translator.translationProperty(
-				"settings.views.dayView.appointmentStrokeColorLabel"));
-		timeStampFontPickerLabel.textProperty().bind(Translator.translationProperty(
-				"settings.views.dayView.timeStampFontLabel"));
-		columnLeft.setHalignment(HPos.LEFT);
-		columnRight.setHalignment(HPos.LEFT);
-		columnLeft.setHgrow(Priority.ALWAYS);
-		pane.getColumnConstraints().addAll(columnLeft, columnRight);
-		pane.addColumn(0,
-				topBarBackgroundColorPickerLabel,
-				topBarStrokeColorPickerLabel,
-				backgroundLeftColorPickerLabel,
-				backgroundRightColorPickerLabel,
-				appointmentBackgroundColorPickerLabel,
-				appointmentStrokeColorPickerLabel,
-				timeStampFontPickerLabel);
-		pane.addColumn(1,
-				topBarBackgroundColorPicker,
-				topBarStrokeColorPicker,
-				backgroundLeftColorPicker,
-				backgroundRightColorPicker,
-				appointmentBackgroundColorPicker,
-				appointmentStrokeColorPicker,
-				timeStampFontPicker);
-		pane.setHgap(20);
-		pane.setVgap(10);
-
-		return new TreeItem(Translator.translationProperty("settings.views.dayView.name"),
-				pane, e -> {
+		return new TreeItem(
+				"settings.views.dayView.name",
+				new SettingsPane(
+					new SettingRow(
+						"settings.views.dayView.topBarBackgroundColorLabel",
+						new InpColorPicker(
+							SettingController.get().DAYVIEW_TOPBAR_BACKGROUND_COLOR)),
+					new SettingRow(
+						"settings.views.dayView.topBarStrokeColorLabel",
+						new InpColorPicker(
+							SettingController.get().DAYVIEW_TOPBAR_STROKE_COLOR)),
+					new SettingRow(
+						"settings.views.dayView.backgroundLeftColorLabel",
+						new InpColorPicker(
+							SettingController.get().DAYVIEW_BACKGROUND_LEFT_COLOR)),
+					new SettingRow(
+						"settings.views.dayView.backgroundRightColorLabel",
+						new InpColorPicker(
+							SettingController.get().DAYVIEW_BACKGROUND_RIGHT_COLOR)),
+					new SettingRow(
+						"settings.views.dayView.appointmentBackgroundColorLabel",
+						new InpColorPicker(
+							SettingController.get().DAYVIEW_APPOINTMENT_BACKGROUND_COLOR)),
+					new SettingRow(
+						"settings.views.dayView.appointmentStrokeColorLabel",
+						new InpColorPicker(
+							SettingController.get().DAYVIEW_APPOINTMENT_STROKE_COLOR)),
+					new SettingRow(
+						"settings.views.dayView.timeStampFontLabel",
+						new InpFontPicker(
+							SettingController.get().DAYVIEW_TIMESTAMP_FONT))),
+				e -> {
 					if (SettingsWindow.hasChanged) {
 						for (CustomInput<?> inp : CustomInput.customInputs) {
 							inp.applySetting();
@@ -382,8 +380,18 @@ public class SettingsWindow extends Window {
 				});
 	}
 
+	/**
+	 * Invokes {@link javafx.stage.Stage#showAndWait() showAndWait}.
+	 */
+	@Override
+	public void show() {
+		SettingsWindow.hasChanged = false;
+		this.stage.showAndWait();
+	}
+
 	@Override
 	public void initSplitPane(SplitPane splitPane) {
+		VBox.setVgrow(splitPane, Priority.ALWAYS);
 		splitPane.setPrefWidth(600);
 		splitPane.setDividerPositions(0.3);
 	}
@@ -396,7 +404,7 @@ public class SettingsWindow extends Window {
 				this.languageItem(),
 				this.viewsItem()});
 		treeView.getSelectionModel().selectedItemProperty().addListener((v, o, n) -> {
-			if (n instanceof TreeItem) {
+			if (n != null && n instanceof TreeItem) {
 				this.scrollPane.setContent(((TreeItem)n).getContent());
 			}
 		});
@@ -406,7 +414,13 @@ public class SettingsWindow extends Window {
 
 	@Override
 	public void initScrollPane(ScrollPane scrollPane) {
+		HBox.setHgrow(scrollPane, Priority.ALWAYS);
 		scrollPane.setMinWidth(100);
 		scrollPane.setFitToWidth(true);
+	}
+
+	@Override
+	public void initRegion(Region region) {
+		HBox.setHgrow(region, Priority.ALWAYS);
 	}
 }
