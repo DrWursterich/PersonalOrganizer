@@ -42,18 +42,21 @@ public abstract class SettingController {
 		}
 		if (FILE.isDirectory()) {
 			LoggingController.log(Level.SEVERE, "Config-File is a Directory.");
-			ButtonType deleteButton = new ButtonType(Translator.translate(
-					"settings.dialogs.fileIsDir.buttons.delete"),
-					ButtonData.YES);
-			ButtonType quitButton = new ButtonType(Translator.translate(
-					"settings.dialogs.fileIsDir.buttons.quit"),
-					ButtonData.CANCEL_CLOSE);
-			if (!deleteButton.equals(OptionsDialog.getOption(
+			OptionsDialog.executeOption(
 					Translator.translate("settings.dialogs.fileIsDir.title"),
 					Translator.translate("settings.dialogs.fileIsDir.message"),
-					deleteButton, quitButton))) {
-				System.exit(0);
-			}
+					new OptionsDialog.Option(
+						new ButtonType(
+							Translator.translate(
+								"settings.dialogs.fileIsDir.buttons.delete"),
+							ButtonData.YES),
+						() -> {}),
+					new OptionsDialog.Option(
+						new ButtonType(
+							Translator.translate(
+								"settings.dialogs.fileIsDir.buttons.quit"),
+							ButtonData.CANCEL_CLOSE),
+						() -> {System.exit(0);}));
 			try {
 				FILE.delete();
 			} catch (Exception e) {
