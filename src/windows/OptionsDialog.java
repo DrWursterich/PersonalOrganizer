@@ -62,6 +62,19 @@ public class OptionsDialog {
 	}
 
 	/**
+	 * Prompts the User with a {@link javafx.scene.control.Dialog Dialog}, containing the
+	 * Title, Message translated with {@link util.Translator Translator}
+	 * and {@link javafx.scene.control.ButtonType ButtonTypes}.
+	 * @param title the title of the dialog
+	 * @param message the message of the dialog
+	 * @param options the buttons the user gets to choose from
+	 * @return the users choice
+	 */
+	public static ButtonType getOptionTranslated(String title, String message, ButtonType...options) {
+		return OptionsDialog.getOption(Translator.translate(title), Translator.translate(message), options);
+	}
+
+	/**
 	 * Uses {@link #getOption(String, String, ButtonType...) getOption()} to
 	 * prompt the User with a {@link javafx.scene.control.Dialog Dialog} containing
 	 * the {@link javafx.scene.control.ButtonType ButtonTypes} of the given
@@ -83,6 +96,20 @@ public class OptionsDialog {
 	}
 
 	/**
+	 * Uses {@link #getOption(String, String, ButtonType...) getOption()} to
+	 * prompt the User with a {@link javafx.scene.control.Dialog Dialog} containing
+	 * the {@link javafx.scene.control.ButtonType ButtonTypes} of the given
+	 * {@link Option Options}.<br/>
+	 * After the Userer has choosen a Option its {@link Runnable Runnable} will be executed.
+	 * @param title the title of the dialog
+	 * @param message the message of the dialog
+	 * @param options the options the user gets to choose from
+	 */
+	public static void executeOptionTranslated(String title, String message, Option...options) {
+		OptionsDialog.executeOption(Translator.translate(title), Translator.translate(message), options);
+	}
+
+	/**
 	 * Prompts the User with a {@link javafx.scene.control.Dialog Dialog},
 	 * containing Title, Message and <em>YES</em>- and <em>NO</em>-Buttons.
 	 * @see OptionsDialog#getOption(StringProperty, StringProperty, ButtonType...)
@@ -98,6 +125,19 @@ public class OptionsDialog {
 	}
 
 	/**
+	 * Prompts the User with a {@link javafx.scene.control.Dialog Dialog},
+	 * containing Title, Message translated with {@link util.Translator Translator}
+	 * and <em>YES</em>- and <em>NO</em>-Buttons.
+	 * @see OptionsDialog#getOption(StringProperty, StringProperty, ButtonType...)
+	 * @param title the title of the dialog
+	 * @param message the message of the dialog
+	 * @return the users choice
+	 */
+	public static boolean getBooleanTranslated(String title, String message) {
+		return OptionsDialog.getBoolean(Translator.translate(title), Translator.translate(message));
+	}
+
+	/**
 	 * Displays a {@link javafx.scene.control.Dialog Dialog} containing the Title and Message.
 	 * @param title the title of the dialog
 	 * @param message the message of the dialog
@@ -105,5 +145,15 @@ public class OptionsDialog {
 	public static void showMessage(String title, String message) {
 		OptionsDialog.getOption(title, message,
 				new ButtonType(Translator.translate("general.ok"), ButtonData.CANCEL_CLOSE));
+	}
+
+	/**
+	 * Displays a {@link javafx.scene.control.Dialog Dialog} containing the Title and Message
+	 * translated with {@link util.Translator Translator}.
+	 * @param title the title of the dialog
+	 * @param message the message of the dialog
+	 */
+	public static void showMessageTranslated(String title, String message) {
+		OptionsDialog.showMessage(Translator.translate(title), Translator.translate(message));
 	}
 }
