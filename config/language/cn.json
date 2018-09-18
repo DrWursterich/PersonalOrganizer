@@ -22,10 +22,10 @@
 			"italicLabel": "斜體"
 		}
 	},
-	
+
 	"ressources": {
 		"priorities": {
-			
+
 		},
 		"categories.none": "沒有類別"
 	},
@@ -122,7 +122,8 @@
 			"new": {
 				"name": "新",
 				"meeting": "約會",
-				"category": "類別"
+				"category": "類別",
+				"priority": "優先"
 			},
 			"manage": {
 				"name": "管理",

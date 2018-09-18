@@ -22,10 +22,10 @@
 			"italicLabel": "Italic"
 		}
 	},
-	
+
 	"ressources": {
 		"priorities": {
-			
+
 		},
 		"categories.none": "No Category"
 	},
@@ -122,7 +122,8 @@
 			"new": {
 				"name": "New",
 				"meeting": "Meeting",
-				"category": "Category"
+				"category": "Category",
+				"priority": "Priority"
 			},
 			"manage": {
 				"name": "Manage",

@@ -22,10 +22,10 @@
 			"italicLabel": "курсивный"
 		}
 	},
-	
+
 	"ressources": {
 		"priorities": {
-			
+
 		},
 		"categories.none": "нет категории"
 	},
@@ -122,7 +122,8 @@
 			"new": {
 				"name": "новый",
 				"meeting": "встреча",
-				"category": "категория"
+				"category": "категория",
+				"priority": "приоритет"
 			},
 			"manage": {
 				"name": "управлять",

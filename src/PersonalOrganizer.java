@@ -31,8 +31,8 @@ public class PersonalOrganizer extends Application implements NodeInitializer {
 	public void start(Stage stage) throws Exception {
 		this.stage = stage;
 
-		this.view.prefWidthProperty().bind(this.stage.widthProperty());
 		VBox.setVgrow(this.view, Priority.ALWAYS);
+		this.view.update();
 
 		this.stage.titleProperty().bind(Translator.translationProperty("title"));
 		this.stage.setScene(this.scene(
@@ -55,14 +55,17 @@ public class PersonalOrganizer extends Application implements NodeInitializer {
 						}, "Ctrl+N"),
 						new MenuItem("menuBar.file.new.category", e -> {
 							WindowController.showWindow(CreateCategoryWindow.class, this.stage);
-						}, "Ctrl+Shift+N")),
+						}, "Ctrl+Shift+K"),
+						new MenuItem("menuBar.file.new.priority", e -> {
+							System.out.println("Priorität erstellen");
+						}, "Ctrl+Shift+P")),
 					new Menu("menuBar.file.manage.name",
 						new MenuItem("menuBar.file.manage.categories", e -> {
 							WindowController.showWindow(ManageCategoriesWindow.class, this.stage);
-						}),
+						}, "Ctrl+Alt+K"),
 						new MenuItem("menuBar.file.manage.priorities", e -> {
 							System.out.println("Prioritäten bearbeiten");
-						}, "Ctrl+Shift+P")),
+						}, "Ctrl+Alt+P")),
 					new MenuItem("menuBar.file.open", e -> {
 						System.out.println("Datei öffnen");
 					}, "Ctrl+O"),

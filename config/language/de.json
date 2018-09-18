@@ -22,10 +22,10 @@
 			"italicLabel": "Kursiv"
 		}
 	},
-	
+
 	"ressources": {
 		"priorities": {
-			
+
 		},
 		"categories.none": "keine Kategorie"
 	},
@@ -122,7 +122,8 @@
 			"new": {
 				"name": "Neu",
 				"meeting": "Termin",
-				"category": "Kategorie"
+				"category": "Kategorie",
+				"priority": "Priorität"
 			},
 			"manage": {
 				"name": "Verwalten",
