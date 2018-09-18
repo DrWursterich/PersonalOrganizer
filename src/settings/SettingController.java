@@ -35,16 +35,13 @@ public abstract class SettingController {
 		} catch (Exception e) {
 			LoggingController.log(Level.SEVERE,
 					"Unable to initialize SettingsContainer: " + e.getMessage());
-			OptionsDialog.showMessageTranslated(
-					"dialogs.unexpectedError.title",
-					"dialogs.unexpectedError.message");
+			OptionsDialog.showMessageNamespace("dialogs.unexpectedError");
 			System.exit(0);
 		}
 		if (FILE.isDirectory()) {
 			LoggingController.log(Level.SEVERE, "Config-File is a Directory.");
-			OptionsDialog.executeOptionTranslated(
-					"settings.dialogs.fileIsDir.title",
-					"settings.dialogs.fileIsDir.message",
+			OptionsDialog.executeOptionNamespace(
+					"settings.dialogs.fileIsDir",
 					new OptionsDialog.Option(
 						NodeInitializer.newButtonTypeTranslatable(
 							"settings.dialogs.fileIsDir.buttons.delete",
@@ -60,9 +57,8 @@ public abstract class SettingController {
 			} catch (Exception e) {
 				LoggingController.log(Level.SEVERE, "Unable to delete the Folder blocking"
 						+ " the Config-File from Creation: " + e.getMessage());
-				OptionsDialog.showMessageTranslated(
-						"settings.dialogs.dirNotDeletable.title",
-						"settings.dialogs.dirNotDeletable.message");
+				OptionsDialog.showMessageNamespace(
+						"settings.dialogs.dirNotDeletable");
 				System.exit(0);
 			}
 		}

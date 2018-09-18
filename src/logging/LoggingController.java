@@ -93,9 +93,8 @@ public class LoggingController {
 					"logging.dialogs.dirIsFile.buttons.disable", ButtonData.NO);
 			ButtonType quitButton = NodeInitializer.newButtonTypeTranslatable(
 					"logging.dialogs.dirIsFile.buttons.quit", ButtonData.CANCEL_CLOSE);
-			ButtonType result = OptionsDialog.getOptionTranslated(
-					"logging.dialogs.dirIsFile.title",
-					"logging.dialogs.dirIsFile.message",
+			ButtonType result = OptionsDialog.getOptionNamespace(
+					"logging.dialogs.dirIsFile",
 					deleteButton, disableButton, quitButton);
 			if (quitButton.getButtonData().equals(result.getButtonData())) {
 				System.exit(0);
@@ -111,9 +110,7 @@ public class LoggingController {
 				} catch (Exception e) {
 					LoggingController.log(Level.SEVERE, "Unable to delete the File blocking"
 							+ " the Logging Directory from Creation: " + e.getMessage());
-					OptionsDialog.showMessageTranslated(
-							"logging.dialogs.fileNotDeletable.title",
-							"logging.dialogs.fileNotDeletable.message");
+					OptionsDialog.showMessageNamespace("logging.dialogs.fileNotDeletable");
 					LoggingController.log(Level.CONFIG, "Logging has been disabled");
 					return null;
 				}
@@ -148,9 +145,7 @@ public class LoggingController {
 				} catch (Exception e) {
 					LoggingController.log(Level.SEVERE, "Unable to delete the folder blocking"
 							+ " the log file from creation: " + e.getMessage());
-					OptionsDialog.showMessageTranslated(
-							"logging.dialogs.dirNotDeletable.title",
-							"logging.dialogs.dirNotDeletable.message");
+					OptionsDialog.showMessageNamespace("logging.dialogs.dirNotDeletable");
 					LoggingController.log(Level.CONFIG, "Logging has been disabled");
 					return null;
 				}

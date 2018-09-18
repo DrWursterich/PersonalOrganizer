@@ -15,6 +15,15 @@ import util.Translator;
  */
 public class OptionsDialog {
 	/**
+	 * The Attribute for a Title of a Dialog in a Language File.
+	 */
+	public final static String TITLE_ATTRIBUTE = "title";
+	/**
+	 * The Attribute for a Message of a Dialog in  aLanguage File.
+	 */
+	public final static String MESSAGE_ATTRIBUTE = "message";
+
+	/**
 	 * Immutable Class, that holds the Data of a executable Option of a Dialog.
 	 * @author Mario Schäper
 	 */
@@ -75,6 +84,24 @@ public class OptionsDialog {
 	}
 
 	/**
+	 * Prompts the User with a {@link javafx.scene.control.Dialog Dialog}, containing the
+	 * Title, Message translated with {@link util.Translator Translator}
+	 * and {@link javafx.scene.control.ButtonType ButtonTypes}.<br/>
+	 * Title and Message are the Product of {@link OptionsDialog#TITLE_ATTRIBUTE title}
+	 * and {@link OptionsDialog#MESSAGE_ATTRIBUTE message} Attributes of the given
+	 * Namespace in the Language File.
+	 * @param namespace the namespace in the language file
+	 * @param options the buttons the user gets to choose from
+	 * @return the users choice
+	 */
+	public static ButtonType getOptionNamespace(String namespace, ButtonType...options) {
+		return OptionsDialog.getOptionTranslated(
+				namespace + "." + OptionsDialog.TITLE_ATTRIBUTE,
+				namespace + "." + OptionsDialog.MESSAGE_ATTRIBUTE,
+				options);
+	}
+
+	/**
 	 * Uses {@link #getOption(String, String, ButtonType...) getOption()} to
 	 * prompt the User with a {@link javafx.scene.control.Dialog Dialog} containing
 	 * the {@link javafx.scene.control.ButtonType ButtonTypes} of the given
@@ -110,6 +137,25 @@ public class OptionsDialog {
 	}
 
 	/**
+	 * Uses {@link #getOption(String, String, ButtonType...) getOption()} to
+	 * prompt the User with a {@link javafx.scene.control.Dialog Dialog} containing
+	 * the {@link javafx.scene.control.ButtonType ButtonTypes} of the given
+	 * {@link Option Options}.<br/>
+	 * Title and Message are the Product of {@link OptionsDialog#TITLE_ATTRIBUTE title}
+	 * and {@link OptionsDialog#MESSAGE_ATTRIBUTE message} Attributes of the given
+	 * Namespace in the Language File.<br/>
+	 * After the Userer has choosen a Option its {@link Runnable Runnable} will be executed.
+	 * @param namespace the namespace of in the language file
+	 * @param options the options the user gets to choose from
+	 */
+	public static void executeOptionNamespace(String namespace, Option...options) {
+		OptionsDialog.executeOption(
+				namespace + "." + OptionsDialog.TITLE_ATTRIBUTE,
+				namespace + "." + OptionsDialog.MESSAGE_ATTRIBUTE,
+				options);
+	}
+
+	/**
 	 * Prompts the User with a {@link javafx.scene.control.Dialog Dialog},
 	 * containing Title, Message and <em>YES</em>- and <em>NO</em>-Buttons.
 	 * @see OptionsDialog#getOption(StringProperty, StringProperty, ButtonType...)
@@ -138,6 +184,23 @@ public class OptionsDialog {
 	}
 
 	/**
+	 * Prompts the User with a {@link javafx.scene.control.Dialog Dialog},
+	 * containing Title, Message translated with {@link util.Translator Translator}
+	 * and <em>YES</em>- and <em>NO</em>-Buttons.
+	 * Title and Message are the Product of {@link OptionsDialog#TITLE_ATTRIBUTE title}
+	 * and {@link OptionsDialog#MESSAGE_ATTRIBUTE message} Attributes of the given
+	 * Namespace in the Language File.<br/>
+	 * @see OptionsDialog#getOption(StringProperty, StringProperty, ButtonType...)
+	 * @param namespace the namespace of in the language file
+	 * @return the users choice
+	 */
+	public static boolean getBooleanNamespace(String namespace) {
+		return OptionsDialog.getBooleanTranslated(
+				namespace + "." + OptionsDialog.TITLE_ATTRIBUTE,
+				namespace + "." + OptionsDialog.MESSAGE_ATTRIBUTE);
+	}
+
+	/**
 	 * Displays a {@link javafx.scene.control.Dialog Dialog} containing the Title and Message.
 	 * @param title the title of the dialog
 	 * @param message the message of the dialog
@@ -155,5 +218,19 @@ public class OptionsDialog {
 	 */
 	public static void showMessageTranslated(String title, String message) {
 		OptionsDialog.showMessage(Translator.translate(title), Translator.translate(message));
+	}
+
+	/**
+	 * Displays a {@link javafx.scene.control.Dialog Dialog} containing the Title and Message
+	 * translated with {@link util.Translator Translator}.
+	 * Title and Message are the Product of {@link OptionsDialog#TITLE_ATTRIBUTE title}
+	 * and {@link OptionsDialog#MESSAGE_ATTRIBUTE message} Attributes of the given
+	 * Namespace in the Language File.<br/>
+	 * @param namespace the namespace of in the language file
+	 */
+	public static void showMessageNamespace(String namespace) {
+		OptionsDialog.showMessageTranslated(
+				namespace + "." + OptionsDialog.TITLE_ATTRIBUTE,
+				namespace + "." + OptionsDialog.MESSAGE_ATTRIBUTE);
 	}
 }

@@ -348,9 +348,8 @@ public class NewAppointmentWindow extends Window {
 						appointments));
 				this.stage.close();
 			} else {
-				OptionsDialog.showMessageTranslated(
-						"newAppointment.dialogs.invalidData.title",
-						"newAppointment.dialogs.invalidData.message");
+				OptionsDialog.showMessageNamespace(
+						"newAppointment.dialogs.invalidData");
 			}});
 
 		this.manageCategoryButton.setOnAction(e -> {

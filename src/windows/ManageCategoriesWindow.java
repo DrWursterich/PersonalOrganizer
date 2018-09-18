@@ -158,9 +158,8 @@ public class ManageCategoriesWindow extends Window {
 	}
 
 	private void removeCategory(Category category) {
-		if (OptionsDialog.getBooleanTranslated(
-				"manageCategories.dialogs.delete.title",
-				"manageCategories.dialogs.delete.message")) {
+		if (OptionsDialog.getBooleanNamespace(
+				"manageCategories.dialogs.delete")) {
 			this.categoriesList.getItems().remove(category);
 			DatabaseController.removeCategory(category);
 		}
