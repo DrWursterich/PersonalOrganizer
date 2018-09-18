@@ -1,17 +1,22 @@
 package windows;
 
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -24,6 +29,104 @@ import util.NumberField;
 import util.Translator;
 
 public interface NodeInitializer {
+	static Label newLabelTranslatable(String text) {
+		Label label = new Label();
+		label.textProperty().bind(Translator.translationProperty(text));
+		return label;
+	}
+
+	static TextField newTextFieldTranslatable(String promptText) {
+		TextField textField = new TextField();
+		textField.promptTextProperty().bind(Translator.translationProperty(promptText));
+		return textField;
+	}
+
+	static TextArea newTextAreaTranslatable(String promptText) {
+		TextArea textArea = new TextArea();
+		textArea.promptTextProperty().bind(Translator.translationProperty(promptText));
+		return textArea;
+	}
+
+	static NumberField newNumberFieldTranslatable(String promptText) {
+		NumberField numberField = new NumberField();
+		numberField.promptTextProperty().bind(Translator.translationProperty(promptText));
+		return numberField;
+	}
+
+	static NumberField newNumberFieldTranslatable(String promptText, int value) {
+		NumberField numberField = new NumberField(value);
+		numberField.promptTextProperty().bind(Translator.translationProperty(promptText));
+		return numberField;
+	}
+
+	static NumberField newNumberFieldTranslatable(String promptText, int minValue, int maxValue) {
+		NumberField numberField = new NumberField(minValue, maxValue);
+		numberField.promptTextProperty().bind(Translator.translationProperty(promptText));
+		return numberField;
+	}
+
+	static NumberField newNumberFieldTranslatable(String promptText, int value, int minValue, int maxValue) {
+		NumberField numberField = new NumberField(value, minValue, maxValue);
+		numberField.promptTextProperty().bind(Translator.translationProperty(promptText));
+		return numberField;
+	}
+
+	static Button newButtonTranslatable(String label) {
+		Button button = new Button();
+		button.textProperty().bind(Translator.translationProperty(label));
+		return button;
+	}
+
+	static ButtonType newButtonTypeTranslatable(String text) {
+		ButtonType buttonType = new ButtonType(Translator.translate(text));
+		return buttonType;
+	}
+
+	static ButtonType newButtonTypeTranslatable(String text, ButtonData buttonData) {
+		ButtonType buttonType = new ButtonType(Translator.translate(text), buttonData);
+		return buttonType;
+	}
+
+	static Tooltip newTooltipTranslatable(String text) {
+		Tooltip tooltip = new Tooltip();
+		tooltip.textProperty().bind(Translator.translationProperty(text));
+		return tooltip;
+	}
+
+	static Tooltip newTooltipTranslatable(String text, Node node) {
+		Tooltip tooltip = new Tooltip();
+		tooltip.textProperty().bind(Translator.translationProperty(text));
+		Tooltip.install(node, tooltip);
+		return tooltip;
+	}
+
+	static Stage newStageTranslatable(String title) {
+		Stage stage = new Stage();
+		stage.titleProperty().bind(Translator.translationProperty(title));
+		return stage;
+	}
+
+	static Stage newStageTranslatable(String title, double width, double height) {
+		Stage stage = new Stage();
+		stage.setMinWidth(width);
+		stage.setMinHeight(height);
+		stage.titleProperty().bind(Translator.translationProperty(title));
+		return stage;
+	}
+
+	static TitledPane newTitledPaneTranslatable(String title) {
+		TitledPane titledPane = new TitledPane();
+		titledPane.textProperty().bind(Translator.translationProperty(title));
+		return titledPane;
+	}
+
+	static TitledPane newTitledPaneTranslatable(String title, Node node) {
+		TitledPane titledPane = new TitledPane();
+		titledPane.textProperty().bind(Translator.translationProperty(title));
+		titledPane.setContent(node);
+		return titledPane;
+	}
+
 	default void initStage(Stage stage) {};
 
 	default void initScene(Scene scene) {};
@@ -40,6 +143,8 @@ public interface NodeInitializer {
 
 	default void initScrollPane(ScrollPane scrollPane) {};
 
+	default void initTabPane(TabPane tabPane) {};
+
 	default void initTreeView(TreeView<?> treeView) {};
 
 	default void initTreeViewEx(menus.TreeView treeView) {};
@@ -49,6 +154,10 @@ public interface NodeInitializer {
 	default void initVBox(VBox vBox) {};
 
 	default void initColumnConstraints(ColumnConstraints columnConstraints) {};
+
+	default void initTooltip(Tooltip tooltip) {};
+
+	default void initComboBox(ComboBox<?> comboBox) {};
 
 	default void initLabel(Label label) {};
 
@@ -98,6 +207,12 @@ public interface NodeInitializer {
 
 	default Scene scene(Region pane) {
 		Scene scene = new Scene(pane);
+		this.initScene(scene);
+		return scene;
+	}
+
+	default Scene scene(Region pane, double width, double height) {
+		Scene scene = new Scene(pane, width, height);
 		this.initScene(scene);
 		return scene;
 	}
@@ -333,4 +448,51 @@ public interface NodeInitializer {
 		this.initButtonType(buttonType);
 		return buttonType;
 	}
+
+	default Tooltip tooltip(String text) {
+		Tooltip tooltip = new Tooltip(text);
+		this.initTooltip(tooltip);
+		return tooltip;
+	}
+
+	default Tooltip tooltipTranslatable(String text) {
+		Tooltip tooltip = new Tooltip();
+		tooltip.textProperty().bind(Translator.translationProperty(text));
+		this.initTooltip(tooltip);
+		return tooltip;
+	}
+
+	default Tooltip tooltip(String text, Node node) {
+		Tooltip tooltip = new Tooltip(text);
+		Tooltip.install(node, tooltip);
+		this.initTooltip(tooltip);
+		return tooltip;
+	}
+
+	default Tooltip tooltipTranslatable(String text, Node node) {
+		Tooltip tooltip = new Tooltip();
+		tooltip.textProperty().bind(Translator.translationProperty(text));
+		Tooltip.install(node, tooltip);
+		this.initTooltip(tooltip);
+		return tooltip;
+	}
+
+	default <T> ComboBox<T> comboBox(Class<T> comboBoxClass) {
+		ComboBox<T> comboBox = new ComboBox<>();
+		this.initComboBox(comboBox);
+		return comboBox;
+	}
+
+	default <T> ComboBox<T> comboBox(Class<T> comboBoxClass, ObservableList<T> items) {
+		ComboBox<T> comboBox = new ComboBox<>(items);
+		this.initComboBox(comboBox);
+		return comboBox;
+	}
+
+	default TabPane tabPane(Tab...tabs) {
+		TabPane tabPane = new TabPane(tabs);
+		this.initTabPane(tabPane);
+		return tabPane;
+	}
 }
+
