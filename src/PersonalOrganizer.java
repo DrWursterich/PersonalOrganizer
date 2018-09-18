@@ -1,19 +1,16 @@
 import javafx.application.Application;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import logging.LoggingController;
-import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.Priority;
 import java.util.GregorianCalendar;
-import java.util.logging.Level;
 import util.Translator;
 import menus.*;
 import views.*;
 import windows.CreateCategoryWindow;
 import windows.ManageCategoriesWindow;
 import windows.NewAppointmentWindow;
-import windows.OptionsDialog;
+import windows.NodeInitializer;
 import windows.SettingsWindow;
 import windows.WindowController;
 
@@ -21,12 +18,9 @@ import windows.WindowController;
  * Static Main Class for the Personal Organizer.
  * @author Mario Schäper
  */
-public class PersonalOrganizer extends Application {
-	private VBox root = new VBox();
-	private Scene scene = new Scene(this.root,
-			0.75*Screen.getPrimary().getBounds().getWidth(),
-			0.60*Screen.getPrimary().getBounds().getHeight());
-	private View view;
+public class PersonalOrganizer extends Application implements NodeInitializer {
+	private View view = new DayView(new GregorianCalendar());
+	private VBox root = this.vBox(this.menuBar(), this.view);
 	private Stage stage;
 
 	public static void main(String...args) throws Exception {
@@ -35,25 +29,17 @@ public class PersonalOrganizer extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		try {
-			this.stage = stage;
+		this.stage = stage;
 
-			this.view = new DayView(new GregorianCalendar());
-			this.view.prefWidthProperty().bind(stage.widthProperty());
-			VBox.setVgrow(this.view, Priority.ALWAYS);
+		this.view.prefWidthProperty().bind(this.stage.widthProperty());
+		VBox.setVgrow(this.view, Priority.ALWAYS);
 
-			this.root.getChildren().addAll(this.menuBar(), this.view);
-
-			stage.titleProperty().bind(Translator.translationProperty("title"));
-			stage.setScene(this.scene);
-			stage.show();
-		} catch (Exception e) {
-			LoggingController.log(Level.SEVERE, "A unexpected Error occoured: " + e.getMessage());
-			OptionsDialog.showMessage(
-					Translator.translate("dialogs.unexpectedError.title"),
-					Translator.translate("dialogs.unexpectedError.message"));
-			System.exit(0);
-		}
+		this.stage.titleProperty().bind(Translator.translationProperty("title"));
+		this.stage.setScene(this.scene(
+				this.root,
+				0.75*Screen.getPrimary().getBounds().getWidth(),
+				0.60*Screen.getPrimary().getBounds().getHeight()));
+		this.stage.show();
 	}
 
 	/**

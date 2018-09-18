@@ -25,7 +25,6 @@ import menus.ContextMenu;
 import menus.Menu;
 import menus.MenuBar;
 import menus.MenuItem;
-import util.Translator;
 
 public class ManageCategoriesWindow extends Window {
 	private ListView<Category> categoriesList = new ListView<>();
@@ -159,11 +158,9 @@ public class ManageCategoriesWindow extends Window {
 	}
 
 	private void removeCategory(Category category) {
-		if (OptionsDialog.getBoolean(
-				Translator.translate(
-						"manageCategories.dialogs.delete.title"),
-				Translator.translate(
-						"manageCategories.dialogs.delete.message"))) {
+		if (OptionsDialog.getBooleanTranslated(
+				"manageCategories.dialogs.delete.title",
+				"manageCategories.dialogs.delete.message")) {
 			this.categoriesList.getItems().remove(category);
 			DatabaseController.removeCategory(category);
 		}

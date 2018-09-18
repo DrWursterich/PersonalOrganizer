@@ -30,29 +30,27 @@ import menus.ContextMenu;
 import menus.MenuItem;
 import util.Duration;
 import util.NumberField;
-import util.Translator;
 
 public class NewAppointmentWindow extends Window {
 	private static final String ADD_TAB_TEXT = " + ";
 	private TextField titleField = this.textFieldTranslatable("newAppointment.titlePrompt");
-	private TextArea descriptionArea = new TextArea();
+	private TextArea descriptionArea = this.textAreaTranslatable("newAppointment.descriptionPrompt");
 	private Label categoryLabel = this.labelTranslatable("newAppointment.category.label");
-	private ComboBox<Category> categoryBox = new ComboBox<>();
-	private Button manageCategoryButton = new Button(NewAppointmentWindow.ADD_TAB_TEXT);
-	private Tooltip manageCategoryButtonTooltip = new Tooltip();
+	private ComboBox<Category> categoryBox = this.comboBox(Category.class);
+	private Button manageCategoryButton = this.button(NewAppointmentWindow.ADD_TAB_TEXT);
 	private HBox categoryInputs = this.hBox(this.categoryBox, this.manageCategoryButton);
 	private VBox categoryContainer = this.vBox(this.categoryLabel, this.categoryInputs);
 	private Label priorityLabel = this.labelTranslatable("newAppointment.priority.label");
-	private ComboBox<Priority> priorityBox = new ComboBox<>();
-	private Button managePriorityButton = new Button(NewAppointmentWindow.ADD_TAB_TEXT);
-	private Tooltip managePriorityButtonTooltip = new Tooltip();
+	private ComboBox<Priority> priorityBox = this.comboBox(Priority.class);
+	private Button managePriorityButton = this.button(NewAppointmentWindow.ADD_TAB_TEXT);
 	private HBox priorityInputs = this.hBox(this.priorityBox, this.managePriorityButton);
 	private VBox priorityContainer = this.vBox(this.priorityLabel, this.priorityInputs);
 	private HBox comboBoxPane = this.hBox(this.categoryContainer, this.priorityContainer);
 	private VBox leftPane = this.vBox(this.titleField, this.descriptionArea, this.comboBoxPane);
-	private TabPane tabPane = new TabPane();
-	private Button cancelButton = new Button();
-	private Button acceptButton = new Button();
+	private CustomTab firstTab = new CustomTab("#01");
+	private TabPane tabPane = new TabPane(firstTab, new CustomTab());
+	private Button cancelButton = this.buttonTranslatable("general.cancel");
+	private Button acceptButton = this.buttonTranslatable("general.ok");
 	private HBox buttonBox = this.hBox(this.cancelButton, this.acceptButton);
 	private VBox rightPane = this.vBox(this.tabPane, this.buttonBox);
 
@@ -293,85 +291,53 @@ public class NewAppointmentWindow extends Window {
 	}
 
 	protected NewAppointmentWindow() {
-		this.rootTranslatable(this.splitPane(this.leftPane, this.rightPane),
+		this.rootTranslatable(
+				this.splitPane(this.leftPane, this.rightPane),
 				350, 380, "newAppointment.title");
-		VBox.setVgrow(this.descriptionArea, ALWAYS);
+		this.tooltipTranslatable(
+				"newAppointment.category.manageTooltip",
+				this.manageCategoryButton);
+		this.tooltipTranslatable(
+				"newAppointment.priority.manageTooltip",
+				this.managePriorityButton);
 		HBox.setHgrow(this.categoryInputs, ALWAYS);
-		HBox.setHgrow(this.categoryBox, ALWAYS);
 		HBox.setHgrow(this.categoryContainer, ALWAYS);
 		HBox.setHgrow(this.priorityInputs, ALWAYS);
-		HBox.setHgrow(this.priorityBox, ALWAYS);
 		HBox.setHgrow(this.priorityContainer, ALWAYS);
-		VBox.setVgrow(this.tabPane, ALWAYS);
-		HBox.setHgrow(this.cancelButton, ALWAYS);
-		HBox.setHgrow(this.acceptButton, ALWAYS);
 
 		this.leftPane.setPadding(new Insets(10));
 
-		this.descriptionArea.setPrefWidth(300);
-		this.descriptionArea.setMaxWidth(Double.MAX_VALUE);
-		this.descriptionArea.promptTextProperty().bind(
-				Translator.translationProperty("newAppointment.descriptionPrompt"));
-
-		this.categoryBox.setMaxWidth(Double.MAX_VALUE);
-		this.categoryBox.setPrefWidth(210);
-		this.manageCategoryButton.setMaxWidth(30);
-		this.manageCategoryButton.setMinWidth(30);
-		this.manageCategoryButtonTooltip.textProperty().bind(
-				Translator.translationProperty("newAppointment.category.manageTooltip"));
-		Tooltip.install(this.manageCategoryButton, this.manageCategoryButtonTooltip);
 		this.categoryBox.getItems().addAll(DatabaseController.getCategories());
 		this.categoryBox.setCellFactory(e -> new CategoryListCell());
 		this.categoryBox.setButtonCell(new CategoryListCell());
 		this.categoryBox.getSelectionModel().select(Category.NONE);
 
-		this.priorityBox.setMaxWidth(Double.MAX_VALUE);
-		this.priorityBox.setPrefWidth(210);
-		this.managePriorityButton.setMaxWidth(30);
-		this.managePriorityButton.setMinWidth(30);
-		this.managePriorityButtonTooltip.textProperty().bind(
-				Translator.translationProperty("newAppointment.priority.manageTooltip"));
-		Tooltip.install(this.managePriorityButton, this.managePriorityButtonTooltip);
-
 		this.rightPane.setPadding(new Insets(10));
 
-		CustomTab firstTab = new CustomTab("#01");
-		CustomTab addTab = new CustomTab();
-
-		this.tabPane.setPrefWidth(300);
-		this.tabPane.setMinWidth(200);
-		this.tabPane.setTabMinWidth(25);
-		this.tabPane.getTabs().addAll(firstTab, addTab);
-		this.tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
-
-		firstTab.setClosable(false);
-		firstTab.setContextMenu(new ContextMenu(
+		this.firstTab.setClosable(false);
+		this.firstTab.setContextMenu(new ContextMenu(
 				new MenuItem("newAppointment.tabContextMenu.closeAll", e -> {
 					for (int i=this.tabPane.getTabs().size()-2;i>0;i--) {
 						((CustomTab)this.tabPane.getTabs().get(i)).close();
-					};
-				})));
+					};})));
 
-		this.cancelButton.textProperty().bind(Translator.translationProperty("general.cancel"));
-		this.cancelButton.setMaxWidth(Double.MAX_VALUE);
 		this.cancelButton.setOnAction(e -> {
-			this.stage.close();
-		});
+			this.stage.close();});
 
-		this.acceptButton.textProperty().bind(Translator.translationProperty("general.ok"));
-		this.acceptButton.setMaxWidth(Double.MAX_VALUE);
 		this.acceptButton.setOnAction(e -> {
-			if (this.titleField.getText() != null && this.titleField.getText() != "" &&
-					firstTab.getDateFrom().before(firstTab.getDateTo())) {
+			if (this.titleField.getText() != null && this.titleField.getText() != ""
+					&& this.firstTab.getDateFrom().before(this.firstTab.getDateTo())) {
 				ArrayList<AppointmentItem> appointments = new ArrayList<>();
 				ObservableList<Tab> tabs = this.tabPane.getTabs();
 				for (int i=0;i<tabs.size();i++) {
-					if (!ADD_TAB_TEXT.equals(tabs.get(i).getText())) {
+					if (!ADD_TAB_TEXT.equals(tabs.get(i).getText())
+							&& tabs.get(i) instanceof CustomTab) {
+						CustomTab tab = (CustomTab)tabs.get(i);
 						appointments.add(new AppointmentItem(
-								((CustomTab)tabs.get(i)).getDateFrom(),
-								((CustomTab)tabs.get(i)).getDateTo(),
-								((CustomTab)tabs.get(i)).getRepetition(),
-								((CustomTab)tabs.get(i)).getRepetitionEnd()));
+								tab.getDateFrom(),
+								tab.getDateTo(),
+								tab.getRepetition(),
+								tab.getRepetitionEnd()));
 					}
 				}
 				DatabaseController.addAppointment(new AppointmentGroup(
@@ -382,15 +348,13 @@ public class NewAppointmentWindow extends Window {
 						appointments));
 				this.stage.close();
 			} else {
-				OptionsDialog.showMessage(
-						Translator.translate("newAppointment.dialogs.invalidData.title"),
-						Translator.translate("newAppointment.dialogs.invalidData.message"));
-			}
-		});
+				OptionsDialog.showMessageTranslated(
+						"newAppointment.dialogs.invalidData.title",
+						"newAppointment.dialogs.invalidData.message");
+			}});
 
 		this.manageCategoryButton.setOnAction(e -> {
-			WindowController.showWindow(ManageCategoriesWindow.class, this.stage);
-		});
+			WindowController.showWindow(ManageCategoriesWindow.class, this.stage);});
 	}
 
 	@Override
@@ -408,6 +372,27 @@ public class NewAppointmentWindow extends Window {
 	}
 
 	@Override
+	public void initTextArea(TextArea textArea) {
+		VBox.setVgrow(textArea, ALWAYS);
+		textArea.setPrefWidth(300);
+		textArea.setMaxWidth(Double.MAX_VALUE);
+	}
+
+	@Override
+	public void initButton(Button button) {
+		HBox.setHgrow(button, ALWAYS);
+		button.setMaxWidth(Double.MAX_VALUE);
+		button.setMinWidth(30);
+	}
+
+	@Override
+	public void initComboBox(ComboBox<?> comboBox) {
+		HBox.setHgrow(comboBox, ALWAYS);
+		comboBox.setMaxWidth(Double.MAX_VALUE);
+		comboBox.setPrefWidth(210);
+	}
+
+	@Override
 	public void initHBox(HBox hBox) {
 		hBox.setSpacing(5);
 	}
@@ -415,5 +400,14 @@ public class NewAppointmentWindow extends Window {
 	@Override
 	public void initVBox(VBox vBox) {
 		vBox.setSpacing(5);
+	}
+
+	@Override
+	public void initTabPane(TabPane tabPane) {
+		VBox.setVgrow(tabPane, ALWAYS);
+		tabPane.setPrefWidth(300);
+		tabPane.setMinWidth(200);
+		tabPane.setTabMinWidth(25);
+		tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
 	}
 }

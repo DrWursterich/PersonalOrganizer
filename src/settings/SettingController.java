@@ -13,11 +13,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.logging.Level;
 import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.control.ButtonType;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import logging.LoggingController;
 import util.Translator;
+import windows.NodeInitializer;
 import windows.OptionsDialog;
 
 /**
@@ -35,26 +35,24 @@ public abstract class SettingController {
 		} catch (Exception e) {
 			LoggingController.log(Level.SEVERE,
 					"Unable to initialize SettingsContainer: " + e.getMessage());
-			OptionsDialog.showMessage(
-					Translator.translate("dialogs.unexpectedError.title"),
-					Translator.translate("dialogs.unexpectedError.message"));
+			OptionsDialog.showMessageTranslated(
+					"dialogs.unexpectedError.title",
+					"dialogs.unexpectedError.message");
 			System.exit(0);
 		}
 		if (FILE.isDirectory()) {
 			LoggingController.log(Level.SEVERE, "Config-File is a Directory.");
-			OptionsDialog.executeOption(
-					Translator.translate("settings.dialogs.fileIsDir.title"),
-					Translator.translate("settings.dialogs.fileIsDir.message"),
+			OptionsDialog.executeOptionTranslated(
+					"settings.dialogs.fileIsDir.title",
+					"settings.dialogs.fileIsDir.message",
 					new OptionsDialog.Option(
-						new ButtonType(
-							Translator.translate(
-								"settings.dialogs.fileIsDir.buttons.delete"),
+						NodeInitializer.newButtonTypeTranslatable(
+							"settings.dialogs.fileIsDir.buttons.delete",
 							ButtonData.YES),
 						() -> {}),
 					new OptionsDialog.Option(
-						new ButtonType(
-							Translator.translate(
-								"settings.dialogs.fileIsDir.buttons.quit"),
+						NodeInitializer.newButtonTypeTranslatable(
+							"settings.dialogs.fileIsDir.buttons.quit",
 							ButtonData.CANCEL_CLOSE),
 						() -> {System.exit(0);}));
 			try {
@@ -62,9 +60,9 @@ public abstract class SettingController {
 			} catch (Exception e) {
 				LoggingController.log(Level.SEVERE, "Unable to delete the Folder blocking"
 						+ " the Config-File from Creation: " + e.getMessage());
-				OptionsDialog.showMessage(
-						Translator.translate("settings.dialogs.dirNotDeletable.title"),
-						Translator.translate("settings.dialogs.dirNotDeletable.message"));
+				OptionsDialog.showMessageTranslated(
+						"settings.dialogs.dirNotDeletable.title",
+						"settings.dialogs.dirNotDeletable.message");
 				System.exit(0);
 			}
 		}
