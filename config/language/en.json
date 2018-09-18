@@ -232,7 +232,7 @@
 			}
 		},
 		"appointments": {
-			"name": "Meeting"
+			"name": "Meetings"
 		},
 		"dialogs": {
 			"delete": {

@@ -47,8 +47,8 @@ public class NewAppointmentWindow extends Window {
 	private VBox priorityContainer = this.vBox(this.priorityLabel, this.priorityInputs);
 	private HBox comboBoxPane = this.hBox(this.categoryContainer, this.priorityContainer);
 	private VBox leftPane = this.vBox(this.titleField, this.descriptionArea, this.comboBoxPane);
+	private TabPane tabPane = new TabPane();
 	private CustomTab firstTab = new CustomTab("#01");
-	private TabPane tabPane = new TabPane(firstTab, new CustomTab());
 	private Button cancelButton = this.buttonTranslatable("general.cancel");
 	private Button acceptButton = this.buttonTranslatable("general.ok");
 	private HBox buttonBox = this.hBox(this.cancelButton, this.acceptButton);
@@ -313,6 +313,8 @@ public class NewAppointmentWindow extends Window {
 		this.categoryBox.getSelectionModel().select(Category.NONE);
 
 		this.rightPane.setPadding(new Insets(10));
+		
+		this.initTabPane(this.tabPane);
 
 		this.firstTab.setClosable(false);
 		this.firstTab.setContextMenu(new ContextMenu(
@@ -381,7 +383,7 @@ public class NewAppointmentWindow extends Window {
 	public void initButton(Button button) {
 		HBox.setHgrow(button, ALWAYS);
 		button.setMaxWidth(Double.MAX_VALUE);
-		button.setMinWidth(30);
+		button.setMinWidth(40);
 	}
 
 	@Override
@@ -408,5 +410,6 @@ public class NewAppointmentWindow extends Window {
 		tabPane.setMinWidth(200);
 		tabPane.setTabMinWidth(25);
 		tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
+		tabPane.getTabs().addAll(this.firstTab, new CustomTab());
 	}
 }
