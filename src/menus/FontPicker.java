@@ -6,6 +6,7 @@ import com.sun.javafx.scene.control.behavior.ComboBoxBaseBehavior;
 import com.sun.javafx.scene.control.behavior.KeyBinding;
 import com.sun.javafx.scene.control.skin.ComboBoxPopupControl;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -162,6 +163,7 @@ public class FontPicker extends ComboBoxBase<Font> {
 			super.handleControlPropertyChanged(str);
 			if ("VALUE".equals(str)) {
 				this.updateFont();
+				FontPicker.this.getOnAction().handle(new ActionEvent());
 			}
 		}
 
