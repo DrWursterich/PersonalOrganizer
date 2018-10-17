@@ -111,6 +111,8 @@
 				"backgroundRightColorLabel": "Календарь фон",
 				"appointmentBackgroundColorLabel": "Назначение",
 				"appointmentStrokeColorLabel": "Назначение края",
+				"appointmentSubjectFontLabel": "Шрифт темы назначения",
+				"appointmentDescriptionFontLabel": "Назначение Описание Шрифт",
 				"timeStampFontLabel": "Временной шрифт"
 			}
 		}

@@ -111,6 +111,8 @@
 				"backgroundRightColorLabel": "View Hintergrund",
 				"appointmentBackgroundColorLabel": "Appointment Background",
 				"appointmentStrokeColorLabel": "Appointment Border",
+				"appointmentSubjectFontLabel": "Appointment Subject Font",
+				"appointmentDescriptionFontLabel": "Appointment Description Font",
 				"timeStampFontLabel": "Timestamp Font"
 			}
 		}

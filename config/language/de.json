@@ -111,6 +111,8 @@
 				"backgroundRightColorLabel": "Kalender Hintergrund",
 				"appointmentBackgroundColorLabel": "Termin Hintergrund",
 				"appointmentStrokeColorLabel": "Termin Rand",
+				"appointmentSubjectFontLabel": "Termin Betreff Schriftart",
+				"appointmentDescriptionFontLabel": "Termin Beschreibung Schriftart",
 				"timeStampFontLabel": "Zeitstempel Schriftart"
 			}
 		}

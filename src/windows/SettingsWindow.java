@@ -367,6 +367,14 @@ public class SettingsWindow extends Window {
 						new InpColorPicker(
 							SettingController.get().DAYVIEW_APPOINTMENT_STROKE_COLOR)),
 					new SettingRow(
+						"settings.views.dayView.appointmentSubjectFontLabel",
+						new InpFontPicker(
+							SettingController.get().DAYVIEW_APPOINTMENT_SUBJECT_FONT)),
+					new SettingRow(
+						"settings.views.dayView.appointmentDescriptionFontLabel",
+						new InpFontPicker(
+							SettingController.get().DAYVIEW_APPOINTMENT_DESCRIPTION_FONT)),
+					new SettingRow(
 						"settings.views.dayView.timeStampFontLabel",
 						new InpFontPicker(
 							SettingController.get().DAYVIEW_TIMESTAMP_FONT))),

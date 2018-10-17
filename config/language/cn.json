@@ -111,6 +111,8 @@
 				"backgroundRightColorLabel": "日曆背景",
 				"appointmentBackgroundColorLabel": "任命背景",
 				"appointmentStrokeColorLabel": "任命邊緣",
+				"appointmentSubjectFontLabel": "预约主题字体",
+				"appointmentDescriptionFontLabel": "约会说明字体",
 				"timeStampFontLabel": "時間戳字體"
 			}
 		}
