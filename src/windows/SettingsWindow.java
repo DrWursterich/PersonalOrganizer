@@ -239,7 +239,7 @@ public class SettingsWindow extends Window {
 	}
 
 	protected SettingsWindow () {
-		this.root(new VBox(this.contentBox, this.buttonBox), 250, 100, "settings.title");
+		this.rootTranslatable(new VBox(this.contentBox, this.buttonBox), 250, 100, "settings.title");
 
 		this.stage.setOnCloseRequest(e -> {
 			if (SettingsWindow.hasChanged) {
