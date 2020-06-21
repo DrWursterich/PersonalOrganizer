@@ -189,11 +189,10 @@ public class DayView extends DateView {
 	 */
 	@Override
 	public void update() {
-		DayView me = this;
 		(new Task<Void>() {
 			@Override
 			protected Void call() throws Exception {
-				Platform.runLater(() -> me.dayScale.update());
+				Platform.runLater(DayView.this.dayScale::update);
 				return null;
 			}
 		}).run();

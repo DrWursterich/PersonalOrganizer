@@ -259,6 +259,7 @@ public interface NodeInitializer {
 		NumberField numberField = new NumberField();
 		numberField.setPromptText(promptText);
 		this.initTextField(numberField);
+		this.initNumberField(numberField);
 		return numberField;
 	}
 
@@ -266,6 +267,7 @@ public interface NodeInitializer {
 		NumberField numberField = new NumberField(value);
 		numberField.setPromptText(promptText);
 		this.initTextField(numberField);
+		this.initNumberField(numberField);
 		return numberField;
 	}
 
@@ -273,6 +275,7 @@ public interface NodeInitializer {
 		NumberField numberField = new NumberField(minValue, maxValue);
 		numberField.setPromptText(promptText);
 		this.initTextField(numberField);
+		this.initNumberField(numberField);
 		return numberField;
 	}
 
@@ -280,6 +283,7 @@ public interface NodeInitializer {
 		NumberField numberField = new NumberField(value, minValue, maxValue);
 		numberField.setPromptText(promptText);
 		this.initTextField(numberField);
+		this.initNumberField(numberField);
 		return numberField;
 	}
 
@@ -287,6 +291,7 @@ public interface NodeInitializer {
 		NumberField numberField = new NumberField();
 		numberField.promptTextProperty().bind(Translator.translationProperty(promptText));
 		this.initTextField(numberField);
+		this.initNumberField(numberField);
 		return numberField;
 	}
 
@@ -294,6 +299,7 @@ public interface NodeInitializer {
 		NumberField numberField = new NumberField(value);
 		numberField.promptTextProperty().bind(Translator.translationProperty(promptText));
 		this.initTextField(numberField);
+		this.initNumberField(numberField);
 		return numberField;
 	}
 
@@ -301,6 +307,7 @@ public interface NodeInitializer {
 		NumberField numberField = new NumberField(minValue, maxValue);
 		numberField.promptTextProperty().bind(Translator.translationProperty(promptText));
 		this.initTextField(numberField);
+		this.initNumberField(numberField);
 		return numberField;
 	}
 
@@ -308,6 +315,7 @@ public interface NodeInitializer {
 		NumberField numberField = new NumberField(value, minValue, maxValue);
 		numberField.promptTextProperty().bind(Translator.translationProperty(promptText));
 		this.initTextField(numberField);
+		this.initNumberField(numberField);
 		return numberField;
 	}
 
@@ -393,6 +401,13 @@ public interface NodeInitializer {
 
 	default ScrollPane scrollPane() {
 		ScrollPane scrollPane = new ScrollPane();
+		this.initScrollPane(scrollPane);
+		return scrollPane;
+	}
+
+	default ScrollPane scrollPane(final Node node) {
+		ScrollPane scrollPane = new ScrollPane();
+		scrollPane.setContent(node);
 		this.initScrollPane(scrollPane);
 		return scrollPane;
 	}

@@ -77,7 +77,7 @@ public abstract class Setting<T extends Object> extends SimpleObjectProperty<T>
 	public boolean equals(Object other) {
 		return (other == null || !(other instanceof Setting<?>))
 				? false
-						: this.defaultValue.equals(((Setting<?>)other).defaultValue);
+				: this.defaultValue.equals(((Setting<?>)other).defaultValue);
 	}
 
 	@Override

@@ -8,7 +8,9 @@ import util.Translator;
 import menus.*;
 import views.*;
 import windows.CreateCategoryWindow;
+import windows.CreatePriorityWindow;
 import windows.ManageCategoriesWindow;
+import windows.ManagePrioritiesWindow;
 import windows.NewAppointmentWindow;
 import windows.NodeInitializer;
 import windows.SettingsWindow;
@@ -57,14 +59,14 @@ public class PersonalOrganizer extends Application implements NodeInitializer {
 							WindowController.showWindow(CreateCategoryWindow.class, this.stage);
 						}, "Ctrl+Shift+K"),
 						new MenuItem("menuBar.file.new.priority", e -> {
-							System.out.println("Priorität erstellen");
+							WindowController.showWindow(CreatePriorityWindow.class, this.stage);
 						}, "Ctrl+Shift+P")),
 					new Menu("menuBar.file.manage.name",
 						new MenuItem("menuBar.file.manage.categories", e -> {
 							WindowController.showWindow(ManageCategoriesWindow.class, this.stage);
 						}, "Ctrl+Alt+K"),
 						new MenuItem("menuBar.file.manage.priorities", e -> {
-							System.out.println("Prioritäten bearbeiten");
+							WindowController.showWindow(ManagePrioritiesWindow.class, this.stage);
 						}, "Ctrl+Alt+P")),
 					new MenuItem("menuBar.file.open", e -> {
 						System.out.println("Datei öffnen");

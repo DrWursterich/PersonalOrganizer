@@ -12,9 +12,11 @@ import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import database.period.Period;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import database.appointment.Appointment;
 import database.appointment.AppointmentGroup;
@@ -41,8 +43,18 @@ public abstract class DatabaseController {
 			+ "APPOINTMENT_APPOINTMENT_GROUP (APPOINTMENT_FK, APPOINTMENT_GROUP_FK) VALUES (?, ?);";
 	private static final String INSERT_CATEGORY = "INSERT INTO "
 			+ "CATEGORY (NAME, DESCRIPTION) VALUES (?, ?);";
-	private static final String UPDATE_CATEGORY = "UPDATE CATEGORY " +
-			"SET NAME = ?, DESCRIPTION = ? WHERE ID = ?";
+	private static final String UPDATE_CATEGORY = "UPDATE CATEGORY "
+			+ "SET NAME = ?, DESCRIPTION = ? WHERE ID = ?";
+	private static final String INSERT_PRIORITY =
+			"INSERT INTO PRIORITY (NAME) VALUES (?);";
+	private static final String UPDATE_PRIORITY =
+			"UPDATE PRIORITY SET NAME = ? WHERE ID = ?;";
+	private static final String INSERT_PERIOD =
+			"INSERT INTO PERIOD (MINUTES; DAYS; MONTHS) VALUES (?, ?, ?);";
+	private static final String DELETE_PRIORITY =
+			"DELETE FROM PRIORITY WHERE ID = ?;";
+	private static final String DELETE_PRIORITY_PERIODS =
+			"DELETE FROM PRIORITY_PERIOD WHERE PRIORITY_FK = ?;";
 	private static final String DELETE_CATEGORY = "DELETE FROM CATEGORY WHERE ID = ?;";
 	private static Connection connection;
 	@SuppressWarnings("unused")
@@ -71,19 +83,17 @@ public abstract class DatabaseController {
 	 * Adds an {@link AppointmentGroup Appointment} to the Database.
 	 * @param appointment the Appointment
 	 */
-	public static void addAppointment(AppointmentGroup appointment) {
+	public static void addAppointment(final AppointmentGroup appointment) {
 		PreparedStatement statement = null;
 		Savepoint savepoint = null;
-		Priority priority = appointment.getPriority();
-		Category category = appointment.getCategory();
-//		if (priority == null) {
-//			priority = Priority.NONE;
-//		}
-//		if (!priority.hasId()) {
-//			DatabaseController.addPriority(priority);
-//		}
-		if (category == null) {
-			category = Category.NONE;
+		final Priority priority = appointment.getPriority() != null
+				? appointment.getPriority()
+				: Priority.NONE;
+		final Category category = appointment.getCategory() != null
+				? appointment.getCategory()
+				: Category.NONE;
+		if (!priority.hasId())  {
+			DatabaseController.addPriority(priority);
 		}
 		if (!category.hasId()) {
 			DatabaseController.addCategory(category);
@@ -93,13 +103,13 @@ public abstract class DatabaseController {
 			connection.setAutoCommit(false);
 			statement = connection.prepareStatement(INSERT_APPOINTMENTGROUP);
 			statement.setString(1, appointment.getSubject());
-			statement.setString(2,appointment.getDescription());
-			statement.setInt(3, 0/*priority.getId()*/);
+			statement.setString(2, appointment.getDescription());
+			statement.setInt(3, priority.getId());
 			statement.setInt(4, category.getId());
 			statement.executeUpdate();
 			statement.close();
-			int appointmentGroupId = DatabaseController.getMaxId("APPOINTMENT_GROUP");
-			for (AppointmentItem app : appointment.getAppointmentItems()) {
+			final int appointmentGroupId = DatabaseController.getMaxId("APPOINTMENT_GROUP");
+			for (final AppointmentItem app : appointment.getAppointmentItems()) {
 				statement = connection.prepareStatement(INSERT_APPOINTMENT);
 				statement.setLong(1, app.getStartDate().getTimeInMillis());
 				statement.setLong(2, app.getEndDate().getTimeInMillis());
@@ -117,13 +127,13 @@ public abstract class DatabaseController {
 			}
 			connection.commit();
 			LoggingController.log(Level.FINE, "Added Appointment to Database.");
-		} catch (SQLException e) {
+		} catch (final SQLException e) {
 			LoggingController.log(Level.WARNING,
 					"Failed to add Appointment to Database: " + e.getMessage());
 			if (savepoint != null) {
 				try {
 					connection.rollback(savepoint);
-				} catch (SQLException ex) {
+				} catch (final SQLException ex) {
 					LoggingController.log(Level.SEVERE, "Rollback failed: " + ex.getMessage());
 				}
 			}
@@ -133,8 +143,41 @@ public abstract class DatabaseController {
 				if (statement != null) {
 					statement.close();
 				}
-			} catch (SQLException e) {}
+			} catch (final SQLException e) {}
 		}
+	}
+
+	public static ArrayList<AppointmentGroup> getPriorityAppointments(
+			final Priority priority) {
+		final ArrayList<AppointmentGroup> ret = new ArrayList<>();
+		try {
+			if (!priority.hasId()) {
+				throw new SQLException(
+						"Category does not exist in the Database");
+			}
+			final Statement statement = connection.createStatement();
+			final ResultSet result = statement.executeQuery(
+					"SELECT ID, NAME, DESCRIPTION, CATEGORY_FK "
+					+ "FROM APPOINTMENT_GROUP "
+					+ "WHERE PRIORITY_FK = " + priority.getId());
+			while (result.next()) {
+				ret.add(new AppointmentGroup(
+						result.getInt("ID"),
+						result.getString("NAME"),
+				result.getString("DESCRIPTION"),
+				DatabaseController.getCategoryById(
+						result.getInt("CATEGORY_FK")),
+				priority,
+				null));
+			}
+		} catch (final SQLException e) {
+			LoggingController.log(Level.WARNING,
+					"Unable to get Appointments for Priority(id="
+					+ priority.getId() + " name=\""
+					+ priority.getName() + "\"):" + e.getMessage());
+			return null;
+		}
+		return ret;
 	}
 
 	/**
@@ -250,8 +293,294 @@ public abstract class DatabaseController {
 		return ret;
 	}
 
-	public static void addPriority(Priority priority) {
-		//TODO
+	public static Priority getPriorityById(int id) {
+		String name= "NONE";
+		final List<Period> alarmList = new ArrayList<>();
+		try {
+			ResultSet result = connection.createStatement().executeQuery(
+					"SELECT NAME FROM PRIORITY WHERE ID = " + id + ";");
+			if (result != null && !result.isClosed()) {
+				name = result.getString("NAME");
+				result.close();
+			} else {
+				throw new SQLException("Priority does not exist");
+			}
+			result = connection.createStatement().executeQuery(
+					"SELECT P.ID, P.MINUTES, P.DAYS, P.MONTHS "
+					+ "FROM PRIORITY_PERIOD AS PP "
+					+ "JOIN PERIOD AS P ON PP.PERIOD_FK = P.ID "
+					+ "WHERE PP.PRIORITY_FK = " + id + ";");
+			while (result != null && !result.isClosed() && result.next()) {
+				alarmList.add(Period.createInstance(
+						result.getInt("ID"),
+						result.getInt("MINUTES"),
+						result.getInt("DAYS"),
+						result.getInt("MONTHS")));
+			}
+			result.close();
+		} catch (final SQLException e) {
+			LoggingController.log(Level.INFO,
+						"Unable to return Priority for id " + id
+						+ ": " + e.getMessage());
+			id = DatabaseItem.UNASSIGNED_ID;
+		}
+		return Priority.createInstance(id, name, alarmList);
+	}
+
+	public static ArrayList<Priority> getPriorities() {
+		final ArrayList<Priority> ret = new ArrayList<>();
+		try {
+			final ResultSet priorities = connection.createStatement().executeQuery(
+					"SELECT * FROM PRIORITY;");
+			while (!priorities.isClosed() && priorities.next()) {
+				final int id = priorities.getInt("ID");
+				final ArrayList<Period> alarmList = new ArrayList<>();
+				final ResultSet alarms = connection.createStatement().executeQuery(
+						"SELECT P.ID, P.MINUTES, P.DAYS, P.MONTHS "
+						+ "FROM PRIORITY_PERIOD AS PP "
+						+ "JOIN PERIOD AS P ON PP.PERIOD_FK = P.ID "
+						+ "WHERE PP.PRIORITY_FK = " + id + ";");
+				while (alarms != null && !alarms.isClosed() && alarms.next()) {
+					alarmList.add(Period.createInstance(
+							alarms.getInt("ID"),
+							alarms.getInt("MINUTES"),
+							alarms.getInt("DAYS"),
+							alarms.getInt("MONTHS")));
+				}
+				ret.add(Priority.createInstance(
+						id,
+						priorities.getString("NAME"),
+						alarmList));
+			}
+		} catch (final SQLException e) {
+			e.printStackTrace();
+		}
+		return ret;
+	}
+
+	/**
+	 * Adds a {@link Priority Priority} to the Database.
+	 * @param priority the Priority
+	 */
+	public static void addPriority(final Priority priority) {
+		PreparedStatement statement = null;
+		Savepoint savepoint = null;
+		boolean success = true;
+		try {
+			savepoint = connection.setSavepoint();
+			connection.setAutoCommit(false);
+			if (priority.hasId()) {
+				statement = connection.prepareStatement(UPDATE_PRIORITY);
+				statement.setInt(2, priority.getId());
+			} else {
+				statement = connection.prepareStatement(INSERT_PRIORITY);
+			}
+			statement.setString(1, priority.getName());
+			statement.executeUpdate();
+			connection.commit();
+			if (!priority.hasId()) {
+				priority.initializeId(DatabaseController.getMaxId("PRIORITY"));
+			}
+			LoggingController.log(Level.FINE, "Added Priority to Database.");
+		} catch (final SQLException e) {
+			LoggingController.log(Level.WARNING,
+					"Failed to add Priority to Database: " + e.getMessage());
+			success = false;
+			e.printStackTrace(System.err);
+			if (savepoint != null) {
+				try {
+					connection.rollback(savepoint);
+				} catch (final SQLException ex) {
+					LoggingController.log(Level.SEVERE,
+							"Rollback failed: " + ex.getMessage());
+				}
+			}
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+				if (statement != null) {
+					statement.close();
+				}
+			} catch (final SQLException e) {
+				System.out.println("recovering failed");
+				e.printStackTrace(System.err);
+			}
+		}
+		if (success) {
+			priority.getAlarmList().stream().forEach(DatabaseController::addPeriod);
+			try {
+				savepoint = connection.setSavepoint();
+				connection.setAutoCommit(false);
+				final int deleted = connection.createStatement().executeUpdate(
+						"DELETE FROM PRIORITY_PERIOD WHERE PRIORITY_FK = "
+							+ priority.getId()+ ";");
+				LoggingController.log(Level.FINE,
+						"Removed " + deleted
+							+ " Priority-Period-Links of \""
+							+ priority.getName() + "\".");
+				final Optional<String> values = priority.getAlarmList().stream()
+						.map(e -> "(" + e.getId() + ", " + e.getId() + ")") // FIXME: Vermutlich so nicht richtig!
+						.reduce((r, e) -> r += ", " + e);
+				if (values.isPresent()) {
+					statement = connection.prepareStatement(
+							"INSERT INTO PRIORITY_PERIOD "
+								+ "(PRIORITY_FK, PERIOD_FK) VALUES "
+								+ values.get() + ";");
+					statement.executeUpdate();
+					LoggingController.log(Level.FINE,
+							"Added Priority-Period-Links to Database.");
+				}
+				connection.commit();
+			} catch (final SQLException e) {
+				LoggingController.log(Level.WARNING,
+						"Failed to add Priority-Period-Links to Database: "
+							+ e.getMessage());
+				e.printStackTrace(System.err);
+				if (savepoint != null) {
+					try {
+						connection.rollback(savepoint);
+					} catch (final SQLException ex) {
+						LoggingController.log(Level.SEVERE,
+								"Rollback failed: " + ex.getMessage());
+					}
+				}
+			} finally {
+				try {
+					connection.setAutoCommit(true);
+					if (statement != null) {
+						statement.close();
+					}
+				} catch (final SQLException e) {
+					System.out.println("recovering failed");
+					e.printStackTrace(System.err);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Adds a {@link Period Period} to the Database.<br/>
+	 * If the Period is already present in the Database,
+	 * this method does nothing.
+	 * @param period the Period
+	 */
+	public static void addPeriod(final Period period) {
+		if (period.hasId()) {
+			return;
+		}
+		PreparedStatement statement = null;
+		Savepoint savepoint = null;
+		try {
+			savepoint = connection.setSavepoint();
+			connection.setAutoCommit(false);
+			final ResultSet periods = connection.createStatement().executeQuery(
+					"SELECT * FROM PERIOD WHERE MONTHS = " + period.getMonths()
+						+ " AND DAYS = " + period.getDays()
+						+ " AND MINUTES = " + period.getMinutes());
+			final List<Integer> duplicatePeriods = new ArrayList<>();
+			while (!periods.isClosed() && periods.next()) {
+				final int id = periods.getInt("ID");
+				if (periods.isFirst()) {
+					LoggingController.log(Level.FINE,
+							"Period already exists in the Database.");
+					period.initializeId(id);
+				}
+				duplicatePeriods.add(id);
+			}
+			if (duplicatePeriods.size() > 1) {
+				LoggingController.log(Level.WARNING,
+						"The Periods with the IDs "
+							+ String.join(
+								", ",
+								duplicatePeriods.toArray(new String[duplicatePeriods.size()])
+							+ " are identical."));
+			}
+			if (duplicatePeriods.size() == 0) {
+				statement = connection.prepareStatement(INSERT_PERIOD);
+				statement.setInt(1, period.getMinutes());
+				statement.setInt(2, period.getDays());
+				statement.setInt(3, period.getMonths());
+				statement.executeUpdate();
+				statement.close();
+				connection.commit();
+				period.initializeId(DatabaseController.getMaxId("PERIOD"));
+				LoggingController.log(Level.FINE, "Added Period to Database.");
+			}
+		} catch (final SQLException e) {
+			LoggingController.log(Level.WARNING,
+					"Failed to add Period to Database: " + e.getMessage());
+			if (savepoint != null) {
+				try {
+					connection.rollback(savepoint);
+				} catch (final SQLException ex) {
+					LoggingController.log(Level.SEVERE,
+							"Rollback failed: " + ex.getMessage());
+				}
+			}
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+				if (statement != null) {
+					statement.close();
+				}
+			} catch (final SQLException e) {
+				System.out.println("recovering failed");
+				e.printStackTrace(System.err);
+			}
+		}
+	}
+
+	public static void addPriorities(final List<Priority> priorities) {
+		priorities.stream().forEach(e -> DatabaseController.addPriority(e));
+	}
+
+	public static void removePriority(final Priority priority) {
+		PreparedStatement statement = null;
+		Savepoint savepoint = null;
+		try {
+			if (!priority.hasId()) {
+					throw new SQLException("Priority does not exist in the Database");
+			}
+			savepoint = connection.setSavepoint();
+			connection.setAutoCommit(false);
+			statement = connection.prepareStatement(DELETE_PRIORITY_PERIODS);
+			statement.setInt(1, priority.getId());
+			statement.executeUpdate();
+			statement.close();
+			statement = connection.prepareStatement(DELETE_PRIORITY);
+			statement.setInt(1, priority.getId());
+			final int amountRemoved = statement.executeUpdate();
+			statement.close();
+			connection.commit();
+			if (amountRemoved == 1) {
+				LoggingController.log(Level.FINE,
+						"Removed 1 Priority from Database.");
+			} else {
+				LoggingController.log(Level.WARNING,
+						"Removed " + amountRemoved + " Priorities from Database.");
+			}
+		} catch (final SQLException e) {
+			LoggingController.log(Level.WARNING,
+					"Failed to remove Priority from Database: " + e.getMessage());
+			if (savepoint != null) {
+				try {
+					connection.rollback(savepoint);
+				} catch (final SQLException ex) {
+					LoggingController.log(Level.SEVERE,
+							"Rollback failed: " + ex.getMessage());
+				}
+			}
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+				if (statement != null) {
+					statement.close();
+				}
+			} catch (final SQLException e) {
+				System.out.println("recovering failed");
+				e.printStackTrace(System.err);
+			}
+		}
 	}
 
 	/**

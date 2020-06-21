@@ -24,9 +24,7 @@
 	},
 
 	"ressources": {
-		"priorities": {
-
-		},
+		"priorities.none": "No Priority",
 		"categories.none": "No Category"
 	},
 
@@ -253,6 +251,63 @@
 		"description": {
 			"label": "Description",
 			"prompt": "Description of the Category"
+		}
+	},
+
+	"managePriorities": {
+		"title": "Manage Priorities",
+		"menu": {
+			"edit": {
+				"name": "Edit",
+				"add": "Add",
+				"delete": "Delete"
+			}
+		},
+		"properties": {
+			"name": "Properties",
+			"title": {
+				"label": "Priority",
+				"prompt": "Title of the Priority"
+			},
+			"alarms.label": "Alarms"
+		},
+		"appointments": {
+			"name": "Appointments"
+		},
+		"dialogs": {
+			"delete": {
+				"title": "Warning!",
+				"message": "Are you sure you want to delete this Priority?"
+			}
+		}
+	},
+
+	"createPriority": {
+		"title": "Create new Priority",
+		"name": {
+			"label": "Title",
+			"prompt": "Title of the Priority"
+		}
+	},
+
+	"alarmIterator": {
+		"alarm": {
+			"months": {
+				"label": "Months",
+				"prompt": "Months"
+			},
+			"days": {
+				"label": "Days",
+				"prompt": "Days"
+			},
+			"hours": {
+				"label": "Hours",
+				"prompt": "Hours"
+			},
+			"minutes": {
+				"label": "Minutes",
+				"prompt": "Minutes"
+			}
 		}
 	}
 }

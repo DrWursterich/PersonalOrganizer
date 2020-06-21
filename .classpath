@@ -10,5 +10,7 @@
 	<classpathentry kind="lib" path="libraries/mysql-connector-java-5.1.46-bin.jar"/>
 	<classpathentry kind="lib" path="libraries/sqlite-jdbc-3.23.1.jar"/>
 	<classpathentry kind="lib" path="jfxrt.jar"/>
+	<classpathentry kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/fxiterator"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

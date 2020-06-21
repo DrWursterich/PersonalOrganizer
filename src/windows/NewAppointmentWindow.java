@@ -25,6 +25,7 @@ import database.appointment.AppointmentItem;
 import database.category.Category;
 import database.category.CategoryListCell;
 import database.priority.Priority;
+import database.priority.PriorityListCell;
 import menus.DatePicker;
 import menus.ContextMenu;
 import menus.MenuItem;
@@ -312,8 +313,13 @@ public class NewAppointmentWindow extends Window {
 		this.categoryBox.setButtonCell(new CategoryListCell());
 		this.categoryBox.getSelectionModel().select(Category.NONE);
 
+		this.priorityBox.getItems().addAll(DatabaseController.getPriorities());
+		this.priorityBox.setCellFactory(e -> new PriorityListCell());
+		this.priorityBox.setButtonCell(new PriorityListCell());
+		this.priorityBox.getSelectionModel().select(Priority.NONE);
+
 		this.rightPane.setPadding(new Insets(10));
-		
+
 		this.initTabPane(this.tabPane);
 
 		this.firstTab.setClosable(false);
@@ -356,6 +362,8 @@ public class NewAppointmentWindow extends Window {
 
 		this.manageCategoryButton.setOnAction(e -> {
 			WindowController.showWindow(ManageCategoriesWindow.class, this.stage);});
+		this.managePriorityButton.setOnAction(e -> {
+			WindowController.showWindow(ManagePrioritiesWindow.class, this.stage);});
 	}
 
 	@Override

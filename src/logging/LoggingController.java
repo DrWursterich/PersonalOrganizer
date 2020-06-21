@@ -41,12 +41,12 @@ public class LoggingController {
 
 	static {
 		try {
-			com.sun.javafx.util.Logging.getAccessibilityLogger().setLevel(OFF);
-			com.sun.javafx.util.Logging.getCSSLogger().setLevel(OFF);
-			com.sun.javafx.util.Logging.getFocusLogger().setLevel(OFF);
-			com.sun.javafx.util.Logging.getInputLogger().setLevel(OFF);
-			com.sun.javafx.util.Logging.getJavaFXLogger().setLevel(OFF);
-			com.sun.javafx.util.Logging.getLayoutLogger().setLevel(OFF);
+//			com.sun.javafx.util.Logging.getAccessibilityLogger().setLevel(OFF);
+//			com.sun.javafx.util.Logging.getCSSLogger().setLevel(OFF);
+//			com.sun.javafx.util.Logging.getFocusLogger().setLevel(OFF);
+//			com.sun.javafx.util.Logging.getInputLogger().setLevel(OFF);
+//			com.sun.javafx.util.Logging.getJavaFXLogger().setLevel(OFF);
+//			com.sun.javafx.util.Logging.getLayoutLogger().setLevel(OFF);
 		} catch (Exception e) {
 			LoggingController.log(Level.INFO, "FX-Logger was not disabled: " + e.getMessage());
 		}

@@ -24,9 +24,7 @@
 	},
 
 	"ressources": {
-		"priorities": {
-
-		},
+		"priorities.none": "Keine Priorität",
 		"categories.none": "keine Kategorie"
 	},
 
@@ -253,6 +251,41 @@
 		"description": {
 			"label": "Beschreibung",
 			"prompt": "Beschreibung der Kategorie"
+		}
+	},
+
+	"managePriorities": {
+		"title": "Prioritäten verwalten",
+		"menu": {
+			"edit": {
+				"name": "Bearbeiten",
+				"add": "Hinzufügen",
+				"delete": "Löschen"
+			}
+		},
+		"properties": {
+			"name": "Eigenschaften",
+			"title": {
+				"label": "Priorität",
+				"prompt": "Titel der Priorität"
+			}
+		},
+		"appointments": {
+			"name": "Termine"
+		},
+		"dialogs": {
+			"delete": {
+				"title": "Warnung!",
+				"message": "Sind Sie sicher, dass Sie die Priorität löschen möchten?"
+			}
+		}
+	},
+
+	"createPriority": {
+		"title": "Priorität erstellen",
+		"name": {
+			"label": "Titel",
+			"prompt": "Titel der Priorität"
 		}
 	}
 }

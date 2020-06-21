@@ -26,8 +26,8 @@ public class AppointmentGroup extends DatabaseItem {
 			Priority priority, ArrayList<AppointmentItem> appointmentItems) {
 		this.subject = subject;
 		this.description = description;
-		this.category = category;
-		this.priority = priority;
+		this.category = category != null ? category : Category.NONE;
+		this.priority = priority != null ? priority : Priority.NONE;
 		this.appointmentItems = appointmentItems;
 	}
 
@@ -40,7 +40,7 @@ public class AppointmentGroup extends DatabaseItem {
 	}
 
 	public Category getCategory() {
-		return this.category != null ? this.category : Category.NONE;
+		return this.category;
 	}
 
 	public Priority getPriority() {
