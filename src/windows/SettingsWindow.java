@@ -6,6 +6,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 
+import de.schaeper.fx.scene.controls.fontPicker.FontPicker;
+import de.schaeper.fx.scene.text.font.Font;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -27,9 +30,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import logging.LoggingController;
-import menus.FontPicker;
 import menus.TreeItem;
 import menus.TreeView;
 import settings.Setting;
@@ -166,7 +167,7 @@ public class SettingsWindow extends Window {
 	private class InpFontPicker extends FontPicker implements CustomInput<Font> {
 		private Setting<Font> setting;
 
-		InpFontPicker(Setting<Font> setting) {
+		InpFontPicker(final Setting<Font> setting) {
 			super(setting.getValue());
 			this.initialize(setting);
 		}
@@ -177,7 +178,7 @@ public class SettingsWindow extends Window {
 		}
 
 		@Override
-		public void setSetting(Setting<Font> setting) {
+		public void setSetting(final Setting<Font> setting) {
 			this.setting = setting;
 		}
 	}

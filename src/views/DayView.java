@@ -16,6 +16,8 @@ import javafx.beans.property.SimpleDoubleProperty;
 import settings.SettingController;
 import database.DatabaseController;
 import database.appointment.Appointment;
+import de.schaeper.fx.bindings.ConverterBinding;
+import de.schaeper.fx.scene.text.font.Font;
 import util.ResizableRectangle;
 import util.Time;
 
@@ -93,7 +95,10 @@ public class DayView extends DateView {
 						.bind(backgroundLeft.xProperty().add(backgroundLeft.widthProperty())
 								.subtract(line.strokeWidthProperty().divide(2)));
 				Label label = new Label(String.format("%2d:00", Math.abs(i % 24)));
-				label.fontProperty().bind(SettingController.get().DAYVIEW_TIMESTAMP_FONT);
+				ConverterBinding.bind(
+						SettingController.get().DAYVIEW_TIMESTAMP_FONT,
+						label.fontProperty(),
+						Font::getFxFont);
 				label.setPrefWidth(40);
 				label.layoutYProperty().bind(height.add(1));
 				Line line2 = new Line();
@@ -133,14 +138,18 @@ public class DayView extends DateView {
 					appRec.strokeProperty().bind(SettingController.get().DAYVIEW_APPOINTMENT_STROKE_COLOR);
 					Label subjectLabel = new Label();
 					subjectLabel.textProperty().bind(a.subjectProperty());
-					subjectLabel.fontProperty()
-							.bind(SettingController.get().DAYVIEW_APPOINTMENT_SUBJECT_FONT);
+					ConverterBinding.bind(
+							SettingController.get().DAYVIEW_APPOINTMENT_SUBJECT_FONT,
+							subjectLabel.fontProperty(),
+							Font::getFxFont);
 					subjectLabel.translateXProperty().bind(appRec.xProperty().add(5));
 					subjectLabel.translateYProperty().bind(appRec.yProperty().add(5));
 					Label descriptionLabel = new Label();
 					descriptionLabel.textProperty().bind(a.descriptionProperty());
-					descriptionLabel.fontProperty()
-							.bind(SettingController.get().DAYVIEW_APPOINTMENT_DESCRIPTION_FONT);
+					ConverterBinding.bind(
+							SettingController.get().DAYVIEW_APPOINTMENT_DESCRIPTION_FONT,
+							descriptionLabel.fontProperty(),
+							Font::getFxFont);
 					descriptionLabel.translateXProperty().bind(appRec.xProperty().add(5));
 					descriptionLabel.translateYProperty()
 							.bind(appRec.yProperty().add(subjectLabel.heightProperty()).add(10));

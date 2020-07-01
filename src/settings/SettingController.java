@@ -1,6 +1,10 @@
 package settings;
 
 import static javafx.scene.text.FontWeight.BOLD;
+import static javafx.scene.text.FontPosture.REGULAR;
+
+import de.schaeper.fx.scene.text.font.Font;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -14,7 +18,6 @@ import java.lang.reflect.Modifier;
 import java.util.logging.Level;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import logging.LoggingController;
 import util.Translator;
 import windows.NodeInitializer;
@@ -85,15 +88,15 @@ public abstract class SettingController {
 		public final Setting<Color> DAYVIEW_BACKGROUND_RIGHT_COLOR =
 				new ColorSetting(Color.AQUAMARINE);
 		public final Setting<Font>  DAYVIEW_TIMESTAMP_FONT =
-				new FontSetting(Font.font("Courier New"));
+				new FontSetting(new Font("Courier New", 12));
 		public final Setting<Color> DAYVIEW_APPOINTMENT_BACKGROUND_COLOR =
 				new ColorSetting(Color.KHAKI);
 		public final Setting<Color> DAYVIEW_APPOINTMENT_STROKE_COLOR =
 				new ColorSetting(Color.DARKKHAKI);
 		public final Setting<Font>  DAYVIEW_APPOINTMENT_SUBJECT_FONT =
-				new FontSetting(Font.font("Verdana", BOLD, 14));
+				new FontSetting(new Font("Verdana", BOLD, REGULAR, 14));
 		public final Setting<Font>  DAYVIEW_APPOINTMENT_DESCRIPTION_FONT =
-				new FontSetting(Font.font("Verdana", 12));
+				new FontSetting(new Font("Verdana", 12));
 
 		public SettingsContainer() throws IllegalArgumentException {}
 

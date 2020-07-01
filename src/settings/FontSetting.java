@@ -3,7 +3,8 @@ package settings;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import javafx.scene.text.Font;
+
+import de.schaeper.fx.scene.text.font.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 
@@ -18,29 +19,18 @@ public class FontSetting extends Setting<Font> {
 		super(defaultValue);
 	}
 
-	private void writeObject(ObjectOutputStream out) throws IOException {
-		Font val = (this.getValue() != null ? this.getValue() : this.defaultValue);
-		String weightString = "NORMAL";
-		String postureString = "REGULAR";
-		String sub = "";
-		if (val.toString().contains("style=")) {
-			sub = val.toString().substring(val.toString().indexOf("style=") + 6);
-			sub = sub.substring(0, sub.indexOf(",")).toUpperCase();
-		}
-		if (sub.contains("ITALIC")) {
-			postureString = "ITALIC";
-			sub = sub.replace("ITALIC", "").trim();
-		}
-		if (!sub.equals("REGULAR") && !sub.equals("")) {
-			weightString = sub;
-		}
-		out.writeUTF(val.getFamily());
-		out.writeDouble(val.getSize());
-		out.writeUTF(weightString);
-		out.writeUTF(postureString);
+	private void writeObject(final ObjectOutputStream out) throws IOException {
+		final Font font = this.getValue() != null
+				? this.getValue()
+				: this.defaultValue;
+		out.writeUTF(font.getFamily());
+		out.writeDouble(font.getSize());
+		out.writeUTF(font.getFontWeight().toString());
+		out.writeUTF(font.getFontPosture().toString());
 	}
 
-	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+	private void readObject(final ObjectInputStream in)
+			throws IOException, ClassNotFoundException {
 		String family = in.readUTF();
 		double size = in.readDouble();
 		String weightString = in.readUTF();
@@ -51,6 +41,6 @@ public class FontSetting extends Setting<Font> {
 			weight = FontWeight.valueOf(weightString);
 			posture = FontPosture.valueOf(postureString);
 		} catch (Exception e) {e.printStackTrace();}
-		this.setValue(Font.font(family, weight, posture, size));
+		this.setValue(new Font(family, weight, posture, size));
 	}
 }
