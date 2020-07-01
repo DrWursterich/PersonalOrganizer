@@ -13,6 +13,8 @@
 		"ok": "ОК",
 		"cancel": "Отмена",
 		"fontPicker": {
+			"title": "Выбор шрифта",
+			"header": "Выберите шрифт",
 			"previewLabel": "предварительный просмотр",
 			"previewText": "AaBbYyZz",
 			"fontLabel": "Шрифт",

@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.logging.Level;
 
 import de.schaeper.fx.scene.controls.fontPicker.FontPicker;
+import de.schaeper.fx.scene.controls.fontPicker.FontPickerDialog;
+import de.schaeper.fx.scene.controls.fontPicker.FontPickerDialogContent;
 import de.schaeper.fx.scene.text.font.Font;
 
 import javafx.collections.FXCollections;
@@ -16,6 +18,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
@@ -170,6 +173,8 @@ public class SettingsWindow extends Window {
 		InpFontPicker(final Setting<Font> setting) {
 			super(setting.getValue());
 			this.initialize(setting);
+			this.setDialogFactory(
+					() -> new TranslatableFontPickerDialog(this.getValue()));
 		}
 
 		@Override
@@ -180,6 +185,50 @@ public class SettingsWindow extends Window {
 		@Override
 		public void setSetting(final Setting<Font> setting) {
 			this.setting = setting;
+		}
+
+		private class TranslatableFontPickerDialog extends FontPickerDialog {
+			public TranslatableFontPickerDialog(final Font defaultFont) {
+				super(defaultFont);
+				final FontPickerDialogContent content
+						= new TranslatableFontPickerDialogContent(defaultFont);
+				this.setResultConverter(
+						button -> button == ButtonType.OK
+							? content.getFont()
+							: null);
+				this.titleProperty().bind(
+						Translator.translationProperty(
+							"general.fontPicker.title"));
+				this.getDialogPane().headerTextProperty().bind(
+						Translator.translationProperty(
+							"general.fontPicker.header"));
+				this.getDialogPane().setContent(content);
+			}
+
+			private class TranslatableFontPickerDialogContent
+					extends FontPickerDialogContent {
+				public TranslatableFontPickerDialogContent(final Font font) {
+					super(font);
+					this.getPreviewLabel().textProperty().bind(
+							Translator.translationProperty(
+								"general.fontPicker.previewLabel"));
+					this.getPreview().textProperty().bind(
+							Translator.translationProperty(
+								"general.fontPicker.previewText"));
+					this.getSizeLabel().textProperty().bind(
+							Translator.translationProperty(
+								"general.fontPicker.sizeLabel"));
+					this.getStyleLabel().textProperty().bind(
+							Translator.translationProperty(
+								"general.fontPicker.styleLabel"));
+					this.getBoldCheckBox().textProperty().bind(
+							Translator.translationProperty(
+								"general.fontPicker.boldLabel"));
+					this.getItalicCheckBox().textProperty().bind(
+							Translator.translationProperty(
+								"general.fontPicker.italicLabel"));
+				}
+			}
 		}
 	}
 

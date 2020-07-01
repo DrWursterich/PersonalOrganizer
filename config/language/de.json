@@ -13,9 +13,11 @@
 		"ok": "OK",
 		"cancel": "Abbrechen",
 		"fontPicker": {
+			"title": "Font-Auswahl",
+			"header": "Wählen Sie eine Schriftart aus",
 			"previewLabel": "Vorschau",
 			"previewText": "AaBbYyZz",
-			"fontLabel": "Font",
+			"fontLabel": "Schriftart",
 			"sizeLabel": "Größe",
 			"styleLabel": "Stil",
 			"boldLabel": "Fett",

@@ -13,6 +13,8 @@
 		"ok": "好",
 		"cancel": "取消",
 		"fontPicker": {
+			"title": "字體奧斯瓦爾",
+			"header": "選擇字體",
 			"previewLabel": "預習",
 			"previewText": "漢鼎繁海報",
 			"fontLabel": "字形",

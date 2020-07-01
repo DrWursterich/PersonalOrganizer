@@ -13,6 +13,8 @@
 		"ok": "OK",
 		"cancel": "Cancel",
 		"fontPicker": {
+			"title": "Font-Select",
+			"header": "Select a Font",
 			"previewLabel": "Preview",
 			"previewText": "AaBbYyZz",
 			"fontLabel": "Font",
