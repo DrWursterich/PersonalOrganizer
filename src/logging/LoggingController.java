@@ -1,7 +1,5 @@
 package logging;
 
-import static sun.util.logging.PlatformLogger.Level.OFF;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -41,16 +39,6 @@ public class LoggingController {
 
 	static {
 		try {
-//			com.sun.javafx.util.Logging.getAccessibilityLogger().setLevel(OFF);
-//			com.sun.javafx.util.Logging.getCSSLogger().setLevel(OFF);
-//			com.sun.javafx.util.Logging.getFocusLogger().setLevel(OFF);
-//			com.sun.javafx.util.Logging.getInputLogger().setLevel(OFF);
-//			com.sun.javafx.util.Logging.getJavaFXLogger().setLevel(OFF);
-//			com.sun.javafx.util.Logging.getLayoutLogger().setLevel(OFF);
-		} catch (Exception e) {
-			LoggingController.log(Level.INFO, "FX-Logger was not disabled: " + e.getMessage());
-		}
-		try {
 			GLOBAL_LOGGER.setLevel(Level.FINE);
 			Handler[] handlers = GLOBAL_LOGGER.getHandlers();
 			for (int i=handlers.length-1;i>=0;i--) {
@@ -71,7 +59,9 @@ public class LoggingController {
 				GLOBAL_LOGGER.addHandler(FILE_HANDLER);
 			}
 		} catch (Exception e) {
-			LoggingController.log(Level.SEVERE, "Unable to initiate Handlers: " + e.getMessage());
+			LoggingController.log(
+					Level.SEVERE,
+					"Unable to initiate Logging-Handlers: " + e.getMessage());
 		}
 	}
 
@@ -180,13 +170,5 @@ public class LoggingController {
 			ret = stackTrace[i];
 		}
 		return ret;
-	}
-
-	@Override
-	protected void finalize() throws Throwable {
-		super.finalize();
-		OUT.close();
-		FILE_HANDLER.close();
-		CONSOLE_HANDLER.close();
 	}
 }

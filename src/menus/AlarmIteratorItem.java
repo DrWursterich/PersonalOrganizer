@@ -43,11 +43,11 @@ public class AlarmIteratorItem extends GridPane
 		public Object parseObject(
 				final String string,
 				final ParsePosition position) {
-			Integer ret;
+			int ret;
 			try {
-				ret = new Integer(string);
+				ret = Integer.parseInt(string);
 			} catch (final NumberFormatException e) {
-				ret = new Integer(0);
+				ret = 0;
 			}
 			position.setIndex(ret);
 			return ret;

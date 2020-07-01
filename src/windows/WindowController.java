@@ -17,7 +17,7 @@ public class WindowController {
 		try {
 			Window window = WindowController.windows.get(windowClass);
 			if (window == null) {
-				window = windowClass.newInstance();
+				window = windowClass.getDeclaredConstructor().newInstance();
 				window.initModality();
 				WindowController.windows.put(windowClass, window);
 			}

@@ -12,7 +12,6 @@ public class ConsoleHandler extends java.util.logging.ConsoleHandler {
 	private boolean firstLog = true;
 	@Override
 	public void publish(LogRecord record) {
-//		super.publish(record);
 		if (this.firstLog) {
 			System.out.print(this.getFormatter().getHead(this));
 			this.firstLog = false;
@@ -36,11 +35,5 @@ public class ConsoleHandler extends java.util.logging.ConsoleHandler {
 		}
 		this.flush();
 		super.close();
-	}
-
-	@Override
-	protected void finalize() throws Throwable {
-		this.flush();
-		super.finalize();
 	}
 }

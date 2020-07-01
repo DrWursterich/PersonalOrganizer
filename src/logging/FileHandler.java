@@ -28,10 +28,4 @@ public class FileHandler extends StreamHandler {
 	public void close() throws SecurityException {
 		super.close();
 	}
-
-	@Override
-	protected void finalize() throws Throwable {
-		this.flush();
-		super.finalize();
-	}
 }

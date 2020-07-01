@@ -166,11 +166,6 @@ public class ManagePrioritiesWindow extends Window {
 	}
 
 	@Override
-	protected void finalize() {
-		this.applyPriorityChanges();
-	}
-
-	@Override
 	public void initStage(final Stage stage) {
 		stage.setOnCloseRequest(e -> {
 			this.applyPriorityChanges();

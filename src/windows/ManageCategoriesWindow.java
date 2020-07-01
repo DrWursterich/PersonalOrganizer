@@ -171,11 +171,6 @@ public class ManageCategoriesWindow extends Window {
 	}
 
 	@Override
-	protected void finalize() {
-		this.applyCategoryChanges();
-	}
-
-	@Override
 	public void initStage(Stage stage) {
 		stage.setOnCloseRequest(e -> {
 			this.applyCategoryChanges();
